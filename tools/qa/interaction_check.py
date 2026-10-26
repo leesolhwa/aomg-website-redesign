@@ -11,6 +11,7 @@ async def newpage(b, w=1440, h=900, intro=False, keep=False, **kw):
   ctx=await b.new_context(viewport={'width':w,'height':h}, **kw); OPEN.append(ctx)
   if not intro: await ctx.add_init_script("try{sessionStorage.setItem('aomg-entered','1')}catch(e){}")
   pg=await ctx.new_page(); errs=[]
+  pg.set_default_timeout(120000)  # 소프트웨어 렌더링(2코어)에서는 한 프레임이 1초 이상 걸릴 수 있음
   pg.on('console', lambda m: errs.append(m.text+' @'+pg.url.split('/')[-1]+' src='+str(m.location.get('url','')).split('/')[-1]) if m.type=='error' and 'ERR_FAILED' not in m.text else None)
   pg.on('pageerror', lambda e: errs.append(f'{e.name}: {e} @{pg.url.split("/")[-1]} stack={e.stack!r}'[:300]))
   pg.on('response', lambda r: errs.append(f'HTTP {r.status} {r.url}') if r.status>=400 else None)
