@@ -20,6 +20,7 @@ AOMG Website Redesign — Brand Identity, UI/UX & Interactive Web Experience
 | [tokens.json](tokens.json) | 디자인 토큰 (실측·조정·임시 구분) |
 | [docs/kode-reference-measurements.md](docs/kode-reference-measurements.md) | 레퍼런스 실측 원본 기록 |
 | [img/README.md](img/README.md) | 이미지 출처와 적용 섹션 |
+| [docs/static-page-qa-report.md](docs/static-page-qa-report.md) | 12단계 QA 리포트 (수정 로그·최종 체크리스트 포함) |
 
 ## 실행
 로컬 서버로 열기 (상세페이지의 `?id=`와 폰트 로딩 때문에 파일 더블클릭보다 권장):

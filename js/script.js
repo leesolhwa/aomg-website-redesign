@@ -27,6 +27,21 @@
   $$('.gnb__menu a').forEach((a) => a.addEventListener('click', () => setMenu(false)));
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && gnb.classList.contains('is-open')) { setMenu(false); toggle.focus(); } });
 
+  /* ---------- 같은 페이지 앵커: 부드러운 이동 ----------
+   * CSS scroll-behavior: smooth는 다른 페이지에서 #섹션으로 넘어올 때도 적용돼
+   * 페이지 전환(View Transition)과 겹치므로, 같은 페이지 안의 클릭에만 JS로 적용 */
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('a[href^="#"]');
+    if (!a || e.defaultPrevented || e.metaKey || e.ctrlKey) return;
+    const target = document.getElementById(a.getAttribute('href').slice(1));
+    if (!target) return;
+    e.preventDefault();
+    target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+    history.pushState(null, '', a.getAttribute('href'));
+    target.setAttribute('tabindex', '-1');
+    target.focus({ preventScroll: true });
+  });
+
   /* ---------- GNB: 배경에 따라 글자색 / 현재 섹션 표시 ---------- */
   const toned = $$('[data-tone]').filter((el) => el !== gnb);
   function updateTone() {
@@ -128,6 +143,16 @@
       panel.classList.add('is-leaving');
       setTimeout(() => { paint(); panel.classList.remove('is-leaving'); }, 200);
     }
+    // 동작 줄이기: 연도 전환 대신 전체 연도를 목록으로 (prd 4-1)
+    if (reduceMotion) {
+      panel.classList.add('discography__all');
+      panel.innerHTML = years.map((y) => `<div class="discography__wall grid">
+          <p class="discography__year" aria-label="${y}년 발매">${y}</p>
+          <ul class="discography__list">${RELEASES.filter((r) => r.year === y).map((r) => releaseCard(r, { withPlay: true })).join('').replaceAll(' data-reveal', '')}</ul>
+        </div>`).join('');
+      $('.discography__controls').hidden = true;
+      return;
+    }
     $('[data-action="year-prev"]').addEventListener('click', () => go(-1));
     $('[data-action="year-next"]').addEventListener('click', () => go(1));
     $('#discography').addEventListener('keydown', (e) => {
@@ -161,9 +186,9 @@
     if (!a) {
       if (params.get('id')) {
         const msg = document.createElement('p');
-        msg.className = 'container t-ko-caption'; msg.setAttribute('role', 'status');
+        msg.className = 't-ko-caption detail-hero__notice'; msg.setAttribute('role', 'status');
         msg.textContent = '찾는 아티스트가 없어요. 키비츠 페이지를 대신 보여드려요.';
-        $('#artist-hero').before(msg);
+        $('.detail-hero__body').prepend(msg); // 고정 GNB에 가리지 않도록 히어로 본문 안에
       }
       a = artistById('keyveatz');
     }
