@@ -25,7 +25,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400&family=Instrument+Serif&display=swap">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <link rel="preload" as="image" href="img/release-keyveatz-oxygen.webp">
-  <link rel="stylesheet" href="css/style.css?v=20261026-logo">
+  <link rel="stylesheet" href="css/style.css?v=20261026-ring">
   <script type="importmap">{ "imports": { "three": "./js/vendor/three.module.min.js" } }</script>
 </head>
 <body class="page-home">
@@ -36,7 +36,12 @@
     <p class="intro__counter" aria-hidden="true">000</p>
     <div class="intro__stage">
       <p class="intro__typed" aria-hidden="true"><span class="intro__text"></span><span class="intro__cursor"></span></p>
-      <img class="intro__logo" src="img/logo-white.png" alt="AOMG" width="1004" height="348">
+      <div class="intro__mark" role="img" aria-label="AOMG">
+        <img class="intro__piece" data-piece="a" src="img/logo/a.svg" alt="" style="--x:0.37%;--y:18.05%;--w:26.48%;--h:69.66%">
+        <img class="intro__piece" data-piece="o" src="img/logo/o.svg" alt="" style="--x:20.91%;--y:0.78%;--w:33.29%;--h:98.99%">
+        <img class="intro__piece" data-piece="m" src="img/logo/m.svg" alt="" style="--x:49.84%;--y:19.02%;--w:27.34%;--h:68.28%">
+        <img class="intro__piece" data-piece="g" src="img/logo/g.svg" alt="" style="--x:74.88%;--y:17.59%;--w:25.66%;--h:70.83%">
+      </div>
     </div>
     <div class="intro__actions" hidden>
       <button class="cta" type="button" data-action="enter" aria-label="입장"><span class="cta__label" data-copy="intro.enter">ENTER</span></button>
@@ -64,6 +69,7 @@
     <!-- ===== #hero: Immersive Hero ===== -->
     <section class="hero surface-accent" id="hero" data-tone="on-accent" aria-labelledby="hero-title">
       <canvas class="hero__canvas" id="hero-canvas" aria-hidden="true"></canvas>
+      <div class="hero__ring" aria-hidden="true"><span>HOLD AND DRAG</span></div>
       <h1 class="hero__statement" id="hero-title" data-copy="hero.statement"><span>ABOVE</span> <span>ORDINARY</span> <span>MUSIC</span> <span>GROUP</span></h1>
       <div class="hero__release container">
         <figure class="hero__cover">
@@ -184,12 +190,12 @@
 
   <img class="artist-preview" alt="" aria-hidden="true">
 
-  <script src="js/data.js?v=20261026-logo"></script>
-  <script src="js/player.js?v=20261026-logo"></script>
-  <script src="js/script.js?v=20261026-logo"></script>
-  <script src="js/effects.js?v=20261026-logo"></script>
+  <script src="js/data.js?v=20261026-ring"></script>
+  <script src="js/player.js?v=20261026-ring"></script>
+  <script src="js/script.js?v=20261026-ring"></script>
+  <script src="js/effects.js?v=20261026-ring"></script>
   <script type="module">
-    import { createLogoScene } from './js/logo3d.js?v=20261026-logo';
+    import { createLogoScene } from './js/logo3d.js?v=20261026-ring';
     const hero = document.getElementById('hero-canvas');
     const heroEl = document.getElementById('hero');
     const textArea = () => {
@@ -197,7 +203,16 @@
       const rel = heroEl.querySelector('.hero__release').getBoundingClientRect();
       return { top: gnb, bottom: rel.top - h.top };
     };
-    createLogoScene(hero, { mode: 'hero', statement: ['ABOVE', 'ORDINARY', 'MUSIC', 'GROUP'], textArea })
+    // 커서 영역 표시 (KODE 기준 화면의 원): 깨지는 반경과 같은 크기로 커서를 따라감
+    const ring = heroEl.querySelector('.hero__ring');
+    let rx = 0, ry = 0;
+    const onRing = ({ x, y, r, visible }) => {
+      rx += (x - rx) * 0.35; ry += (y - ry) * 0.35;
+      ring.style.setProperty('--ring-r', `${r}px`);
+      ring.style.transform = `translate(${rx - r}px, ${ry - r}px)`;
+      heroEl.classList.toggle('is-hovering', visible);
+    };
+    createLogoScene(hero, { mode: 'hero', statement: ['ABOVE', 'ORDINARY', 'MUSIC', 'GROUP'], textArea, onRing })
       .then((s) => { if (s) document.getElementById('hero').classList.add('is-3d'); })
       .catch(() => document.documentElement.classList.add('no-webgl'));
     createLogoScene(document.getElementById('footer-canvas'), { mode: 'footer', interactive: false }).catch(() => {});

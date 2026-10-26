@@ -297,15 +297,14 @@ html.is-intro { overflow: hidden; }
 .intro__stage { display: grid; place-items: center; width: 100%; }
 .intro__stage > * { grid-area: 1 / 1; }
 .intro__typed { position: relative; z-index: 1; font-family: var(--font-sans-en); font-size: min(var(--fs-display-3), 5.2vw); line-height: var(--lh-paragraph-en); text-transform: uppercase; text-align: center; white-space: nowrap; }
-.intro__ch { display: inline-block; opacity: 0; transition: opacity var(--dur-lg) var(--ease-out), transform 0.9s cubic-bezier(0.65, 0, 0.35, 1); transform-origin: 50% 50%; }
-.intro__ch.is-on { opacity: 1; transition: opacity 0s, transform 0.9s cubic-bezier(0.65, 0, 0.35, 1); }
-.intro.is-collapsing .intro__ch:not(.is-initial) { opacity: 0; transition: opacity var(--dur-md) var(--ease-out); }
-.intro.is-assembled .intro__ch.is-initial { opacity: 0; filter: blur(4px); transition: opacity var(--dur-lg) var(--ease-out), filter var(--dur-lg) var(--ease-out); }
+.intro__ch { display: inline-block; opacity: 0; }
+.intro__ch.is-on { opacity: 1; }
 .intro__cursor { display: inline-block; width: 0.18em; height: 1em; margin-left: 0.08em; vertical-align: -0.12em; background: currentColor; animation: blink 1s steps(1) infinite; }
 @keyframes blink { 50% { opacity: 0; } }
-/* 로고: 너무 크지 않게 (사용자 요청) */
-.intro__logo { width: min(22.5rem, 64vw); height: auto; opacity: 0; transform: scale(1.04); transition: opacity var(--dur-lg) var(--ease-out), transform 0.9s var(--ease-out); }
-.intro__logo.is-in { opacity: 1; transform: none; }
+/* 로고 = 사용자 제공 글자 SVG 4조각 (원본 로고와 위치 실측 일치 94.7%). 너무 크지 않게 최대 360px */
+.intro__mark { position: relative; width: min(22.5rem, 64vw); aspect-ratio: 1004 / 348; }
+.intro__piece { position: absolute; left: var(--x); top: var(--y); width: var(--w); height: var(--h); opacity: 0; transform-origin: 50% 50%; will-change: transform, opacity; }
+.intro.is-static .intro__piece { opacity: 1; }
 .intro__actions { opacity: 0; transition: opacity var(--dur-lg) var(--ease-out); }
 .intro.is-ready .intro__actions { opacity: 1; }
 .intro__actions { display: flex; justify-content: center; }
@@ -314,8 +313,14 @@ html.is-intro { overflow: hidden; }
 .hero { position: relative; min-height: var(--section-screen); min-height: 100svh; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; }
 .hero__canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: pan-y; cursor: grab; }
 .hero__canvas:active { cursor: grabbing; }
+/* 커서 영역 표시: 깨지는 반경을 그대로 보여주는 원 (KODE 'HOLD AND DRAG') */
+.hero__ring { position: absolute; top: 0; left: 0; width: calc(var(--ring-r, 0px) * 2); height: calc(var(--ring-r, 0px) * 2); border: 2px solid var(--color-white); border-radius: 50%; display: grid; place-items: center; pointer-events: none; opacity: 0; transition: opacity var(--dur-md) var(--ease-out); }
+.hero__ring span { color: var(--color-white); font-family: var(--font-sans-en); font-size: var(--fs-body-1); line-height: var(--lh-body-1); text-transform: uppercase; white-space: nowrap; }
+.hero.is-hovering .hero__ring { opacity: 1; }
+.hero.is-hovering .hero__canvas { cursor: none; }
+.hero.is-hovering .hero__canvas:active { cursor: none; }
 /* 문장: WebGL이 같은 문장을 굴절용 평면에 그리면 HTML은 화면에서만 숨김 (스크린리더는 읽음) */
-.hero__statement { position: absolute; inset: var(--header-h) 0 auto 0; height: 62%; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; font-family: var(--type-display); font-weight: var(--fw-display); font-size: var(--fs-display-4); line-height: var(--lh-display-0); letter-spacing: normal; text-transform: uppercase; text-align: center; white-space: nowrap; }
+.hero__statement { position: absolute; inset: var(--header-h) 0 auto 0; height: 62%; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; font-family: var(--type-display); font-weight: var(--fw-display); font-size: var(--fs-display-4); line-height: var(--lh-display-0); letter-spacing: -0.045em; text-transform: uppercase; text-align: center; white-space: nowrap; }
 .hero__statement span { display: block; }
 .hero.is-3d .hero__statement { opacity: 0; }
 .hero__release { position: relative; display: grid; grid-template-columns: calc(var(--hit-area) * 2) minmax(0, 1fr); column-gap: var(--grid-gap-x); align-items: end; padding-top: var(--space-card-text); padding-bottom: calc(var(--space-heading-body) + var(--player-h)); pointer-events: none; } /* KODE 히어로 하단처럼 작은 정보 줄 */
