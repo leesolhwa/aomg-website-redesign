@@ -79,9 +79,9 @@
       </a>
     </li>`;
   const artistName = (a) => `
-    <li><a href="artist.html?id=${esc(a.id)}" data-artist="${esc(a.id)}">
+    <li><a href="artist.html?id=${esc(a.id)}" data-artist="${esc(a.id)}" aria-label="${esc(a.name)} (${esc(a.nameKo)})">
       <img class="artist-names__thumb" src="${esc(a.image)}" alt="" loading="lazy" width="1200" height="1200">
-      <span>${esc(a.name)}</span><span class="artist-names__ko">${esc(a.nameKo)}</span>
+      <span>${esc(a.name)}</span>
     </a></li>`;
   const eventRow = (ev) => `
     <li class="event">

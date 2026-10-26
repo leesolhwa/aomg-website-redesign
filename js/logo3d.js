@@ -95,16 +95,18 @@ function shatterMaterial(params, uniforms) {
         float hd = distance(aCenter.xy, uHover.xy);
         float g = uHoverAmt * aRand.w;
         float hov = (1.0 - smoothstep(uHoverR * 0.2, uHoverR, hd)) * g;   // 커서 주변: 강하게
-        float spread = 0.38 * g;                                          // 오브제 전체: 조각 사이가 벌어짐
+        float spread = 0.42 * g;                                          // 오브제 전체: 조각 사이가 벌어짐
         float jitter = uBeat * 0.06 * aRand.w;
-        mat3 shardR = rotAxis(aRand.xyz, hov * 2.6 + spread * 1.3 + jitter * 2.0);
+        mat3 shardR = rotAxis(aRand.xyz, hov * 1.55 + spread * 0.75 + jitter * 2.0);   // 회전(깨짐) 약 60%
         vec3 objectNormal = shardR * vec3(normal);
         #ifdef USE_TANGENT
           vec3 objectTangent = shardR * vec3(tangent.xyz);
         #endif`)
       .replace('#include <begin_vertex>', `
-        vec3 away = normalize(vec3(aCenter.xy - uHover.xy, 0.0) + vec3(0.0, 0.0, 0.9) + aDir * 0.35);
-        vec3 transformed = shardR * (position - aCenter) + aCenter + away * hov * 1.1 + aDir * (spread * 0.55 + jitter);`);
+        vec3 away = normalize(vec3(aCenter.xy - uHover.xy, 0.0) + vec3(0.0, 0.0, 0.5) + aDir * 0.35);
+        // 오브제 전체가 화면 쪽으로 넓게 퍼짐: 중심에서 먼 조각일수록 멀리
+        vec3 outward = vec3(aCenter.xy * (0.55 + 0.45 * aRand.w), aDir.z * 0.6);
+        vec3 transformed = shardR * (position - aCenter) + aCenter + away * hov * 1.3 + outward * spread * 1.15 + aDir * (spread * 0.9 + jitter);`);
   };
   return mat;
 }
@@ -162,7 +164,7 @@ export async function createLogoScene(canvas, opts = {}) {
 
   const svg = await loadShapes();
   const accent = new THREE.Color(css('--color-accent') || '#FF3B1F');
-  const uniforms = { uBeat: { value: 0 }, uTime: { value: 0 }, uHover: { value: new THREE.Vector3(99, 99, 0) }, uHoverAmt: { value: 0 }, uHoverR: { value: 0.9 } };
+  const uniforms = { uBeat: { value: 0 }, uTime: { value: 0 }, uHover: { value: new THREE.Vector3(99, 99, 0) }, uHoverAmt: { value: 0 }, uHoverR: { value: 0.95 } };
   const useTransmission = mode === 'hero' && finePointer; // 모바일은 성능 때문에 굴절 끔
   const material = shatterMaterial(mode === 'hero' ? {
     color: accent, metalness: 0.05, roughness: 0.08, clearcoat: 1, clearcoatRoughness: 0.05,

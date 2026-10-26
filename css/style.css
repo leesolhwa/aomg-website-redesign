@@ -360,8 +360,7 @@ html.is-intro { overflow: hidden; }
 .artist-names li + li { margin-top: var(--space-card-text); }
 .artist-names a { display: grid; grid-template-columns: var(--hit-area) minmax(0, 1fr); column-gap: var(--grid-gap-x); align-items: center; min-height: var(--hit-area); transition: color var(--dur-md) var(--ease-out); }
 .artist-names a > span:first-of-type { grid-column: 2; overflow-wrap: break-word; } /* 웹폰트 로드 실패 시 안전장치: 실제 폰트에선 최장 단어 294px < 가용폭 316px */
-.artist-names__ko { grid-column: 2; font-family: var(--type-ko); font-size: var(--fs-ko-caption); line-height: var(--lh-ko-caption); }
-.artist-names__thumb { grid-row: 1 / span 2; width: var(--hit-area); aspect-ratio: var(--ratio-artist-profile); object-fit: cover; align-self: start; }
+.artist-names__thumb { width: var(--hit-area); aspect-ratio: var(--ratio-artist-profile); object-fit: cover; align-self: start; }
 .artist-names a:hover, .artist-names a:focus-visible { color: var(--color-accent); }
 @media (min-width: 768px) {
   .artist-names { text-align: justify; text-align-last: justify; }
@@ -371,7 +370,6 @@ html.is-intro { overflow: hidden; }
   .artist-names a { display: inline; }
   .artist-names a > span:first-of-type { white-space: nowrap; display: inline-block; } /* 한 덩어리로 묶어 이름 안 띄어쓰기는 벌어지지 않게 */
   .artist-names__thumb { display: none; }
-  .artist-names__ko { display: inline-block; vertical-align: top; margin-left: var(--grid-gap-x); }
 }
 .artist-preview { position: fixed; top: 0; left: 0; z-index: var(--z-preview); width: calc((100vw - var(--gutter-x) * 2) / 5); aspect-ratio: var(--ratio-artist-profile); object-fit: cover; pointer-events: none; opacity: 0; transition: opacity var(--dur-sm) var(--ease-out); }
 .artist-preview.is-visible { opacity: 1; }
