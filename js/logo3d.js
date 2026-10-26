@@ -1,5 +1,5 @@
 /* AOMG Concept Redesign — logo3d.js (ES module)
- * KODE 히어로의 3D 오브제를 AOMG 로고로 재구성
+ * KODE 히어로의 3D 오브제를 AOMG 오브제(img/obj-bold.svg, 사용자 제공)로 재구성
  * - 드래그: 회전 (관성)
  * - 누르고 있기: 조각으로 깨짐 → 놓으면 다시 모임
  * - 미니 플레이어 비트(--beat)에 맞춰 조각이 미세하게 반응 (깜빡임 없음)
@@ -8,21 +8,32 @@
  */
 import * as THREE from 'three';
 import { RoomEnvironment } from './vendor/RoomEnvironment.js';
-import { Font } from './vendor/FontLoader.js';
+import { SVGLoader } from './vendor/SVGLoader.js';
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 
-let fontPromise = null;
-const loadFont = () => (fontPromise ||= fetch(new URL('./vendor/aomg-logo-font.json', import.meta.url)).then((r) => r.json()).then((j) => new Font(j)));
+let shapePromise = null;
+// SVG 경로 → 구멍(holes)을 포함한 Shape 목록 + 정규화 정보 (폭 3.2 단위)
+const loadShapes = () => (shapePromise ||= fetch(new URL('../img/obj-bold.svg', import.meta.url)).then((r) => r.text()).then((txt) => {
+  const data = new SVGLoader().parse(txt);
+  const shapes = data.paths.flatMap((p) => SVGLoader.createShapes(p));
+  const box = new THREE.Box2();
+  shapes.forEach((sh) => sh.getPoints().forEach((pt) => box.expandByPoint(pt)));
+  return { shapes, scale: 3.2 / (box.max.x - box.min.x), cx: (box.min.x + box.max.x) / 2, cy: (box.min.y + box.max.y) / 2 };
+}));
 
 /* ---------- 조각난 로고 지오메트리 ---------- */
-function buildShardGeometry(font, { size = 1, depth = 0.32, cell = 0.22 }) {
-  const shapes = font.generateShapes('AOMG', size);
+function buildShardGeometry({ shapes, scale, cx, cy }, { depth = 0.34, cell = 0.22 }) {
+  // SVG 좌표 그대로 입체화한 뒤 한 번에 정규화 (깊이·베벨은 SVG 단위로 환산)
+  const k = 1 / scale;
   const geo = new THREE.ExtrudeGeometry(shapes, {
-    depth, curveSegments: 10, bevelEnabled: true, bevelThickness: 0.06, bevelSize: 0.035, bevelSegments: 4,
+    depth: depth * k, curveSegments: 12, bevelEnabled: true, bevelThickness: 0.06 * k, bevelSize: 0.03 * k, bevelSegments: 4,
   }); // ExtrudeGeometry는 이미 non-indexed
+  geo.translate(-cx, -cy, 0);
+  geo.scale(scale, scale, scale);
+  geo.rotateX(Math.PI); // SVG y축(아래로 증가)을 위로 — 뒤집기(scale -1) 대신 회전이라 면 방향이 유지됨
   geo.computeBoundingBox();
   const c = new THREE.Vector3(); geo.boundingBox.getCenter(c);
   geo.translate(-c.x, -c.y, -c.z);
@@ -138,7 +149,7 @@ export async function createLogoScene(canvas, opts = {}) {
   const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
   camera.position.set(0, 0, 8);
 
-  const font = await loadFont();
+  const svg = await loadShapes();
   const accent = new THREE.Color(css('--color-accent') || '#FF3B1F');
   const uniforms = { uBreak: { value: 0 }, uBeat: { value: 0 }, uTime: { value: 0 } };
   const useTransmission = mode === 'hero' && finePointer; // 모바일은 성능 때문에 굴절 끔
@@ -147,10 +158,10 @@ export async function createLogoScene(canvas, opts = {}) {
     transmission: useTransmission ? 0.92 : 0, thickness: 0.9, ior: 1.45, attenuationColor: accent, attenuationDistance: 0.8,
     envMapIntensity: 1.4, side: THREE.DoubleSide,
   } : {
-    color: 0xffffff, metalness: 1, roughness: 0.18, envMapIntensity: 1.2,
+    color: 0x8a8a8a, metalness: 1, roughness: 0.3, envMapIntensity: 0.45, // 푸터: 글자 뒤 배경으로 물러나도록 어두운 크롬
   }, uniforms);
 
-  const logo = new THREE.Mesh(buildShardGeometry(font, { cell: mode === 'hero' ? 0.2 : 0.26 }), material);
+  const logo = new THREE.Mesh(buildShardGeometry(svg, { cell: mode === 'hero' ? 0.2 : 0.26 }), material);
   const pivot = new THREE.Group(); pivot.add(logo); scene.add(pivot);
 
   // 문장 평면 (히어로만): 같은 장면에 있어야 유리 굴절에 비침
@@ -173,9 +184,12 @@ export async function createLogoScene(canvas, opts = {}) {
     const dist = camera.position.z;
     const viewH = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * dist;
     const viewW = viewH * camera.aspect;
-    const logoW = logo.geometry.boundingBox ? (logo.geometry.computeBoundingBox(), logo.geometry.boundingBox.max.x - logo.geometry.boundingBox.min.x) : 3;
+    logo.geometry.computeBoundingBox();
+    const bb = logo.geometry.boundingBox;
+    const logoW = bb.max.x - bb.min.x, logoH = bb.max.y - bb.min.y;
     const target = (mode === 'hero' ? (w < 768 ? 0.78 : 0.46) : (w < 768 ? 0.7 : 0.4)) * viewW;
-    const s = Math.min(target / logoW, (viewH * 0.55) / 1);
+    const maxH = (textArea ? (textArea().bottom - textArea().top) / h : 0.6) * viewH * 0.8; // 문장 영역 높이의 80% 이내
+    const s = Math.min(target / logoW, maxH / logoH);
     pivot.scale.setScalar(s);
     // 로고를 문장 영역의 세로 중앙에
     baseY = 0;

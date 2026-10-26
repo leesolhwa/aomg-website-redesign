@@ -82,6 +82,8 @@
 
 ## 4. 페이지별 / 섹션별 카피
 
+> **2026-10-26 사용자 결정 (2차):** 히어로 문장은 'ABOVE / ORDINARY / MUSIC / GROUP' 4줄, 3D 오브제는 사용자 제공 `img/obj-bold.svg`(지구본 형태), 브라우저 탭 아이콘은 사용자 제공 logo_thin(`img/favicon.svg`), 인트로 버튼은 `[ ENTER ]` 하나.
+
 > **2026-10-26 사용자 결정:** 레퍼런스(KODE)의 핵심 인터랙션을 복원한다 — 인트로(타이핑 → 로고 → ENTER), 히어로 3D AOMG 로고(드래그 회전·누르면 깨짐), 스크롤 고정 발매 기록, 마우스 트레일, 긁어서 드러나는 포스터, 푸터 3D. 이전 문서에서 '가져오지 않음/범위 밖'으로 적었던 결정을 이 결정으로 대체한다.
 
 ### 4-0. 추가 카피 (KODE 인터랙션)
@@ -89,9 +91,8 @@
 |---|---|---|---|
 | 인트로 타이핑 | ABOVE ORDINARY MUSIC GROUP | — | AOMG 정식 명칭. 사용자 지정 |
 | 인트로 로고 | AOMG | — | 사용자 지정 |
-| 인트로 버튼 | `[ ENTER WITH SOUND ]` / `[ ENTER ]` | 접근성 라벨: 소리와 함께 입장 / 소리 없이 입장 | 입장이 곧 소리 선택 |
-| 인트로 안내 | — | 소리와 함께 들어가면 비트에 맞춰 화면이 반응해요. | 3-2 해요체 |
-| 히어로 문장 (h1) | INTERACT / WITH THE / BEAT | — | 1장 영문 컨셉. KODE 3줄 문장 자리 |
+| 인트로 버튼 | `[ ENTER ]` | 접근성 라벨: 입장 | 선택지 없이 하나 (사용자 결정) |
+| 히어로 문장 (h1) | ABOVE / ORDINARY / MUSIC / GROUP | — | AOMG 정식 명칭 4줄 (사용자 결정). KODE 문장 자리 |
 | 히어로 안내 | DRAG TO ROTATE · HOLD TO BREAK | 드래그하면 돌아가고, 누르고 있으면 깨져요. | 조작 방법 |
 | 공연 포스터 막 | SCRATCH / TO REVEAL | 긁어서 포스터를 확인해 보세요. | KODE 'SCRATCH AROUND' 원문은 쓰지 않음 |
 | 포스터 버튼 | `[ REVEAL ]` | 접근성 라벨: 포스터 바로 보기 | 긁기 대안 |
@@ -319,11 +320,10 @@
 | 키 | 문구 |
 |---|---|
 | `hero.label` | KEYVEATZ — 1ST EP |
-| `hero.statement` | INTERACT / WITH THE / BEAT (h1) |
+| `hero.statement` | ABOVE / ORDINARY / MUSIC / GROUP (h1) |
 | `hero.hint` | 드래그하면 돌아가고, 누르고 있으면 깨져요. |
 | `hero.title` | OXY_GEN |
-| `intro.enterSound` / `intro.enter` | ENTER WITH SOUND / ENTER |
-| `intro.note` | 소리와 함께 들어가면 비트에 맞춰 화면이 반응해요. |
+| `intro.enter` | ENTER |
 | `live.scratchHint` / `live.reveal` | 긁어서 포스터를 확인해 보세요. / REVEAL |
 | `hero.date` | 2026.06.30 |
 | `hero.subtitle` | AOMG의 새 걸크루, 키비츠의 첫 EP. |

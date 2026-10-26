@@ -32,8 +32,10 @@ async def main():
     info=await pg.evaluate("(()=>{const s=document.getElementById('discography');return {top:s.getBoundingClientRect().top+scrollY, range:s.offsetHeight-innerHeight, stat:s.classList.contains('is-static')}})()")
     check('discography pinned at 1440x900', not info['stat'] and info['range']>0, str(info))
     years=[]
-    for f in (0.05,0.5,0.95):
-      await pg.evaluate(f"scrollTo({{top:{info['top']+info['range']*f},behavior:'instant'}})"); await pg.wait_for_timeout(1200)
+    for f,exp in ((0.05,'2026'),(0.5,'2022'),(0.95,'2019')):
+      await pg.evaluate(f"scrollTo({{top:{info['top']+info['range']*f},behavior:'instant'}})")
+      try: await pg.wait_for_function(f"document.querySelector('.discography__year').textContent.trim()==='{exp}'", timeout=6000)
+      except Exception: pass
       years.append(await pg.inner_text('.discography__year'))
     check('scroll changes year', years[0]=='2026' and years[-1]=='2019' and len(set(years))==3, str(years))
     await pg.click('[data-action=year-prev]'); await pg.wait_for_timeout(1200)
@@ -54,12 +56,18 @@ async def main():
     # 3b intro
     pg,errs=await newpage(b, intro=True); await pg.goto(BASE+'index.html')
     check('intro visible on first visit', await pg.evaluate("getComputedStyle(document.getElementById('intro')).display!=='none'"))
-    await pg.wait_for_selector('[data-action=enter-sound]', state='visible', timeout=20000)
-    check('intro focuses ENTER WITH SOUND', await pg.evaluate("document.activeElement.dataset.action")=='enter-sound')
+    await pg.wait_for_selector('[data-action=enter]', state='visible', timeout=20000)
+    check('intro has single ENTER only', await pg.eval_on_selector_all('#intro button','e=>e.length')==1)
+    check('intro focuses ENTER', await pg.evaluate("document.activeElement.dataset.action")=='enter')
     await pg.keyboard.press('Tab'); await pg.keyboard.press('Tab')
     check('intro traps focus', await pg.evaluate("!!document.activeElement.closest('#intro')"))
-    await pg.click('[data-action=enter-sound]'); await pg.wait_for_timeout(1200)
-    check('ENTER WITH SOUND starts audio and removes intro', (await pg.evaluate('Player.state.playing')) and not await pg.evaluate("!!document.getElementById('intro')"))
+    check('favicon is logo_thin svg', await pg.evaluate("document.querySelector('link[rel=icon]').getAttribute('href')")=='img/favicon.svg')
+    check('hero statement is 4 lines', await pg.eval_on_selector_all('.hero__statement span','e=>e.map(x=>x.textContent).join(" ")')=='ABOVE ORDINARY MUSIC GROUP')
+    check('assets are versioned', await pg.evaluate("[...document.querySelectorAll('link[rel=stylesheet][href^=css], script[src^=js]')].every(e=>/\\?v=/.test(e.getAttribute('href')||e.getAttribute('src')))"))
+    await pg.click('[data-action=enter]')
+    try: await pg.wait_for_function("!document.getElementById('intro')", timeout=10000)
+    except Exception: pass
+    check('ENTER removes intro', not await pg.evaluate("!!document.getElementById('intro')"))
     await pg.reload(); await pg.wait_for_timeout(500)
     check('intro skipped on revisit in session', not await pg.evaluate("!!document.getElementById('intro')"))
     check('no errors (intro flow)', not errs, '; '.join(errs[:3]))

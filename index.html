@@ -3,6 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="img/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
   <style>@view-transition { navigation: auto; }</style><!-- 전환 설정은 첫 화면 전에 적용되도록 인라인 -->
   <title>AOMG — Interact with the Beat</title>
   <meta name="description" content="키비츠의 첫 EP [OXY_GEN]부터 AOMG 아티스트 10팀의 음악과 공연, 소식까지. (비공식 컨셉 리디자인)">
@@ -22,7 +25,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400&family=Instrument+Serif&display=swap">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <link rel="preload" as="image" href="img/release-keyveatz-oxygen.webp">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=20261026-obj">
   <script type="importmap">{ "imports": { "three": "./js/vendor/three.module.min.js" } }</script>
 </head>
 <body class="page-home">
@@ -34,9 +37,7 @@
     <p class="intro__typed" aria-hidden="true"><span class="intro__text"></span><span class="intro__cursor"></span></p>
     <p class="intro__logo" hidden>AOMG</p>
     <div class="intro__actions" hidden>
-      <button class="cta" type="button" data-action="enter-sound" aria-label="소리와 함께 입장"><span class="cta__label" data-copy="intro.enterSound">ENTER WITH SOUND</span></button>
-      <button class="cta" type="button" data-action="enter" aria-label="소리 없이 입장"><span class="cta__label" data-copy="intro.enter">ENTER</span></button>
-      <p class="intro__note" data-copy="intro.note">소리와 함께 들어가면 비트에 맞춰 화면이 반응해요.</p>
+      <button class="cta" type="button" data-action="enter" aria-label="입장"><span class="cta__label" data-copy="intro.enter">ENTER</span></button>
     </div>
   </div>
 
@@ -61,7 +62,7 @@
     <!-- ===== #hero: Immersive Hero ===== -->
     <section class="hero surface-accent" id="hero" data-tone="on-accent" aria-labelledby="hero-title">
       <canvas class="hero__canvas" id="hero-canvas" aria-hidden="true"></canvas>
-      <h1 class="hero__statement" id="hero-title" data-copy="hero.statement"><span>INTERACT</span> <span>WITH THE</span> <span>BEAT</span></h1>
+      <h1 class="hero__statement" id="hero-title" data-copy="hero.statement"><span>ABOVE</span> <span>ORDINARY</span> <span>MUSIC</span> <span>GROUP</span></h1>
       <p class="hero__hint"><span lang="en">DRAG TO ROTATE · HOLD TO BREAK</span><span class="hero__hint-ko" data-copy="hero.hint">드래그하면 돌아가고, 누르고 있으면 깨져요.</span></p>
       <div class="hero__release container">
         <figure class="hero__cover">
@@ -184,12 +185,12 @@
 
   <img class="artist-preview" alt="" aria-hidden="true">
 
-  <script src="js/data.js"></script>
-  <script src="js/player.js"></script>
-  <script src="js/script.js"></script>
-  <script src="js/effects.js"></script>
+  <script src="js/data.js?v=20261026-obj"></script>
+  <script src="js/player.js?v=20261026-obj"></script>
+  <script src="js/script.js?v=20261026-obj"></script>
+  <script src="js/effects.js?v=20261026-obj"></script>
   <script type="module">
-    import { createLogoScene } from './js/logo3d.js';
+    import { createLogoScene } from './js/logo3d.js?v=20261026-obj';
     const hero = document.getElementById('hero-canvas');
     const heroEl = document.getElementById('hero');
     const textArea = () => {
@@ -197,7 +198,7 @@
       const rel = heroEl.querySelector('.hero__release').getBoundingClientRect();
       return { top: gnb, bottom: rel.top - h.top };
     };
-    createLogoScene(hero, { mode: 'hero', statement: ['INTERACT', 'WITH THE', 'BEAT'], textArea })
+    createLogoScene(hero, { mode: 'hero', statement: ['ABOVE', 'ORDINARY', 'MUSIC', 'GROUP'], textArea })
       .then((s) => { if (s) document.getElementById('hero').classList.add('is-3d'); })
       .catch(() => document.documentElement.classList.add('no-webgl'));
     createLogoScene(document.getElementById('footer-canvas'), { mode: 'footer', interactive: false }).catch(() => {});

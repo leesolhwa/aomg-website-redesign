@@ -1,6 +1,6 @@
 /* AOMG Concept Redesign — effects.js
  * KODE 레퍼런스 인터랙션의 AOMG 버전
- * 1) 인트로: 카운터 + 커서 → "ABOVE ORDINARY MUSIC GROUP" 타이핑 → "AOMG" → [ ENTER WITH SOUND ] / [ ENTER ]
+ * 1) 인트로: 카운터 + 커서 → "ABOVE ORDINARY MUSIC GROUP" 타이핑 → "AOMG" → [ ENTER ]
  * 2) 긁어서 드러나는 포스터 (Live Pulse)
  * 3) 마우스 트레일 (마우스 사용 환경만)
  * 모든 효과는 prefers-reduced-motion에서 끄거나 즉시 결과만 보여줌
@@ -50,18 +50,16 @@
       requestAnimationFrame(tick);
     }
 
-    const enter = (withSound) => {
+    const enter = () => {
       try { sessionStorage.setItem('aomg-entered', '1'); } catch (e) { /* noop */ }
-      if (withSound && window.Player) window.Player.play();
       intro.classList.add('is-leaving');
       document.documentElement.classList.remove('is-intro');
       const done = () => { intro.remove(); const h = $('#hero'); if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); } };
       reduceMotion ? done() : setTimeout(done, 700);
     };
-    $('[data-action="enter-sound"]', intro).addEventListener('click', () => enter(true));
-    $('[data-action="enter"]', intro).addEventListener('click', () => enter(false));
+    $('[data-action="enter"]', intro).addEventListener('click', enter);
     intro.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') enter(false);
+      if (e.key === 'Escape') enter();
       if (e.key === 'Tab') { // 포커스를 인트로 안에 가둠
         const b = [...intro.querySelectorAll('button:not([hidden])')];
         if (!b.length) return;
