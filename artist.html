@@ -24,7 +24,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400&family=Instrument+Serif&display=swap">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <link rel="preload" as="image" href="img/artist-keyveatz.webp">
-  <link rel="stylesheet" href="css/style.css?v=20261026-obj">
+  <link rel="stylesheet" href="css/style.css?v=20261026-logo">
   <script type="importmap">{ "imports": { "three": "./js/vendor/three.module.min.js" } }</script>
 </head>
 <body class="page-artist">
@@ -73,19 +73,19 @@
 
     <!-- ===== #releases ===== -->
     <section class="detail-releases container" id="releases" data-tone="on-dark" aria-labelledby="releases-title" data-section="releases">
-      <h2 class="section-title" id="releases-title" data-reveal><span data-copy="detail.releases.title">RELEASES</span> <span class="section-caption" data-copy="detail.releases.caption">발매</span></h2>
+      <h2 class="section-title" id="releases-title" data-reveal><span data-copy="detail.releases.title">RELEASES</span></h2>
       <ul class="card-grid" data-render="artist-releases"></ul>
     </section>
 
     <!-- ===== #videos ===== -->
     <section class="detail-videos container" id="videos" data-tone="on-dark" aria-labelledby="videos-title" data-section="videos">
-      <h2 class="section-title" id="videos-title" data-reveal><span data-copy="detail.videos.title">VIDEOS</span> <span class="section-caption" data-copy="detail.videos.caption">영상</span></h2>
+      <h2 class="section-title" id="videos-title" data-reveal><span data-copy="detail.videos.title">VIDEOS</span></h2>
       <ul class="card-grid" data-render="artist-videos"></ul>
     </section>
 
     <!-- ===== #artist-live ===== -->
     <section class="detail-live container" id="artist-live" data-tone="on-dark" aria-labelledby="alive-title" data-section="events">
-      <h2 class="section-title" id="alive-title" data-reveal><span data-copy="detail.live.title">LIVE</span> <span class="section-caption" data-copy="detail.live.caption">공연</span></h2>
+      <h2 class="section-title" id="alive-title" data-reveal><span data-copy="detail.live.title">LIVE</span></h2>
       <ul class="event-list" data-render="artist-events"></ul>
       <div class="empty-state" data-empty="artist-events" hidden>
         <p data-copy="live.empty">지금 예정된 공연이 없어요.<br class="m-only"> 새 일정은 공식 인스타그램에서<br class="m-only"> 확인할 수 있어요.</p>
@@ -95,19 +95,19 @@
 
     <!-- ===== #artist-news ===== -->
     <section class="detail-news container" id="artist-news" data-tone="on-dark" aria-labelledby="anews-title" data-section="news">
-      <h2 class="section-title" id="anews-title" data-reveal><span data-copy="detail.news.title">NEWS</span> <span class="section-caption" data-copy="detail.news.caption">소식</span></h2>
+      <h2 class="section-title" id="anews-title" data-reveal><span data-copy="detail.news.title">NEWS</span></h2>
       <ul class="card-grid" data-render="artist-news"></ul>
     </section>
 
     <!-- ===== #related ===== -->
     <section class="detail-related container" id="related" data-tone="on-dark" aria-labelledby="related-title">
-      <h2 class="section-title" id="related-title" data-reveal><span data-copy="detail.related.title">MORE FROM AOMG</span> <span class="section-caption" data-copy="detail.related.caption">다른 아티스트</span></h2>
+      <h2 class="section-title" id="related-title" data-reveal><span data-copy="detail.related.title">MORE FROM AOMG</span></h2>
       <ul class="artist-names" data-render="related"></ul>
     </section>
 
     <!-- ===== #links ===== -->
     <section class="detail-links container" id="links" data-tone="on-dark" aria-labelledby="links-title" data-section="links">
-      <h2 class="section-title" id="links-title" data-reveal><span data-copy="detail.links.title">FOLLOW</span> <span class="section-caption" data-copy="detail.links.caption">공식 채널</span></h2>
+      <h2 class="section-title" id="links-title" data-reveal><span data-copy="detail.links.title">FOLLOW</span></h2>
       <ul class="link-list" data-render="artist-links"></ul>
     </section>
   </main>
@@ -145,12 +145,12 @@
     <button class="cta player__audio" type="button" data-action="audio-toggle" aria-pressed="false" aria-label="소리 켜기"><span class="cta__label" data-copy="audio.on">AUDIO ON</span></button>
   </div>
 
-  <script src="js/data.js?v=20261026-obj"></script>
-  <script src="js/player.js?v=20261026-obj"></script>
-  <script src="js/script.js?v=20261026-obj"></script>
-  <script src="js/effects.js?v=20261026-obj"></script>
+  <script src="js/data.js?v=20261026-logo"></script>
+  <script src="js/player.js?v=20261026-logo"></script>
+  <script src="js/script.js?v=20261026-logo"></script>
+  <script src="js/effects.js?v=20261026-logo"></script>
   <script type="module">
-    import { createLogoScene } from './js/logo3d.js?v=20261026-obj';
+    import { createLogoScene } from './js/logo3d.js?v=20261026-logo';
     createLogoScene(document.getElementById('footer-canvas'), { mode: 'footer', interactive: false }).catch(() => {});
   </script>
 </body>

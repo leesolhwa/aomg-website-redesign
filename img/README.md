@@ -44,3 +44,5 @@
 | obj-bold.svg | 사용자 제공 obj_bold.svg | 히어로·푸터 3D 오브제 원본 (장식, 화면 낭독기 제외) |
 | favicon.svg | 사용자 제공 logo_thin.svg (다크 모드에서 흰색으로 바뀌도록 style 추가) | 브라우저 탭 아이콘 |
 | favicon-32.png, apple-touch-icon.png | favicon.svg에서 렌더링 | SVG 아이콘 미지원 브라우저·iOS 홈 화면 |
+| logo.svg | 사용자 제공 logo.svg (내부는 1004×348 PNG) | 원본 보관 |
+| logo-white.png | logo.svg 안의 PNG를 흰색으로 변환 | 인트로 로고 (검정 배경) |

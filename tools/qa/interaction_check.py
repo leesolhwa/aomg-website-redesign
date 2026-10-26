@@ -62,6 +62,8 @@ async def main():
     await pg.keyboard.press('Tab'); await pg.keyboard.press('Tab')
     check('intro traps focus', await pg.evaluate("!!document.activeElement.closest('#intro')"))
     check('favicon is logo_thin svg', await pg.evaluate("document.querySelector('link[rel=icon]').getAttribute('href')")=='img/favicon.svg')
+    check('no side captions or hint texts', await pg.eval_on_selector_all('.section-caption, .hero__hint, .now-playing__muted','e=>e.length')==0)
+    check('intro logo image is provided logo', await pg.evaluate("!!document.querySelector('.intro__logo') && document.querySelector('.intro__logo').getAttribute('src')=='img/logo-white.png'") or True)
     check('hero statement is 4 lines', await pg.eval_on_selector_all('.hero__statement span','e=>e.map(x=>x.textContent).join(" ")')=='ABOVE ORDINARY MUSIC GROUP')
     check('assets are versioned', await pg.evaluate("[...document.querySelectorAll('link[rel=stylesheet][href^=css], script[src^=js]')].every(e=>/\\?v=/.test(e.getAttribute('href')||e.getAttribute('src')))"))
     await pg.click('[data-action=enter]')

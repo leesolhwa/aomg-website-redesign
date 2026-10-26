@@ -1,7 +1,7 @@
 /* AOMG Concept Redesign — logo3d.js (ES module)
  * KODE 히어로의 3D 오브제를 AOMG 오브제(img/obj-bold.svg, 사용자 제공)로 재구성
  * - 드래그: 회전 (관성)
- * - 누르고 있기: 조각으로 깨짐 → 놓으면 다시 모임
+ * - 마우스를 올린 부분만 조각으로 깨짐 → 벗어나면 다시 모임 (KODE 히어로 방식)
  * - 미니 플레이어 비트(--beat)에 맞춰 조각이 미세하게 반응 (깜빡임 없음)
  * - 히어로: 문장 텍스트를 같은 장면의 평면에 그려 유리(transmission) 굴절이 보이게 함
  * - WebGL 실패 시 html에 .no-webgl → HTML 텍스트가 그대로 보임
@@ -85,21 +85,24 @@ function shatterMaterial(params, uniforms) {
     shader.vertexShader = shader.vertexShader
       .replace('#include <common>', `#include <common>
         attribute vec3 aCenter; attribute vec3 aDir; attribute vec4 aRand;
-        uniform float uBreak; uniform float uBeat; uniform float uTime;
+        uniform float uBeat; uniform float uTime; uniform vec3 uHover; uniform float uHoverAmt; uniform float uHoverR;
         mat3 rotAxis(vec3 a, float r) { a = normalize(a); float s = sin(r), c = cos(r), o = 1.0 - c;
           return mat3(o*a.x*a.x + c, o*a.x*a.y + a.z*s, o*a.z*a.x - a.y*s,
                       o*a.x*a.y - a.z*s, o*a.y*a.y + c, o*a.y*a.z + a.x*s,
                       o*a.z*a.x + a.y*s, o*a.y*a.z - a.x*s, o*a.z*a.z + c); }`)
       .replace('#include <beginnormal_vertex>', `
-        float shardP = uBreak * aRand.w;
+        // 커서 주변 조각만: 거리에 따라 0~1, 조각마다 세기가 다름
+        float hd = distance(aCenter.xy, uHover.xy);
+        float hov = (1.0 - smoothstep(uHoverR * 0.2, uHoverR, hd)) * uHoverAmt * aRand.w;
         float jitter = uBeat * 0.06 * aRand.w;
-        mat3 shardR = rotAxis(aRand.xyz, shardP * 5.0 + jitter * 2.0);
+        mat3 shardR = rotAxis(aRand.xyz, hov * 2.6 + jitter * 2.0);
         vec3 objectNormal = shardR * vec3(normal);
         #ifdef USE_TANGENT
           vec3 objectTangent = shardR * vec3(tangent.xyz);
         #endif`)
       .replace('#include <begin_vertex>', `
-        vec3 transformed = shardR * (position - aCenter) + aCenter + aDir * (shardP * 2.2 + jitter);`);
+        vec3 away = normalize(vec3(aCenter.xy - uHover.xy, 0.0) + vec3(0.0, 0.0, 0.9) + aDir * 0.35);
+        vec3 transformed = shardR * (position - aCenter) + aCenter + away * hov * 1.1 + aDir * jitter;`);
   };
   return mat;
 }
@@ -151,7 +154,7 @@ export async function createLogoScene(canvas, opts = {}) {
 
   const svg = await loadShapes();
   const accent = new THREE.Color(css('--color-accent') || '#FF3B1F');
-  const uniforms = { uBreak: { value: 0 }, uBeat: { value: 0 }, uTime: { value: 0 } };
+  const uniforms = { uBeat: { value: 0 }, uTime: { value: 0 }, uHover: { value: new THREE.Vector3(99, 99, 0) }, uHoverAmt: { value: 0 }, uHoverR: { value: 0.9 } };
   const useTransmission = mode === 'hero' && finePointer; // 모바일은 성능 때문에 굴절 끔
   const material = shatterMaterial(mode === 'hero' ? {
     color: accent, metalness: 0.05, roughness: 0.08, clearcoat: 1, clearcoatRoughness: 0.05,
@@ -161,7 +164,7 @@ export async function createLogoScene(canvas, opts = {}) {
     color: 0x8a8a8a, metalness: 1, roughness: 0.3, envMapIntensity: 0.45, // 푸터: 글자 뒤 배경으로 물러나도록 어두운 크롬
   }, uniforms);
 
-  const logo = new THREE.Mesh(buildShardGeometry(svg, { cell: mode === 'hero' ? 0.2 : 0.26 }), material);
+  const logo = new THREE.Mesh(buildShardGeometry(svg, { cell: 0.3 /* KODE처럼 큼직한 조각 */ }), material);
   const pivot = new THREE.Group(); pivot.add(logo); scene.add(pivot);
 
   // 문장 평면 (히어로만): 같은 장면에 있어야 유리 굴절에 비침
@@ -209,30 +212,48 @@ export async function createLogoScene(canvas, opts = {}) {
   const rot = { x: 0.15, y: -0.35, vx: 0, vy: 0 };
   let baseY = 0;
   const pointer = { x: 0, y: 0 };
-  let dragging = false, holding = false, holdStart = 0, startX = 0, startY = 0, lastX = 0, lastY = 0;
-  let breakTarget = 0;
+  let dragging = false, down = false, startX = 0, startY = 0, lastX = 0, lastY = 0;
+  // 커서 위치 → 오브제 로컬 좌표의 중앙 평면(z=0)과의 교점 = 깨질 지점
+  const raycaster = new THREE.Raycaster(), ndc = new THREE.Vector2(), localRay = new THREE.Ray();
+  const hoverPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0), hit = new THREE.Vector3(), inv = new THREE.Matrix4();
+  const hoverTarget = new THREE.Vector3(99, 99, 0);
+  let hoverOn = 0;
+  function updateHover(e) {
+    if (reduceMotion) return;
+    const r = canvas.getBoundingClientRect();
+    ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+    raycaster.setFromCamera(ndc, camera);
+    inv.copy(logo.matrixWorld).invert();
+    localRay.copy(raycaster.ray).applyMatrix4(inv);
+    if (localRay.intersectPlane(hoverPlane, hit) && Math.hypot(hit.x, hit.y) < 1.9) {
+      if (hoverOn === 0) uniforms.uHover.value.copy(hit); // 처음 들어올 때는 그 자리에서 시작
+      hoverTarget.copy(hit); hoverOn = 1;
+    } else hoverOn = 0;
+  }
   if (interactive) {
     canvas.addEventListener('pointerdown', (e) => {
-      holding = true; dragging = false; holdStart = performance.now();
+      down = true; dragging = false;
       startX = lastX = e.clientX; startY = lastY = e.clientY;
       canvas.setPointerCapture(e.pointerId);
+      updateHover(e);
     });
     canvas.addEventListener('pointermove', (e) => {
       const r = canvas.getBoundingClientRect();
       pointer.x = ((e.clientX - r.left) / r.width) * 2 - 1;
       pointer.y = ((e.clientY - r.top) / r.height) * 2 - 1;
-      if (!holding) return;
+      if (e.pointerType === 'mouse' || down) updateHover(e);
+      if (!down) return;
       if (!dragging && Math.hypot(e.clientX - startX, e.clientY - startY) > 6) dragging = true;
-      if (dragging) {
+      if (dragging) {   // 누르고 드래그 = 회전
         rot.vy = (e.clientX - lastX) * 0.008; rot.vx = (e.clientY - lastY) * 0.006;
         rot.y += rot.vy; rot.x += rot.vx;
-        breakTarget = 0;
       }
       lastX = e.clientX; lastY = e.clientY;
     });
-    const end = () => { holding = false; dragging = false; breakTarget = 0; };
+    const end = (e) => { down = false; dragging = false; if (e.pointerType !== 'mouse') hoverOn = 0; };
     canvas.addEventListener('pointerup', end);
     canvas.addEventListener('pointercancel', end);
+    canvas.addEventListener('pointerleave', () => { if (!down) hoverOn = 0; });
     canvas.addEventListener('contextmenu', (e) => e.preventDefault()); // 길게 누르기 메뉴 방지
   }
 
@@ -244,9 +265,10 @@ export async function createLogoScene(canvas, opts = {}) {
     raf = 0;
     const dt = Math.min(0.05, (now - last) / 1000); last = now;
     uniforms.uTime.value += dt;
-    if (holding && !dragging && now - holdStart > 220) breakTarget = 1;
-    const b = uniforms.uBreak.value;
-    uniforms.uBreak.value += (breakTarget - b) * (breakTarget > b ? 0.09 : 0.06);
+    // 깨질 지점은 커서를 부드럽게 따라가고, 세기는 빠르게 켜지고 천천히 복원
+    uniforms.uHover.value.lerp(hoverTarget, 0.22);
+    const ha = uniforms.uHoverAmt.value;
+    uniforms.uHoverAmt.value += (hoverOn - ha) * (hoverOn > ha ? 0.18 : 0.06);
     const beat = parseFloat(css('--beat')) || 0;
     uniforms.uBeat.value += (beat - uniforms.uBeat.value) * 0.3;
 
@@ -260,7 +282,7 @@ export async function createLogoScene(canvas, opts = {}) {
     pivot.position.y = baseY + (reduceMotion ? 0 : Math.sin(uniforms.uTime.value * 0.8) * 0.05);
     // 인트로가 화면을 덮고 있는 동안은 그리지 않음 (보이지 않는 프레임에 GPU를 쓰지 않게)
     if (!document.documentElement.classList.contains('is-intro')) renderer.render(scene, camera);
-    if (visible && !(reduceMotion && Math.abs(breakTarget - b) < 0.001 && !holding && !dragging)) raf = requestAnimationFrame(loop);
+    if (visible && !(reduceMotion && !down)) raf = requestAnimationFrame(loop);
   }
 
   const ro = new ResizeObserver(() => { fit(); if (!raf) raf = requestAnimationFrame(loop); });
