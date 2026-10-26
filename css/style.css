@@ -300,6 +300,7 @@ html.is-intro { overflow: hidden; }
 .intro__ch { display: inline-block; opacity: 0; }
 .intro__ch.is-on { opacity: 1; }
 .intro__cursor { display: inline-block; width: 0.18em; height: 1em; margin-left: 0.08em; vertical-align: -0.12em; background: currentColor; animation: blink 1s steps(1) infinite; }
+.intro__cursor.is-typing { animation: none; }
 @keyframes blink { 50% { opacity: 0; } }
 /* 로고 = 사용자 제공 글자 SVG 4조각 (원본 로고와 위치 실측 일치 94.7%). 너무 크지 않게 최대 360px */
 .intro__mark { position: relative; width: min(22.5rem, 64vw); aspect-ratio: 1004 / 348; }
