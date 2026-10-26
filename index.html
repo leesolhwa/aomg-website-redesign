@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>AOMG — Interact with the Beat</title>
   <meta name="description" content="키비츠의 첫 EP [OXY_GEN]부터 AOMG 아티스트 10팀의 음악과 공연, 소식까지. (비공식 컨셉 리디자인)">
+  <script>document.documentElement.classList.add('js')</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400&family=Instrument+Serif&display=swap">
@@ -16,35 +17,35 @@
   <a class="skip-link" href="#main" data-copy="skip">본문으로 건너뛰기</a>
 
   <!-- ===== GNB (공통) ===== -->
-  <header class="gnb container" id="gnb">
-    <a class="gnb__logo" href="#hero" aria-label="AOMG 홈" data-copy="nav.home">AOMG</a>
-    <button class="gnb__toggle cta" type="button" aria-expanded="false" aria-controls="gnb-menu">
+  <header class="gnb container" id="gnb" data-tone="on-accent">
+    <a class="gnb__logo" href="index.html" aria-label="AOMG 홈" data-copy="nav.home">AOMG</a>
+    <button class="gnb__toggle cta" type="button" aria-expanded="false" aria-controls="gnb-menu" aria-label="메뉴 열기">
       <span class="cta__label" data-copy="nav.menu">MENU</span>
     </button>
     <nav class="gnb__menu" id="gnb-menu" aria-label="주요 메뉴">
       <ul>
-        <li><a href="#now-playing" data-copy="nav.nowPlaying">NOW PLAYING</a></li>
-        <li><a href="#artists" data-copy="nav.artists">ARTISTS</a></li>
-        <li><a href="#discography" data-copy="nav.releases">RELEASES</a></li>
-        <li><a href="#live" data-copy="nav.live">LIVE</a></li>
-        <li><a href="#news" data-copy="nav.news">NEWS</a></li>
+        <li><a href="#now-playing" data-copy="nav.nowPlaying" aria-label="지금 재생">NOW PLAYING</a></li>
+        <li><a href="#artists" data-copy="nav.artists" aria-label="아티스트">ARTISTS</a></li>
+        <li><a href="#discography" data-copy="nav.releases" aria-label="발매 기록">RELEASES</a></li>
+        <li><a href="#live" data-copy="nav.live" aria-label="공연 일정">LIVE</a></li>
+        <li><a href="#news" data-copy="nav.news" aria-label="소식">NEWS</a></li>
       </ul>
     </nav>
   </header>
 
   <main id="main">
     <!-- ===== #hero: Immersive Hero ===== -->
-    <section class="hero container grid" id="hero" aria-labelledby="hero-title">
+    <section class="hero container grid surface-accent" id="hero" data-tone="on-accent" aria-labelledby="hero-title">
       <figure class="hero__cover">
         <img src="img/release-keyveatz-oxygen.webp" alt="OXY_GEN 앨범 커버" width="1200" height="1200" fetchpriority="high">
       </figure>
       <div class="hero__body">
-        <p class="hero__label" data-copy="hero.label">KEYVEATZ — 1ST EP</p>
+        <p class="hero__label" data-copy="hero.label">KEYVEATZ <span aria-hidden="true">—</span> 1ST EP</p>
         <h1 class="hero__title" id="hero-title" data-copy="hero.title">OXY_GEN</h1>
         <p class="hero__date"><time datetime="2026-06-30" data-copy="hero.date">2026.06.30</time></p>
         <p class="hero__subtitle" data-copy="hero.subtitle">AOMG의 새 걸크루,<br class="m-only"> 키비츠의 첫 EP.</p>
         <p class="hero__text" data-copy="hero.body">소리를 켜면<br class="m-only"> 화면이 비트에 반응해요.</p>
-        <div class="hero__cta">
+        <div class="hero__cta cta-row">
           <button class="cta" type="button" data-action="audio-toggle" aria-pressed="false" aria-label="소리 켜기"><span class="cta__label" data-copy="hero.cta.audio">AUDIO ON</span></button>
           <a class="cta" href="https://open.spotify.com/artist/6f8BfBKDA1P0yLj6uAmLLF" target="_blank" rel="noopener" aria-label="OXY_GEN 스트리밍에서 듣기, 새 창"><span class="cta__label" data-copy="hero.cta.listen">LISTEN</span></a>
         </div>
@@ -52,45 +53,46 @@
     </section>
 
     <!-- ===== #now-playing ===== -->
-    <section class="now-playing container grid" id="now-playing" aria-labelledby="np-title">
-      <div class="now-playing__side">
+    <section class="now-playing container grid surface-dark" id="now-playing" data-tone="on-dark" aria-labelledby="np-title">
+      <div class="now-playing__side" data-reveal>
         <h2 class="section-title" id="np-title"><span data-copy="nowPlaying.title">NOW PLAYING</span> <span class="section-caption" data-copy="nowPlaying.caption">지금 재생</span></h2>
         <p class="section-subtitle" data-copy="nowPlaying.subtitle">트랙을 고르면 파형이<br class="m-only"> 그 비트를 따라 움직인다.</p>
         <ol class="track-list" data-render="tracks"></ol>
         <p class="now-playing__note" data-copy="nowPlaying.demoNote">데모 비트예요.<br class="m-only"> 키비츠의 전체 곡은<br class="m-only"> 스트리밍에서 들을 수 있어요.</p>
       </div>
-      <div class="now-playing__stage">
-        <canvas class="visualizer" id="visualizer" aria-hidden="true"></canvas>
-        <p class="now-playing__current" aria-live="polite" data-render="current-track"></p>
+      <div class="now-playing__stage" data-reveal>
+        <canvas class="visualizer" id="visualizer" width="1200" height="675" aria-hidden="true"></canvas>
+        <p class="now-playing__current" aria-live="polite" data-render="current-track">DEMO BEAT 01</p>
         <p class="now-playing__muted" data-copy="nowPlaying.muted">소리가 꺼져 있어요. [ AUDIO ON ]을 누르면 재생돼요.</p>
       </div>
     </section>
 
     <!-- ===== #artists: Artist Universe ===== -->
-    <section class="artists container" id="artists" aria-labelledby="artists-title">
-      <h2 class="section-title" id="artists-title"><span data-copy="artists.title">ARTISTS</span> <span class="section-caption" data-copy="artists.caption">AOMG 아티스트 10팀</span></h2>
-      <p class="section-subtitle" data-copy="artists.subtitle">래퍼, 보컬, 크루, 방송인, 파이터까지.</p>
-      <p class="section-text" data-copy="artists.body">이름을 누르면 음악과 영상,<br class="m-only"> 공연이 한 페이지에 모여 있어요.</p>
+    <section class="artists container surface-dark" id="artists" data-tone="on-dark" aria-labelledby="artists-title">
+      <h2 class="section-title" id="artists-title" data-reveal><span data-copy="artists.title">ARTISTS</span> <span class="section-caption" data-copy="artists.caption">AOMG 아티스트 10팀</span></h2>
+      <p class="section-subtitle" data-copy="artists.subtitle" data-reveal>래퍼, 보컬, 크루, 방송인, 파이터까지.</p>
+      <p class="section-text" data-copy="artists.body" data-reveal>이름을 누르면 음악과 영상,<br class="m-only"> 공연이 한 페이지에 모여 있어요.</p>
       <ul class="artist-names" data-render="artists"></ul>
     </section>
 
     <!-- ===== #discography: Discography Wall ===== -->
-    <section class="discography container" id="discography" aria-labelledby="disco-title">
-      <h2 class="section-title" id="disco-title"><span data-copy="discography.title">RELEASES</span> <span class="section-caption" data-copy="discography.caption">연도별 발매 기록</span></h2>
-      <p class="section-subtitle" data-copy="discography.subtitle">AOMG의 앨범을<br class="m-only"> 연도별로 넘겨본다.</p>
-      <div class="discography__wall" data-render="discography"></div>
+    <section class="discography container surface-light" id="discography" data-tone="on-light" aria-labelledby="disco-title">
+      <h2 class="section-title" id="disco-title" data-reveal><span data-copy="discography.title">RELEASES</span> <span class="section-caption" data-copy="discography.caption">연도별 발매 기록</span></h2>
+      <p class="section-subtitle" data-copy="discography.subtitle" data-reveal>AOMG의 앨범을<br class="m-only"> 연도별로 넘겨본다.</p>
+      <div class="discography__panel" data-render="discography" aria-live="polite"></div>
       <div class="discography__controls">
         <button class="cta" type="button" data-action="year-prev" aria-label="이전 연도"><span class="cta__label">PREV</span></button>
+        <span class="discography__count" data-render="year-count" aria-hidden="true"></span>
         <button class="cta" type="button" data-action="year-next" aria-label="다음 연도"><span class="cta__label">NEXT</span></button>
       </div>
     </section>
 
     <!-- ===== #live: Live Pulse ===== -->
-    <section class="live container grid" id="live" aria-labelledby="live-title">
-      <figure class="live__poster">
+    <section class="live container grid surface-dark" id="live" data-tone="on-dark" aria-labelledby="live-title">
+      <figure class="live__poster" data-reveal>
         <img src="img/news-keyveatz-messygirls.webp" alt="키비츠 홍보 이미지" loading="lazy" width="800" height="1000">
       </figure>
-      <div class="live__body">
+      <div class="live__body" data-reveal>
         <h2 class="section-title" id="live-title"><span data-copy="live.title">LIVE</span> <span class="section-caption" data-copy="live.caption">공연 일정</span></h2>
         <p class="section-subtitle" data-copy="live.subtitle">날짜와 장소, 예매 링크를 한곳에서 확인한다.</p>
         <ul class="event-list" data-render="events"></ul>
@@ -102,21 +104,21 @@
     </section>
 
     <!-- ===== #news: Stories & News ===== -->
-    <section class="news container" id="news" aria-labelledby="news-title">
-      <h2 class="section-title" id="news-title"><span data-copy="news.title">NEWS</span> <span class="section-caption" data-copy="news.caption">AOMG 소식</span></h2>
-      <p class="section-subtitle" data-copy="news.subtitle">발매, 수상, 새 얼굴 소식.</p>
+    <section class="news container surface-dark" id="news" data-tone="on-dark" aria-labelledby="news-title">
+      <h2 class="section-title" id="news-title" data-reveal><span data-copy="news.title">NEWS</span> <span class="section-caption" data-copy="news.caption">AOMG 소식</span></h2>
+      <p class="section-subtitle" data-copy="news.subtitle" data-reveal>발매, 수상, 새 얼굴 소식.</p>
       <ul class="card-grid" data-render="news"></ul>
     </section>
   </main>
 
   <!-- ===== Footer (공통) ===== -->
-  <footer class="footer container grid" id="contact">
+  <footer class="footer container grid" id="contact" data-tone="on-dark">
     <div class="footer__info">
       <p class="footer__logo">AOMG</p>
       <p data-copy="footer.about.ko">AOMG는 2013년 설립된 힙합·R&amp;B 레이블이자 아티스트 매니지먼트 회사다. 레이블 투어와 월드 투어, 방송, 스포츠까지 활동 영역을 넓혀 왔다.</p>
-      <p lang="en" data-copy="footer.about.en">AOMG is a hip-hop and R&amp;B label and artist management company founded in 2013.</p>
+      <p class="t-paragraph-en" lang="en" data-copy="footer.about.en">AOMG is a hip-hop and R&amp;B label and artist management company founded in 2013.</p>
       <p class="footer__label" data-copy="footer.inquiryLabel">BUSINESS INQUIRY</p>
-      <a href="mailto:info@aomgofficial.com" data-copy="footer.email">info@aomgofficial.com</a>
+      <a class="footer__email" href="mailto:info@aomgofficial.com" data-copy="footer.email">info@aomgofficial.com</a>
     </div>
     <ul class="footer__social">
       <li><a href="https://www.instagram.com/aomgofficial" target="_blank" rel="noopener" aria-label="인스타그램, 새 창">INSTAGRAM</a></li>
@@ -126,7 +128,7 @@
     </ul>
     <div class="footer__legal">
       <p data-copy="footer.disclaimer">비공식 컨셉 리디자인 · 비상업적 포트폴리오.<br class="m-only"> 모든 아티스트명·이미지·음원의 권리는<br class="m-only"> AOMG와 각 권리자에게 있습니다.</p>
-      <p data-copy="footer.credit">CONCEPT REDESIGN 2026</p>
+      <p class="footer__credit" data-copy="footer.credit">CONCEPT REDESIGN 2026</p>
     </div>
   </footer>
 
@@ -135,11 +137,13 @@
     <a class="player__logo" href="index.html" aria-label="AOMG 홈">AOMG</a>
     <div class="player__track">
       <button class="cta" type="button" data-action="play-toggle" aria-label="재생"><span class="cta__label">PLAY</span></button>
-      <p class="player__title" aria-live="polite" data-copy="player.idle">재생 중인 곡 없음</p>
+      <p class="player__title" aria-live="polite" data-render="player-title" data-copy="player.idle">재생 중인 곡 없음</p>
       <div class="player__progress" role="progressbar" aria-label="재생 위치" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></div>
     </div>
     <button class="cta player__audio" type="button" data-action="audio-toggle" aria-pressed="false" aria-label="소리 켜기"><span class="cta__label" data-copy="audio.on">AUDIO ON</span></button>
   </div>
+
+  <img class="artist-preview" alt="" aria-hidden="true">
 
   <script src="js/data.js"></script>
   <script src="js/player.js"></script>

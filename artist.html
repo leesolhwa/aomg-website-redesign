@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>KEYVEATZ / 키비츠 — AOMG</title>
   <meta name="description" content="AOMG의 새로운 걸크루. 음악, 영상, 공연, 공식 채널을 한 페이지에서. (비공식 컨셉 리디자인)">
+  <script>document.documentElement.classList.add('js')</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400&family=Instrument+Serif&display=swap">
@@ -16,25 +17,25 @@
   <a class="skip-link" href="#main" data-copy="skip">본문으로 건너뛰기</a>
 
   <!-- ===== GNB (공통) ===== -->
-  <header class="gnb container" id="gnb">
+  <header class="gnb container" id="gnb" data-tone="on-dark">
     <a class="gnb__logo" href="index.html" aria-label="AOMG 홈" data-copy="nav.home">AOMG</a>
-    <button class="gnb__toggle cta" type="button" aria-expanded="false" aria-controls="gnb-menu">
+    <button class="gnb__toggle cta" type="button" aria-expanded="false" aria-controls="gnb-menu" aria-label="메뉴 열기">
       <span class="cta__label" data-copy="nav.menu">MENU</span>
     </button>
     <nav class="gnb__menu" id="gnb-menu" aria-label="주요 메뉴">
       <ul>
-        <li><a href="index.html#now-playing" data-copy="nav.nowPlaying">NOW PLAYING</a></li>
-        <li><a href="index.html#artists" data-copy="nav.artists">ARTISTS</a></li>
-        <li><a href="index.html#discography" data-copy="nav.releases">RELEASES</a></li>
-        <li><a href="index.html#live" data-copy="nav.live">LIVE</a></li>
-        <li><a href="index.html#news" data-copy="nav.news">NEWS</a></li>
+        <li><a href="index.html#now-playing" data-copy="nav.nowPlaying" aria-label="지금 재생">NOW PLAYING</a></li>
+        <li><a href="index.html#artists" data-copy="nav.artists" aria-label="아티스트">ARTISTS</a></li>
+        <li><a href="index.html#discography" data-copy="nav.releases" aria-label="발매 기록">RELEASES</a></li>
+        <li><a href="index.html#live" data-copy="nav.live" aria-label="공연 일정">LIVE</a></li>
+        <li><a href="index.html#news" data-copy="nav.news" aria-label="소식">NEWS</a></li>
       </ul>
     </nav>
   </header>
 
-  <main id="main" data-artist-id="keyveatz">
+  <main id="main">
     <!-- ===== #artist-hero ===== -->
-    <section class="detail-hero container grid" id="artist-hero" aria-labelledby="artist-name">
+    <section class="detail-hero container grid" id="artist-hero" data-tone="on-dark" aria-labelledby="artist-name">
       <figure class="detail-hero__image">
         <img src="img/artist-keyveatz.webp" alt="키비츠 프로필 사진" width="1200" height="1200" fetchpriority="high" data-render="artist-image">
       </figure>
@@ -48,62 +49,63 @@
     </section>
 
     <!-- ===== #about ===== -->
-    <section class="detail-about container grid" id="about" aria-labelledby="about-title" data-section="bio">
-      <h2 class="section-title" id="about-title" data-copy="detail.about.title">ABOUT</h2>
-      <div class="detail-about__body">
+    <section class="detail-about container grid" id="about" data-tone="on-dark" aria-labelledby="about-title" data-section="bio">
+      <h2 class="section-title" id="about-title" data-copy="detail.about.title" data-reveal>ABOUT</h2>
+      <div class="detail-about__body" data-reveal>
         <p data-render="bio-ko"></p>
-        <p lang="en" data-render="bio-en"></p>
+        <p class="t-paragraph-en" lang="en" data-render="bio-en"></p>
       </div>
     </section>
 
     <!-- ===== #releases ===== -->
-    <section class="detail-releases container" id="releases" aria-labelledby="releases-title" data-section="releases">
-      <h2 class="section-title" id="releases-title"><span data-copy="detail.releases.title">RELEASES</span> <span class="section-caption" data-copy="detail.releases.caption">발매</span></h2>
+    <section class="detail-releases container" id="releases" data-tone="on-dark" aria-labelledby="releases-title" data-section="releases">
+      <h2 class="section-title" id="releases-title" data-reveal><span data-copy="detail.releases.title">RELEASES</span> <span class="section-caption" data-copy="detail.releases.caption">발매</span></h2>
       <ul class="card-grid" data-render="artist-releases"></ul>
     </section>
 
     <!-- ===== #videos ===== -->
-    <section class="detail-videos container" id="videos" aria-labelledby="videos-title" data-section="videos">
-      <h2 class="section-title" id="videos-title"><span data-copy="detail.videos.title">VIDEOS</span> <span class="section-caption" data-copy="detail.videos.caption">영상</span></h2>
+    <section class="detail-videos container" id="videos" data-tone="on-dark" aria-labelledby="videos-title" data-section="videos">
+      <h2 class="section-title" id="videos-title" data-reveal><span data-copy="detail.videos.title">VIDEOS</span> <span class="section-caption" data-copy="detail.videos.caption">영상</span></h2>
       <ul class="card-grid" data-render="artist-videos"></ul>
     </section>
 
     <!-- ===== #artist-live ===== -->
-    <section class="detail-live container" id="artist-live" aria-labelledby="alive-title" data-section="events">
-      <h2 class="section-title" id="alive-title"><span data-copy="detail.live.title">LIVE</span> <span class="section-caption" data-copy="detail.live.caption">공연</span></h2>
+    <section class="detail-live container" id="artist-live" data-tone="on-dark" aria-labelledby="alive-title" data-section="events">
+      <h2 class="section-title" id="alive-title" data-reveal><span data-copy="detail.live.title">LIVE</span> <span class="section-caption" data-copy="detail.live.caption">공연</span></h2>
       <ul class="event-list" data-render="artist-events"></ul>
       <div class="empty-state" data-empty="artist-events" hidden>
         <p data-copy="live.empty">지금 예정된 공연이 없어요.<br class="m-only"> 새 일정은 공식 인스타그램에서<br class="m-only"> 확인할 수 있어요.</p>
+        <a class="cta" data-render="artist-instagram" href="https://www.instagram.com/aomgofficial" target="_blank" rel="noopener" aria-label="인스타그램, 새 창"><span class="cta__label">INSTAGRAM</span></a>
       </div>
     </section>
 
     <!-- ===== #artist-news ===== -->
-    <section class="detail-news container" id="artist-news" aria-labelledby="anews-title" data-section="news">
-      <h2 class="section-title" id="anews-title"><span data-copy="detail.news.title">NEWS</span> <span class="section-caption" data-copy="detail.news.caption">소식</span></h2>
+    <section class="detail-news container" id="artist-news" data-tone="on-dark" aria-labelledby="anews-title" data-section="news">
+      <h2 class="section-title" id="anews-title" data-reveal><span data-copy="detail.news.title">NEWS</span> <span class="section-caption" data-copy="detail.news.caption">소식</span></h2>
       <ul class="card-grid" data-render="artist-news"></ul>
     </section>
 
     <!-- ===== #related ===== -->
-    <section class="detail-related container" id="related" aria-labelledby="related-title">
-      <h2 class="section-title" id="related-title"><span data-copy="detail.related.title">MORE FROM AOMG</span> <span class="section-caption" data-copy="detail.related.caption">다른 아티스트</span></h2>
+    <section class="detail-related container" id="related" data-tone="on-dark" aria-labelledby="related-title">
+      <h2 class="section-title" id="related-title" data-reveal><span data-copy="detail.related.title">MORE FROM AOMG</span> <span class="section-caption" data-copy="detail.related.caption">다른 아티스트</span></h2>
       <ul class="artist-names" data-render="related"></ul>
     </section>
 
     <!-- ===== #links ===== -->
-    <section class="detail-links container" id="links" aria-labelledby="links-title" data-section="links">
-      <h2 class="section-title" id="links-title"><span data-copy="detail.links.title">FOLLOW</span> <span class="section-caption" data-copy="detail.links.caption">공식 채널</span></h2>
+    <section class="detail-links container" id="links" data-tone="on-dark" aria-labelledby="links-title" data-section="links">
+      <h2 class="section-title" id="links-title" data-reveal><span data-copy="detail.links.title">FOLLOW</span> <span class="section-caption" data-copy="detail.links.caption">공식 채널</span></h2>
       <ul class="link-list" data-render="artist-links"></ul>
     </section>
   </main>
 
   <!-- ===== Footer (공통) ===== -->
-  <footer class="footer container grid" id="contact">
+  <footer class="footer container grid" id="contact" data-tone="on-dark">
     <div class="footer__info">
       <p class="footer__logo">AOMG</p>
       <p data-copy="footer.about.ko">AOMG는 2013년 설립된 힙합·R&amp;B 레이블이자 아티스트 매니지먼트 회사다. 레이블 투어와 월드 투어, 방송, 스포츠까지 활동 영역을 넓혀 왔다.</p>
-      <p lang="en" data-copy="footer.about.en">AOMG is a hip-hop and R&amp;B label and artist management company founded in 2013.</p>
+      <p class="t-paragraph-en" lang="en" data-copy="footer.about.en">AOMG is a hip-hop and R&amp;B label and artist management company founded in 2013.</p>
       <p class="footer__label" data-copy="footer.inquiryLabel">BUSINESS INQUIRY</p>
-      <a href="mailto:info@aomgofficial.com" data-copy="footer.email">info@aomgofficial.com</a>
+      <a class="footer__email" href="mailto:info@aomgofficial.com" data-copy="footer.email">info@aomgofficial.com</a>
     </div>
     <ul class="footer__social">
       <li><a href="https://www.instagram.com/aomgofficial" target="_blank" rel="noopener" aria-label="인스타그램, 새 창">INSTAGRAM</a></li>
@@ -113,7 +115,7 @@
     </ul>
     <div class="footer__legal">
       <p data-copy="footer.disclaimer">비공식 컨셉 리디자인 · 비상업적 포트폴리오.<br class="m-only"> 모든 아티스트명·이미지·음원의 권리는<br class="m-only"> AOMG와 각 권리자에게 있습니다.</p>
-      <p data-copy="footer.credit">CONCEPT REDESIGN 2026</p>
+      <p class="footer__credit" data-copy="footer.credit">CONCEPT REDESIGN 2026</p>
     </div>
   </footer>
 
@@ -122,7 +124,7 @@
     <a class="player__logo" href="index.html" aria-label="AOMG 홈">AOMG</a>
     <div class="player__track">
       <button class="cta" type="button" data-action="play-toggle" aria-label="재생"><span class="cta__label">PLAY</span></button>
-      <p class="player__title" aria-live="polite" data-copy="player.idle">재생 중인 곡 없음</p>
+      <p class="player__title" aria-live="polite" data-render="player-title" data-copy="player.idle">재생 중인 곡 없음</p>
       <div class="player__progress" role="progressbar" aria-label="재생 위치" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></div>
     </div>
     <button class="cta player__audio" type="button" data-action="audio-toggle" aria-pressed="false" aria-label="소리 켜기"><span class="cta__label" data-copy="audio.on">AUDIO ON</span></button>
