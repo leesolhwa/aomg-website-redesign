@@ -21,6 +21,13 @@ AOMG Website Redesign — Brand Identity, UI/UX & Interactive Web Experience
 | [docs/kode-reference-measurements.md](docs/kode-reference-measurements.md) | 레퍼런스 실측 원본 기록 |
 | [img/README.md](img/README.md) | 이미지 출처와 적용 섹션 |
 
+## 실행
+로컬 서버로 열기 (상세페이지의 `?id=`와 폰트 로딩 때문에 파일 더블클릭보다 권장):
+```bash
+python3 -m http.server 8000
+# http://localhost:8000
+```
+
 ## 구조
 ```
 index.html            메인
