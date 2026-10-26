@@ -3,9 +3,19 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>@view-transition { navigation: auto; }</style><!-- 전환 설정은 첫 화면 전에 적용되도록 인라인 -->
   <title>AOMG — Interact with the Beat</title>
   <meta name="description" content="키비츠의 첫 EP [OXY_GEN]부터 AOMG 아티스트 10팀의 음악과 공연, 소식까지. (비공식 컨셉 리디자인)">
-  <script>document.documentElement.classList.add('js')</script>
+  <script>
+    document.documentElement.classList.add('js');
+    // 페이지 전환(View Transition)이 브라우저에서 취소될 때의 Promise 거부를 처리 → 콘솔 오류 방지
+    ['pageswap', 'pagereveal'].forEach(function (t) {
+      addEventListener(t, function (e) {
+        var v = e.viewTransition; if (!v) return;
+        [v.ready, v.finished, v.updateCallbackDone].forEach(function (p) { if (p) p.catch(function () {}); });
+      });
+    });
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400&family=Instrument+Serif&display=swap">
@@ -57,6 +67,9 @@
       <div class="now-playing__side" data-reveal>
         <h2 class="section-title" id="np-title"><span data-copy="nowPlaying.title">NOW PLAYING</span> <span class="section-caption" data-copy="nowPlaying.caption">지금 재생</span></h2>
         <p class="section-subtitle" data-copy="nowPlaying.subtitle">트랙을 고르면 파형이<br class="m-only"> 그 비트를 따라 움직인다.</p>
+        <figure class="now-playing__cover">
+          <img src="img/release-keyveatz-oxygen.webp" alt="OXY_GEN 앨범 커버" loading="lazy" width="1200" height="1200">
+        </figure>
         <ol class="track-list" data-render="tracks"></ol>
         <p class="now-playing__note" data-copy="nowPlaying.demoNote">데모 비트예요.<br class="m-only"> 키비츠의 전체 곡은<br class="m-only"> 스트리밍에서 들을 수 있어요.</p>
       </div>

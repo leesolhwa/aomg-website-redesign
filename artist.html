@@ -3,9 +3,19 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>@view-transition { navigation: auto; }</style><!-- 전환 설정은 첫 화면 전에 적용되도록 인라인 -->
   <title>KEYVEATZ / 키비츠 — AOMG</title>
   <meta name="description" content="AOMG의 새로운 걸크루. 음악, 영상, 공연, 공식 채널을 한 페이지에서. (비공식 컨셉 리디자인)">
-  <script>document.documentElement.classList.add('js')</script>
+  <script>
+    document.documentElement.classList.add('js');
+    // 페이지 전환(View Transition)이 브라우저에서 취소될 때의 Promise 거부를 처리 → 콘솔 오류 방지
+    ['pageswap', 'pagereveal'].forEach(function (t) {
+      addEventListener(t, function (e) {
+        var v = e.viewTransition; if (!v) return;
+        [v.ready, v.finished, v.updateCallbackDone].forEach(function (p) { if (p) p.catch(function () {}); });
+      });
+    });
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400&family=Instrument+Serif&display=swap">

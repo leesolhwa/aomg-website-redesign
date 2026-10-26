@@ -101,11 +101,12 @@ const RELEASES = [
   { id: 'mib', title: 'Men In Black', artistId: 'uglyduck', artist: 'UGLY DUCK & DeVita', type: 'COLLABORATION ALBUM', year: 2019, date: '2019', cover: null, listen: null }, // date [needs-check]
 ];
 
-// Demo audio — prd.md 7장. 파일이 없으면 player.js가 합성 비트로 대체
+// Demo audio — prd.md 7장. src가 null이면 player.js가 합성 비트로 재생
+// 저작권 free 음원을 audio/에 넣으면 src에 경로를 적는다 (없는 파일을 적으면 404 콘솔 오류 발생)
 const TRACKS = [
-  { id: 'demo-01', title: 'DEMO BEAT 01', src: 'audio/track-01.mp3', bpm: null },
-  { id: 'demo-02', title: 'DEMO BEAT 02', src: 'audio/track-02.mp3', bpm: null },
-  { id: 'demo-03', title: 'DEMO BEAT 03', src: 'audio/track-03.mp3', bpm: null },
+  { id: 'demo-01', title: 'DEMO BEAT 01', src: null, bpm: null },
+  { id: 'demo-02', title: 'DEMO BEAT 02', src: null, bpm: null },
+  { id: 'demo-03', title: 'DEMO BEAT 03', src: null, bpm: null },
 ];
 
 // 영상 제목·유튜브 ID는 [needs-check]. 제목이 없으면 카드에 제목을 표시하지 않음
