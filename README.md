@@ -8,7 +8,7 @@ AOMG Website Redesign — Brand Identity, UI/UX & Interactive Web Experience
 - 브랜드: AOMG (힙합·R&B 레이블)
 - 컨셉: **Interact with the Beat** — 사운드에 반응하는 레이블 플랫폼
 - 범위: 메인(`index.html`) + 아티스트 상세(`artist.html`)
-- 기술: HTML / CSS / JavaScript, Web Audio API, View Transitions API
+- 기술: HTML / CSS / JavaScript, Three.js(3D 로고), Web Audio API, View Transitions API
 - 기준 레퍼런스: [KODE Immersive](https://kodeimmersive.com/)
 
 ## 문서
@@ -37,6 +37,9 @@ css/style.css         tokens.json 기반 CSS 변수 + 스타일
 js/data.js            아티스트·릴리즈·뉴스 데이터
 js/player.js          오디오·미니 플레이어·비주얼라이저
 js/script.js          GNB·렌더링·상세페이지
+js/effects.js         인트로·긁기 포스터·마우스 트레일
+js/logo3d.js          3D AOMG 로고 (Three.js)
+js/vendor/            Three.js r160 (MIT), 로고용 폰트 (MgOpen)
 img/                  AOMG 공식 사이트 이미지
 audio/                데모 음원
 docs/                 기획 문서

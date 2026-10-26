@@ -11,7 +11,7 @@ OUT=sys.argv[1]; SHOT=set(sys.argv[2:])
 BLOCK=['googleapis','gstatic','jsdelivr']
 JS = r'''() => {
  const vw = innerWidth, issues = [];
- const vis = e => { const s=getComputedStyle(e); const r=e.getBoundingClientRect(); return s.display!=='none' && s.visibility!=='hidden' && r.width>0 && r.height>0 && !e.closest('[hidden]'); };
+ const vis = e => { const s=getComputedStyle(e); const r=e.getBoundingClientRect(); if (!(s.display!=='none' && s.visibility!=='hidden' && r.width>0 && r.height>0 && !e.closest('[hidden]'))) return false; for (let n=e; n && n.nodeType===1; n=n.parentElement) if (getComputedStyle(n).opacity==='0') return false; return true; };
  if (document.documentElement.scrollWidth > vw) issues.push(['Major','h-scroll', document.documentElement.scrollWidth+'>'+vw]);
  document.querySelectorAll('body *').forEach(e => { if (!vis(e)) return; const r=e.getBoundingClientRect(); if (r.right>vw+1 && getComputedStyle(e).position!=='fixed') issues.push(['Major','overflow-x', e.tagName+'.'+e.className+' '+(e.textContent||'').trim().slice(0,24)]); });
  document.querySelectorAll('img').forEach(i => { if (!i.hasAttribute('alt')) issues.push(['Major','img-no-alt', i.src.split('/').pop()]); if (vis(i) && i.complete && i.naturalWidth===0 && i.getAttribute('src')) issues.push(['Major','img-broken', i.getAttribute('src')]); });
@@ -38,12 +38,13 @@ JS = r'''() => {
 }'''
 async def main():
   async with async_playwright() as p:
-    b=await p.chromium.launch()
+    b=await p.chromium.launch(args=['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist'])
     report={}
     for page in PAGES:
       for w in WIDTHS:
         if page.startswith('artist') and 'keyveatz' not in page and w not in (390,1440): continue
         ctx=await b.new_context(viewport={'width':w,'height':844 if w<768 else 900})
+        await ctx.add_init_script("try{sessionStorage.setItem('aomg-entered','1')}catch(e){}")  # 인트로는 interaction_check에서 따로 검사
         pg=await ctx.new_page(); errs=[]; bad=[]
         pg.on('console', lambda m: errs.append(m.text) if m.type=='error' and 'ERR_FAILED' not in m.text else None)
         pg.on('pageerror', lambda e: errs.append('PAGEERROR '+str(e)))
@@ -52,13 +53,13 @@ async def main():
         await pg.goto(BASE+page, wait_until='load')
         await pg.add_style_tag(content=':root{--font-display-en:"DejaVu Serif Condensed",serif}')
         await pg.evaluate("document.querySelectorAll('[data-reveal]').forEach(e=>e.classList.add('is-in')); document.querySelectorAll('img[loading=lazy]').forEach(i=>i.loading='eager')")
-        await pg.wait_for_timeout(600)
+        await pg.wait_for_timeout(1500)
         r=await pg.evaluate(JS)
         for e in errs: r['issues'].append(['Critical','console',e])
         for x in bad: r['issues'].append(['Major','http',x])
         report[f'{page}@{w}']=r
         if f'{page}@{w}' in SHOT or 'all' in SHOT:
-          await pg.screenshot(path=f"{OUT}/{page.replace('.html','').replace('?id=','-')}-{w}.png", full_page=True)
+          await pg.screenshot(path=f"{OUT}/{page.replace('.html','').replace('?id=','-')}-{w}.png", full_page=True, timeout=180000)
         await ctx.close()
     await b.close()
   json.dump(report, open(f'{OUT}/report.json','w'), ensure_ascii=False, indent=1)

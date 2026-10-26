@@ -288,21 +288,43 @@ ul, ol { list-style: none; }
   .gnb.is-open { color: var(--color-text-on-dark); }
 }
 
-/* ==== Hero (Kode 히어로: 100vh, accent 배경, 초대형 타이포) ==== */
-.hero { min-height: var(--section-screen); padding-top: calc(var(--header-h) + var(--section-pad-sm)); padding-bottom: calc(var(--section-pad-sm) + var(--player-h)); align-content: end; row-gap: var(--section-pad-sm); }
-.hero__cover { grid-column: 1 / span 4; }
+/* ==== Intro (Kode 프리로더: 검정 화면, 카운터, 커서 타이핑 → 로고 → ENTER) ==== */
+.intro { display: none; }
+html.js:not(.intro-seen) .intro { position: fixed; inset: 0; z-index: var(--z-skip); display: flex; flex-direction: column; align-items: center; justify-content: center; row-gap: var(--space-heading-body); padding: var(--gutter-x); background: var(--color-black); color: var(--color-white); transition: transform var(--dur-xl) var(--ease-in-out), opacity var(--dur-lg) var(--ease-out); }
+html.is-intro { overflow: hidden; }
+.intro.is-leaving { transform: translateY(-100%); }
+.intro__counter { position: absolute; top: calc(var(--header-h) / 2); left: 50%; transform: translateX(-50%); font-family: var(--font-sans-en); font-size: var(--fs-body-5); line-height: var(--lh-body-5); }
+.intro__typed { font-family: var(--font-sans-en); font-size: var(--fs-display-3); line-height: var(--lh-paragraph-en); text-transform: uppercase; text-align: center; min-height: 1.2em; }
+.intro__cursor { display: inline-block; width: 0.18em; height: 1em; margin-left: 0.08em; vertical-align: -0.12em; background: currentColor; animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.intro__logo { font-family: var(--font-sans-en); font-size: var(--fs-display-4); line-height: var(--lh-display-4); letter-spacing: var(--ls-display-1); }
+.intro__actions { display: flex; flex-direction: column; align-items: center; row-gap: var(--space-card-text); }
+.intro__actions .cta + .cta { margin-top: 0; }
+.intro__note { margin-top: var(--space-card-text); font-size: var(--fs-ko-caption); line-height: var(--lh-ko-caption); text-align: center; }
+@media (min-width: 768px) { .intro__actions { flex-direction: row; flex-wrap: wrap; justify-content: center; column-gap: var(--space-heading-body); } .intro__note { flex-basis: 100%; } }
+
+/* ==== Hero (Kode 히어로: 100vh accent, 3줄 초대형 문장 + 앞의 3D 오브제) ==== */
+.hero { position: relative; min-height: var(--section-screen); min-height: 100svh; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; }
+.hero__canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: pan-y; cursor: grab; }
+.hero__canvas:active { cursor: grabbing; }
+/* 문장: WebGL이 같은 문장을 굴절용 평면에 그리면 HTML은 화면에서만 숨김 (스크린리더는 읽음) */
+.hero__statement { position: absolute; inset: var(--header-h) 0 auto 0; height: 62%; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; font-family: var(--type-display); font-weight: var(--fw-display); font-size: var(--fs-display-4); line-height: var(--lh-display-0); letter-spacing: normal; text-transform: uppercase; text-align: center; white-space: nowrap; }
+.hero__statement span { display: block; }
+.hero.is-3d .hero__statement { opacity: 0; }
+.hero__hint { position: absolute; top: calc(var(--header-h) + var(--space-card-text)); left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; row-gap: 0.3em; pointer-events: none; font-family: var(--font-sans-en); font-size: var(--fs-body-2); line-height: var(--lh-paragraph-en); text-transform: uppercase; text-align: center; white-space: nowrap; }
+.hero__hint-ko { font-family: var(--type-ko); text-transform: none; }
+html.no-webgl .hero__hint { display: none; }
+.hero__release { position: relative; display: grid; grid-template-columns: calc(var(--hit-area) * 2) minmax(0, 1fr); column-gap: var(--grid-gap-x); align-items: end; padding-top: var(--space-card-text); padding-bottom: calc(var(--space-heading-body) + var(--player-h)); pointer-events: none; } /* KODE 히어로 하단처럼 작은 정보 줄 */
+.hero__release a, .hero__release button { pointer-events: auto; }
 .hero__cover img { width: 100%; aspect-ratio: var(--ratio-release-cover); object-fit: cover; }
-.hero__body { grid-column: 1 / -1; display: flex; flex-direction: column; }
-.hero__label { font-family: var(--font-sans-en); font-size: var(--fs-body-1); line-height: var(--lh-paragraph-en); text-transform: uppercase; }
-.hero__title { margin-top: var(--space-card-text); font-family: var(--type-display); font-weight: var(--fw-display); font-size: var(--fs-display-0); line-height: var(--lh-display-0); text-transform: uppercase; white-space: nowrap; transform: scale(calc(1 + var(--beat, 0) * 0.03)); transform-origin: left bottom; }
-.hero__date { margin-top: var(--space-card-text); font-family: var(--font-sans-en); font-size: var(--fs-body-6); line-height: var(--lh-body-6); }
-.hero__subtitle { margin-top: var(--space-heading-body); font-family: var(--type-ko); font-size: var(--fs-ko-lead); line-height: var(--lh-ko-lead); letter-spacing: var(--ls-ko-lead); }
-.hero__text { margin-top: var(--space-card-text); }
-.hero__cta { margin-top: var(--space-body-cta); }
+.hero__body { display: flex; flex-direction: column; align-items: flex-start; }
+.hero__label { font-family: var(--font-sans-en); font-size: var(--fs-body-2); line-height: var(--lh-paragraph-en); text-transform: uppercase; }
+.hero__title { margin-top: var(--space-card-text); font-family: var(--type-display); font-weight: var(--fw-display); font-size: var(--fs-display-3); line-height: var(--lh-display-3); letter-spacing: normal; text-transform: uppercase; white-space: nowrap; transform: scale(calc(1 + var(--beat, 0) * 0.03)); transform-origin: left bottom; }
+.hero__subtitle { margin-top: var(--space-card-text); font-family: var(--type-ko); font-size: var(--fs-ko-caption); line-height: var(--lh-ko-caption); }
+.hero__cta { margin-top: var(--space-card-text); }
 @media (min-width: 768px) {
-  .hero__cover { grid-column: 1 / span 2; align-self: end; }
-  .hero__body { grid-column: 3 / span 3; align-self: end; }
-  .hero__label { line-height: var(--lh-body-1); }
+  .hero__release { grid-template-columns: calc(var(--hit-area) * 2.5) minmax(0, 1fr); }
+  .hero__hint { top: auto; bottom: calc(var(--section-pad-sm) + var(--player-h)); left: auto; right: var(--gutter-x); transform: none; align-items: flex-end; text-align: right; }
 }
 
 /* ==== Now Playing (Kode sub-hero: 100vh, 5열 2:3) ==== */
@@ -350,7 +372,15 @@ html.is-audio-on .now-playing__muted { visibility: hidden; }
 @media (hover: none), (max-width: 767px) { .artist-preview { display: none; } }
 
 /* ==== Discography Wall (Kode services: 흰 배경, display-4 숫자) ==== */
-.discography { padding-block: var(--section-pad-lg); }
+/* 스크롤 고정: 섹션 높이 = 화면 3개, 안쪽이 화면에 고정되고 스크롤 진행도로 연도가 바뀜 (reference: services 섹션, 길이는 300vh로 제한) */
+.discography { height: calc(var(--section-screen) * 3); }
+.discography__sticky { position: sticky; top: 0; min-height: var(--section-screen); padding-top: calc(var(--header-h) + var(--space-heading-body)); padding-bottom: calc(var(--player-h) + var(--space-heading-body)); display: flex; flex-direction: column; justify-content: center; }
+.discography:not(.is-static) .discography__wall { margin-top: var(--space-heading-body); }
+.discography:not(.is-static) .discography__controls { margin-top: var(--space-card-text); }
+@media (max-width: 767px) { .discography:not(.is-static) .discography__list { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: var(--space-heading-body); } .discography:not(.is-static) .card__text-cover { font-size: var(--fs-body-4); line-height: var(--lh-paragraph-en); } }
+.discography.is-static { height: auto; }
+.discography.is-static .discography__sticky { position: static; min-height: 0; padding-block: var(--section-pad-lg); }
+.discography__progress { height: 2px; margin-top: var(--space-card-text); background: currentColor; transform-origin: left; transform: scaleX(var(--disco-progress, 0)); }
 .discography__wall { margin-top: var(--section-pad-sm); row-gap: var(--section-pad-sm); }
 .discography__year { grid-column: 1 / -1; font-family: var(--type-display); font-weight: var(--fw-display); font-size: var(--fs-display-4); line-height: var(--lh-display-4); letter-spacing: var(--ls-display-4); }
 .discography__list { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--grid-gap-x); row-gap: var(--card-gap-y); align-content: start; }
@@ -362,6 +392,8 @@ html.is-audio-on .now-playing__muted { visibility: hidden; }
 @media (min-width: 768px) {
   .discography__year { grid-column: 1 / span 2; }
   .discography__list { grid-column: 3 / span 3; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  /* 고정 화면 안에 들어가도록 카드 폭을 화면 높이에 맞춰 제한 */
+  .discography:not(.is-static) .discography__list { max-width: calc(30vh * 3 + var(--grid-gap-x) * 2); }
 }
 
 /* ==== Card (Kode에 없음 → temporary: 패딩 0, 이미지 위·텍스트 아래) ==== */
@@ -388,6 +420,12 @@ html.is-audio-on .now-playing__muted { visibility: hidden; }
 .live { padding-block: var(--section-pad-sm); row-gap: var(--section-pad-sm); }
 .live__poster { grid-column: 1 / span 4; }
 .live__poster img { width: 100%; aspect-ratio: var(--ratio-live-poster); object-fit: cover; }
+/* 긁어서 드러나는 포스터 (reference: logo-draw "scratch around") */
+.scratch { position: relative; }
+.scratch__canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; cursor: crosshair; transition: opacity var(--dur-lg) var(--ease-out); }
+.scratch.is-revealed .scratch__canvas { opacity: 0; pointer-events: none; }
+.scratch__hint { margin-top: var(--space-card-text); display: flex; flex-wrap: wrap; align-items: center; column-gap: var(--space-card-text); font-size: var(--fs-ko-caption); line-height: var(--lh-ko-caption); }
+.scratch.is-revealed + .scratch__hint span { visibility: hidden; }
 .live__body { grid-column: 1 / -1; }
 .event-list { margin-top: var(--space-heading-body); }
 .event { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--grid-gap-x); row-gap: var(--space-card-text); padding-block: var(--space-card-text); font-family: var(--font-sans-en); font-size: var(--fs-body-6); line-height: var(--lh-paragraph-en); text-transform: uppercase; }
@@ -403,7 +441,9 @@ html.is-audio-on .now-playing__muted { visibility: hidden; }
 .news { padding-top: var(--section-pad-md); padding-bottom: var(--section-pad-end); }
 
 /* ==== Footer (Kode footer: 100vh 검정) ==== */
-.footer { min-height: var(--section-screen); padding-block: var(--section-pad-md); row-gap: var(--section-pad-sm); align-content: space-between; background: var(--color-bg); color: var(--color-text-on-dark); }
+.footer { position: relative; overflow: hidden; min-height: var(--section-screen); padding-block: var(--section-pad-md); row-gap: var(--section-pad-sm); align-content: space-between; background: var(--color-bg); color: var(--color-text-on-dark); }
+.footer__canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.footer > *:not(.footer__canvas) { position: relative; }
 .footer__info { grid-column: 1 / -1; display: flex; flex-direction: column; row-gap: var(--space-card-text); max-width: var(--readable-max); }
 .footer__logo { font-family: var(--type-display); font-size: var(--fs-display-1); line-height: var(--lh-display-1); letter-spacing: var(--ls-display-1); }
 .footer__label { margin-top: var(--space-heading-body); font-family: var(--font-sans-en); font-size: var(--fs-body-2); line-height: var(--lh-paragraph-en); }
@@ -456,6 +496,9 @@ html.is-audio-on .now-playing__muted { visibility: hidden; }
 .link-list { margin-top: var(--space-heading-body); display: flex; flex-wrap: wrap; column-gap: var(--space-body-cta); }
 .link-list .cta { font-size: var(--fs-body-3); line-height: var(--lh-body-3); }
 .page-artist .track.is-current .track__title, .page-artist .artist-names a:hover, .page-artist .artist-names a:focus-visible { color: var(--artist-accent); }
+
+/* ==== Cursor trail (reference: MouseTrail) ==== */
+.cursor-trail { position: fixed; inset: 0; width: 100%; height: 100%; z-index: var(--z-preview); pointer-events: none; }
 
 /* ==== Reveal (JS 있을 때만 숨김 → JS 없거나 동작 줄이기면 그대로 보임) ==== */
 html.js [data-reveal] { opacity: 0; transform: translateY(var(--space-card-text)); transition: var(--transition-reveal); }

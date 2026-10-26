@@ -82,6 +82,20 @@
 
 ## 4. 페이지별 / 섹션별 카피
 
+> **2026-10-26 사용자 결정:** 레퍼런스(KODE)의 핵심 인터랙션을 복원한다 — 인트로(타이핑 → 로고 → ENTER), 히어로 3D AOMG 로고(드래그 회전·누르면 깨짐), 스크롤 고정 발매 기록, 마우스 트레일, 긁어서 드러나는 포스터, 푸터 3D. 이전 문서에서 '가져오지 않음/범위 밖'으로 적었던 결정을 이 결정으로 대체한다.
+
+### 4-0. 추가 카피 (KODE 인터랙션)
+| 위치 | 영문 | 한글 | 근거 |
+|---|---|---|---|
+| 인트로 타이핑 | ABOVE ORDINARY MUSIC GROUP | — | AOMG 정식 명칭. 사용자 지정 |
+| 인트로 로고 | AOMG | — | 사용자 지정 |
+| 인트로 버튼 | `[ ENTER WITH SOUND ]` / `[ ENTER ]` | 접근성 라벨: 소리와 함께 입장 / 소리 없이 입장 | 입장이 곧 소리 선택 |
+| 인트로 안내 | — | 소리와 함께 들어가면 비트에 맞춰 화면이 반응해요. | 3-2 해요체 |
+| 히어로 문장 (h1) | INTERACT / WITH THE / BEAT | — | 1장 영문 컨셉. KODE 3줄 문장 자리 |
+| 히어로 안내 | DRAG TO ROTATE · HOLD TO BREAK | 드래그하면 돌아가고, 누르고 있으면 깨져요. | 조작 방법 |
+| 공연 포스터 막 | SCRATCH / TO REVEAL | 긁어서 포스터를 확인해 보세요. | KODE 'SCRATCH AROUND' 원문은 쓰지 않음 |
+| 포스터 버튼 | `[ REVEAL ]` | 접근성 라벨: 포스터 바로 보기 | 긁기 대안 |
+
 ### 4-1. index.html (Home)
 
 | 파일명 | 페이지명 | 섹션 ID | 영문/한글 제목 | 서브타이틀 | 본문 카피 | CTA 문구 | 카피 근거 |
@@ -263,7 +277,7 @@
 | 아무 브랜드에나 붙는 말 | 새로운 차원, 한계를 넘어, 경계를 허무는, 무한한 가능성, 당신의 일상을 바꿀 | 정보가 없음 → 연도·앨범명·숫자로 |
 | 과장 형용사 | 독보적인, 압도적인, 최고의, 전설적인, 역대급, 레전드 | 공식 소개문에 있어도 옮기지 않음 |
 | 감성 수식어 | 감각적인, 트렌디한, 힙한, 감성 가득한, 특별한 | "힙"은 말하지 않고 디자인으로 보여줌 |
-| 레퍼런스 카피 | INNOVATE WITH PURPOSE, WE SEE NO LIMIT, TECH-ENABLED CREATIVITY, SCRATCH AROUND, ENTER | KODE 원문. 번역도 금지 |
+| 레퍼런스 카피 | INNOVATE WITH PURPOSE, WE SEE NO LIMIT, TECH-ENABLED CREATIVITY, SCRATCH AROUND | KODE 원문. 번역도 금지 (`[ ENTER ]`는 2026-10-26 사용자 결정으로 허용) |
 | 공식처럼 보이는 표현 | 공식 홈페이지, © AOMG, 저작권은 당사에 | 비공식 리디자인임을 숨기지 않음 |
 | 확인 안 된 사실 | 실제 공연명·공연장·날짜, 영상 제목, 멤버 한글 이름 추측, "현재 랭킹" | `[needs-check]`로 남김 |
 | 사용자 호칭 | 여러분, 고객님, 팬 여러분 | 호칭 없이 동사로 |
@@ -305,7 +319,12 @@
 | 키 | 문구 |
 |---|---|
 | `hero.label` | KEYVEATZ — 1ST EP |
+| `hero.statement` | INTERACT / WITH THE / BEAT (h1) |
+| `hero.hint` | 드래그하면 돌아가고, 누르고 있으면 깨져요. |
 | `hero.title` | OXY_GEN |
+| `intro.enterSound` / `intro.enter` | ENTER WITH SOUND / ENTER |
+| `intro.note` | 소리와 함께 들어가면 비트에 맞춰 화면이 반응해요. |
+| `live.scratchHint` / `live.reveal` | 긁어서 포스터를 확인해 보세요. / REVEAL |
 | `hero.date` | 2026.06.30 |
 | `hero.subtitle` | AOMG의 새 걸크루, 키비츠의 첫 EP. |
 | `hero.body` | 소리를 켜면 화면이 비트에 반응해요. |

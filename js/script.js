@@ -124,43 +124,70 @@
 
   /* ---------- Discography Wall: 연도 전환 ---------- */
   function initDiscography() {
+    const section = $('#discography');
     const panel = $('[data-render="discography"]');
     if (!panel) return;
     const years = [...new Set(RELEASES.map((r) => r.year))].sort((a, b) => b - a);
-    let idx = 0;
     const count = $('[data-render="year-count"]');
-    function paint() {
-      const y = years[idx];
-      panel.innerHTML = `<div class="discography__wall grid">
-          <p class="discography__year" aria-label="${y}년 발매">${y}</p>
-          <ul class="discography__list">${RELEASES.filter((r) => r.year === y).map((r) => releaseCard(r, { withPlay: true })).join('').replaceAll(' data-reveal', '')}</ul>
-        </div>`;
-      count.textContent = `${idx + 1} / ${years.length}`;
-    }
-    function go(d) {
-      idx = (idx + d + years.length) % years.length;
-      if (reduceMotion) return paint();
+    const wall = (y) => `<div class="discography__wall grid">
+        <p class="discography__year" aria-label="${y}년 발매">${y}</p>
+        <ul class="discography__list">${RELEASES.filter((r) => r.year === y).map((r) => releaseCard(r, { withPlay: true })).join('').replaceAll(' data-reveal', '')}</ul>
+      </div>`;
+    let idx = -1;
+    function paint(i) {
+      if (i === idx) return;
+      const first = idx === -1; idx = i;
+      const draw = () => { panel.innerHTML = wall(years[idx]); count.textContent = `${idx + 1} / ${years.length}`; };
+      if (first || reduceMotion) return draw();
       panel.classList.add('is-leaving');
-      setTimeout(() => { paint(); panel.classList.remove('is-leaving'); }, 200);
+      setTimeout(() => { draw(); panel.classList.remove('is-leaving'); }, 150);
     }
-    // 동작 줄이기: 연도 전환 대신 전체 연도를 목록으로 (prd 4-1)
+    // 동작 줄이기: 고정 해제 + 전체 연도 목록 (prd 4-1)
     if (reduceMotion) {
+      section.classList.add('is-static');
       panel.classList.add('discography__all');
-      panel.innerHTML = years.map((y) => `<div class="discography__wall grid">
-          <p class="discography__year" aria-label="${y}년 발매">${y}</p>
-          <ul class="discography__list">${RELEASES.filter((r) => r.year === y).map((r) => releaseCard(r, { withPlay: true })).join('').replaceAll(' data-reveal', '')}</ul>
-        </div>`).join('');
+      panel.innerHTML = years.map(wall).join('');
       $('.discography__controls').hidden = true;
       return;
     }
-    $('[data-action="year-prev"]').addEventListener('click', () => go(-1));
-    $('[data-action="year-next"]').addEventListener('click', () => go(1));
-    $('#discography').addEventListener('keydown', (e) => {
+    // 스크롤 고정: 섹션 안 스크롤 진행도 → 연도 (reference: services 섹션)
+    const sticky = $('.discography__sticky');
+    const progressOf = () => {
+      const r = section.getBoundingClientRect();
+      const range = section.offsetHeight - innerHeight;
+      return range > 0 ? Math.min(1, Math.max(0, -r.top / range)) : 0;
+    };
+    function onScroll() {
+      if (section.classList.contains('is-static')) return;
+      const p = progressOf();
+      section.style.setProperty('--disco-progress', p.toFixed(3));
+      paint(Math.min(years.length - 1, Math.floor(p * years.length)));
+    }
+    // 고정된 화면에 내용이 다 안 들어가면(작은 화면 높이) 고정 해제
+    function checkFit() {
+      section.classList.remove('is-static');
+      paint(Math.max(0, idx));
+      if (sticky.scrollHeight > innerHeight + 2) section.classList.add('is-static');
+      onScroll();
+    }
+    const goTo = (i) => {
+      i = (i + years.length) % years.length;
+      if (section.classList.contains('is-static')) return paint(i);
+      const range = section.offsetHeight - innerHeight;
+      const top = section.getBoundingClientRect().top + scrollY + range * ((i + 0.5) / years.length);
+      scrollTo({ top, behavior: 'smooth' });
+    };
+    $('[data-action="year-prev"]').addEventListener('click', () => goTo(idx - 1));
+    $('[data-action="year-next"]').addEventListener('click', () => goTo(idx + 1));
+    section.addEventListener('keydown', (e) => {
       if (e.target.closest('a, button:not([data-action^="year"])')) return;
-      if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
-      if (e.key === 'ArrowRight') { e.preventDefault(); go(1); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); goTo(idx - 1); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); goTo(idx + 1); }
     });
-    paint();
+    paint(0);
+    addEventListener('scroll', onScroll, { passive: true });
+    addEventListener('resize', checkFit);
+    checkFit();
   }
 
   /* ---------- index 렌더링 ---------- */
