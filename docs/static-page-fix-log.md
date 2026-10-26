@@ -62,3 +62,20 @@
 - 3D 로고 재질(유리 vs 크롬)과 조각 크기, 모바일 굴절 효과(현재 성능 때문에 끔)
 - 모바일 히어로 문장 크기 (폭 기준이라 위아래 여백이 큼)
 - 실제 GPU·실제 폰트 환경에서 프레임 확인
+
+
+---
+
+## 추가 수정: 사용자 피드백 2차 (2026-10-26)
+
+| # | 구분 | 내용 | 파일 |
+|---|---|---|---|
+| 19 | Critical | **예전 CSS가 브라우저 캐시에 남아 새 HTML과 섞임** → 인트로가 화면 위에 글자로만 표시, 히어로가 빈 빨간 화면. 원인: GitHub Pages `Cache-Control: max-age=600` + CSS·JS 주소에 버전 없음 | `index.html`, `artist.html` (모든 CSS·JS에 `?v=`) |
+| 20 | 변경 | 히어로 문장 'ABOVE / ORDINARY / MUSIC / GROUP' 4줄 | `index.html` |
+| 21 | 변경 | 3D 오브제를 사용자 제공 obj-bold.svg로 교체 (SVGLoader로 구멍 포함 입체화, 조각·회전 유지) | `js/logo3d.js`, `img/obj-bold.svg`, `js/vendor/SVGLoader.js` |
+| 22 | 변경 | 파비콘을 사용자 제공 logo_thin으로 (다크 모드 대응 + PNG 대체) | `img/favicon*`, `img/apple-touch-icon.png`, 두 HTML |
+| 23 | 변경 | 인트로 버튼 `[ ENTER ]` 하나 | `index.html`, `js/effects.js` |
+| 24 | Minor | 푸터 오브제가 소셜 링크 글자와 겹쳐 읽기 어려움 → 어두운 크롬으로 | `js/logo3d.js` |
+| 25 | 검사 도구 | 고정 시간 대기 → 조건 대기, 버전·파비콘·4줄 문장·단일 ENTER 검사 추가 | `tools/qa/interaction_check.py` |
+
+재검수: 정적 32회 0건, 동작 35개 시나리오 통과 (6회 중 5회 전부 통과, 1회는 소프트웨어 3D 환경의 클릭 대기 시간 초과로 재현 안 됨)
