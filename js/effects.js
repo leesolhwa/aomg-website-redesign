@@ -104,13 +104,22 @@
       let loaded = document.readyState === 'complete';
       addEventListener('load', () => { loaded = true; }, { once: true });
       const start = performance.now(), dur = 2400;
+      let typedN = -1, idleT = 0;
+      typedText.insertBefore(cursor, chars[0]);
       const tick = (now) => {
         const p = Math.min(loaded ? 1 : 0.99, (now - start) / dur);
         counter.textContent = String(Math.round(p * 100)).padStart(3, '0');
         const n = Math.round(p * TEXT.length);
-        chars.forEach((c, i) => c.classList.toggle('is-on', i < n));
+        if (n !== typedN) {
+          typedN = n;
+          chars.forEach((c, i) => c.classList.toggle('is-on', i < n));
+          // 커서는 방금 친 글자 바로 뒤로 (타자 치는 느낌). 치는 동안은 깜빡이지 않음
+          typedText.insertBefore(cursor, chars[n] || null);
+          cursor.classList.add('is-typing');
+          clearTimeout(idleT); idleT = setTimeout(() => cursor.classList.remove('is-typing'), 450);
+        }
         if (p < 1) requestAnimationFrame(tick);
-        else setTimeout(assemble, 300);
+        else setTimeout(assemble, 900); // 다 친 뒤 커서가 두어 번 깜빡이고 넘어감
       };
       requestAnimationFrame(tick);
     }
