@@ -307,7 +307,7 @@
 
 - 원본: 현재 AOMG 공식 사이트(aomgofficial.com, Squarespace CDN)
 - 목록·용도·원본 URL: `img/README.md`
-- 다운로드: `img/download-images.sh` 실행 (원본 주소 뒤에 `?format=2500w`를 붙여 고해상도로 받음)
+- 다운로드: GitHub Actions로 받아 WebP로 최적화 완료 (`img/README.md`)
 - 히어로용 16:9 키비주얼이 원본에 없음 → 생성하지 않고 **1:1 앨범 커버 + accent 배경 + 초대형 타이포** 구성으로 해결 (Kode처럼 타이포가 비주얼을 대신함)
 - 영상 썸네일은 원본이 480×360 저해상도 → 유튜브 영상 ID 확인 후 `maxresdefault.jpg`로 교체 *(needs-check)*
 
@@ -320,7 +320,7 @@
 - 모바일 섹션 패딩 실측값 (현재 데스크톱의 50% 임시)
 - 영상 썸네일 유튜브 ID
 - 공연 일정 데이터 (현재 공식 사이트는 페이스북 이벤트로 연결, 실제 일정 확인 필요)
-- `KVZ_DSCOVER.jpg`가 OXY_GEN EP 커버인지 (파일명 기준 추정)
+- ~~`KVZ_DSCOVER.jpg`가 OXY_GEN EP 커버인지~~ → 확인 완료 (커버에 OXY_GEN 표기)
 
 ### temporary
 accent #FF3B1F, focus-ring, 무료 대체 폰트 2종, readable-max 40em, card-gap-y 40px, heading-to-body 40px, body-to-cta 32px, 카드 패딩 0·hover, 이미지 비율(공연 4:5, 영상 16:9), 미니 플레이어 진행바 2px, detail-hero 구성, 상세 back-link

@@ -1,0 +1,202 @@
+/* AOMG Concept Redesign — style.css
+ * 기준: tokens.json, docs/reference-analysis.md, docs/prd.md
+ * 규칙: 색·크기는 아래 CSS 변수만 사용. hex·px 값을 직접 쓰지 않는다.
+ */
+
+/* ==== Tokens: tokens.json에서 자동 생성 (값을 직접 수정하지 말고 tokens.json을 고친 뒤 다시 생성) ==== */
+:root {
+  /* color */
+  --color-black: #000000; /* reference */
+  --color-white: #FFFFFF; /* reference */
+  --color-accent: #FF3B1F; /* temporary */
+  --color-bg: #000000; /* adjusted */
+  --color-bg-inverse: #FFFFFF; /* reference */
+  --color-bg-accent: #FF3B1F; /* temporary */
+  --color-text-on-dark: #FFFFFF; /* reference */
+  --color-text-on-light: #000000; /* reference */
+  --color-text-on-accent: #000000; /* adjusted */
+  --color-focus: #FFFFFF; /* temporary */
+  --artist-accent: #FF3B1F;
+  --artist-bg: #000000;
+  --artist-text: #FFFFFF;
+
+  /* font */
+  --font-display-en: "Instrument Serif", "Times New Roman", serif; /* temporary */
+  --font-sans-en: "Geist", "Helvetica Neue", Arial, sans-serif; /* temporary */
+  --font-ko: "Pretendard Variable", Pretendard, sans-serif; /* adjusted */
+  --fw-display: 400; /* decision-needed */
+  --fw-body: 400; /* reference */
+  --fw-ko-display: 700; /* temporary */
+
+  /* type scale: mobile (<390px) */
+  --fs-display-4: 60px;
+  --lh-display-4: 0.9;
+  --ls-display-4: -0.08em;
+  --fs-display-0: 60px;
+  --lh-display-0: 0.9;
+  --ls-display-0: normal;
+  --fs-display-1: 30px;
+  --lh-display-1: 0.9;
+  --ls-display-1: -0.08em;
+  --fs-display-3: 24px;
+  --lh-display-3: 0.9;
+  --ls-display-3: normal;
+  --fs-display-2: 22px;
+  --lh-display-2: 0.75;
+  --ls-display-2: normal;
+  --fs-body-3: 16px;
+  --lh-body-3: 0.75;
+  --ls-body-3: normal;
+  --fs-body-4: 16px;
+  --lh-body-4: 0.95;
+  --ls-body-4: normal;
+  --fs-body-6: 14px;
+  --lh-body-6: 0.95;
+  --ls-body-6: normal;
+  --fs-body-1: 14px;
+  --lh-body-1: 0.75;
+  --ls-body-1: normal;
+  --fs-body-5: 16px;
+  --lh-body-5: 0.75;
+  --ls-body-5: normal;
+  --fs-body-2: 12px;
+  --lh-body-2: 0.75;
+  --ls-body-2: normal;
+  --fs-paragraph-en: 16px;
+  --lh-paragraph-en: 1.2;
+  --ls-paragraph-en: normal;
+  --fs-ko-display: 40px;
+  --lh-ko-display: 1.1;
+  --ls-ko-display: -0.03em;
+  --fs-ko-title: 24px;
+  --lh-ko-title: 1.25;
+  --ls-ko-title: -0.02em;
+  --fs-ko-lead: 20px;
+  --lh-ko-lead: 1.45;
+  --ls-ko-lead: -0.02em;
+  --fs-ko-body: 15px;
+  --lh-ko-body: 1.65;
+  --ls-ko-body: -0.01em;
+  --fs-ko-caption: 13px;
+  --lh-ko-caption: 1.5;
+  --ls-ko-caption: 0;
+
+  /* layout */
+  --gutter-x: 10px;
+  --grid-cols: 6;
+  --grid-gap-x: 10px;
+  --grid-gap-y: 0px;
+  --card-gap-y: 40px; /* temporary */
+  --readable-max: 40em; /* temporary */
+  --section-screen: 100vh;
+
+  /* spacing: mobile = desktop × 0.5 (temporary) */
+  --section-pad-sm: 48px;
+  --section-pad-md: 56px;
+  --section-pad-lg: 64px;
+  --section-pad-end: 128px;
+  --section-inner-gap: 80px;
+  --space-heading-body: 40px; /* temporary */
+  --space-body-cta: 32px; /* temporary */
+  --space-card-text: 10px; /* adjusted */
+
+  /* component */
+  --header-h: 50px;
+  --player-h: 60px;
+  --radius: 0px;
+  --cta-bracket-gap: 0.3em;
+  --hit-area: 44px;
+
+  /* motion */
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-xs: 150ms;
+  --dur-sm: 200ms;
+  --dur-md: 300ms;
+  --dur-lg: 500ms;
+  --dur-xl: 1500ms;
+}
+
+@media screen and (min-width: 390px) {
+  :root {
+    --fs-display-4: calc(8px + 13.3333vw);
+    --fs-display-0: calc(37.7143px + 5.71429vw);
+    --fs-display-1: calc(18.8571px + 2.85714vw);
+    --fs-display-3: calc(20.2857px + 0.95238vw);
+    --fs-display-2: calc(17.5429px + 1.14286vw);
+    --fs-body-3: calc(13.7714px + 0.57143vw);
+    --fs-body-4: calc(15.2571px + 0.19048vw);
+    --fs-body-6: calc(12.5143px + 0.38095vw);
+    --fs-body-1: calc(13.2571px + 0.19048vw);
+    --fs-body-2: calc(11.2571px + 0.19048vw);
+    --fs-ko-display: calc(25.1429px + 3.80952vw);
+    --fs-ko-title: calc(18.4286px + 1.42857vw);
+    --fs-ko-lead: calc(17.7714px + 0.57143vw);
+    --fs-ko-body: calc(14.2571px + 0.19048vw);
+    --fs-ko-caption: calc(12.2571px + 0.19048vw);
+  }
+}
+
+@media (min-width: 768px) {
+  :root {
+    --gutter-x: 22px;
+    --grid-cols: 5;
+    --section-pad-sm: 96px;
+    --section-pad-md: 112px;
+    --section-pad-lg: 128px;
+    --section-pad-end: 256px;
+    --section-inner-gap: 160px;
+  }
+}
+
+@media screen and (min-width: 1440px) {
+  :root {
+    --fs-display-4: 200px;
+    --fs-display-0: 120px;
+    --fs-display-1: 60px;
+    --fs-display-3: 34px;
+    --fs-display-2: 34px;
+    --fs-body-3: 22px;
+    --fs-body-4: 18px;
+    --fs-body-6: 18px;
+    --fs-body-1: 16px;
+    --fs-body-5: 16px;
+    --fs-body-2: 14px;
+    --fs-paragraph-en: 16px;
+    --fs-ko-display: 80px;
+    --fs-ko-title: 39px;
+    --fs-ko-lead: 26px;
+    --fs-ko-body: 17px;
+    --fs-ko-caption: 15px;
+  }
+}
+
+
+/* ==== Base ==== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { background: var(--color-bg); color: var(--color-text-on-dark); scroll-behavior: smooth; scroll-padding-top: var(--header-h); -webkit-text-size-adjust: 100%; }
+body { font-family: var(--font-sans-en), var(--font-ko); font-weight: var(--fw-body); font-size: var(--fs-ko-body); line-height: var(--lh-ko-body); word-break: keep-all; padding-bottom: var(--player-h); }
+img, canvas, video { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+ul, ol { list-style: none; }
+:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+
+@view-transition { navigation: auto; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+/* ==== Utilities ==== */
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.skip-link { position: fixed; top: 0; left: var(--gutter-x); z-index: 100; transform: translateY(-100%); }
+.skip-link:focus { transform: none; }
+.m-only { display: inline; }
+@media (min-width: 768px) { .m-only { display: none; } }
+
+.container { padding-inline: var(--gutter-x); }
+.grid { display: grid; grid-template-columns: repeat(var(--grid-cols), 1fr); gap: var(--grid-gap-y) var(--grid-gap-x); }
+
+/* 1차 정적 페이지 제작 단계에서 섹션별 스타일을 이어서 작성 */
