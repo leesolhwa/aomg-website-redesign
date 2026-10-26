@@ -1,0 +1,259 @@
+/* AOMG Concept Redesign — logo3d.js (ES module)
+ * KODE 히어로의 3D 오브제를 AOMG 로고로 재구성
+ * - 드래그: 회전 (관성)
+ * - 누르고 있기: 조각으로 깨짐 → 놓으면 다시 모임
+ * - 미니 플레이어 비트(--beat)에 맞춰 조각이 미세하게 반응 (깜빡임 없음)
+ * - 히어로: 문장 텍스트를 같은 장면의 평면에 그려 유리(transmission) 굴절이 보이게 함
+ * - WebGL 실패 시 html에 .no-webgl → HTML 텍스트가 그대로 보임
+ */
+import * as THREE from 'three';
+import { RoomEnvironment } from './vendor/RoomEnvironment.js';
+import { Font } from './vendor/FontLoader.js';
+
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+
+let fontPromise = null;
+const loadFont = () => (fontPromise ||= fetch(new URL('./vendor/aomg-logo-font.json', import.meta.url)).then((r) => r.json()).then((j) => new Font(j)));
+
+/* ---------- 조각난 로고 지오메트리 ---------- */
+function buildShardGeometry(font, { size = 1, depth = 0.32, cell = 0.22 }) {
+  const shapes = font.generateShapes('AOMG', size);
+  const geo = new THREE.ExtrudeGeometry(shapes, {
+    depth, curveSegments: 10, bevelEnabled: true, bevelThickness: 0.06, bevelSize: 0.035, bevelSegments: 4,
+  }); // ExtrudeGeometry는 이미 non-indexed
+  geo.computeBoundingBox();
+  const c = new THREE.Vector3(); geo.boundingBox.getCenter(c);
+  geo.translate(-c.x, -c.y, -c.z);
+
+  const pos = geo.attributes.position;
+  const triCount = pos.count / 3;
+  const clusters = new Map(); // 격자 셀 → 삼각형 목록 (같은 셀의 앞·뒤·옆면이 한 조각으로 움직임)
+  const v = new THREE.Vector3();
+  for (let t = 0; t < triCount; t++) {
+    v.set(0, 0, 0);
+    for (let k = 0; k < 3; k++) v.add(new THREE.Vector3().fromBufferAttribute(pos, t * 3 + k));
+    v.divideScalar(3);
+    const key = `${Math.floor(v.x / cell)},${Math.floor(v.y / cell)}`;
+    if (!clusters.has(key)) clusters.set(key, []);
+    clusters.get(key).push(t);
+  }
+  const center = new Float32Array(pos.count * 3);
+  const dir = new Float32Array(pos.count * 3);
+  const rand = new Float32Array(pos.count * 4);
+  const tmp = new THREE.Vector3();
+  clusters.forEach((tris) => {
+    const cc = new THREE.Vector3();
+    tris.forEach((t) => { for (let k = 0; k < 3; k++) cc.add(tmp.fromBufferAttribute(pos, t * 3 + k)); });
+    cc.divideScalar(tris.length * 3);
+    const d = new THREE.Vector3(cc.x, cc.y, (Math.random() - 0.3) * 1.6).normalize();
+    d.x += (Math.random() - 0.5) * 0.6; d.y += (Math.random() - 0.5) * 0.6; d.normalize();
+    const axis = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
+    const speed = 0.6 + Math.random() * 0.8;
+    tris.forEach((t) => {
+      for (let k = 0; k < 3; k++) {
+        const i = t * 3 + k;
+        center.set([cc.x, cc.y, cc.z], i * 3);
+        dir.set([d.x, d.y, d.z], i * 3);
+        rand.set([axis.x, axis.y, axis.z, speed], i * 4);
+      }
+    });
+  });
+  geo.setAttribute('aCenter', new THREE.BufferAttribute(center, 3));
+  geo.setAttribute('aDir', new THREE.BufferAttribute(dir, 3));
+  geo.setAttribute('aRand', new THREE.BufferAttribute(rand, 4));
+  geo.computeBoundingSphere();
+  return geo;
+}
+
+function shatterMaterial(params, uniforms) {
+  const mat = new THREE.MeshPhysicalMaterial(params);
+  mat.onBeforeCompile = (shader) => {
+    Object.assign(shader.uniforms, uniforms);
+    shader.vertexShader = shader.vertexShader
+      .replace('#include <common>', `#include <common>
+        attribute vec3 aCenter; attribute vec3 aDir; attribute vec4 aRand;
+        uniform float uBreak; uniform float uBeat; uniform float uTime;
+        mat3 rotAxis(vec3 a, float r) { a = normalize(a); float s = sin(r), c = cos(r), o = 1.0 - c;
+          return mat3(o*a.x*a.x + c, o*a.x*a.y + a.z*s, o*a.z*a.x - a.y*s,
+                      o*a.x*a.y - a.z*s, o*a.y*a.y + c, o*a.y*a.z + a.x*s,
+                      o*a.z*a.x + a.y*s, o*a.y*a.z - a.x*s, o*a.z*a.z + c); }`)
+      .replace('#include <beginnormal_vertex>', `
+        float shardP = uBreak * aRand.w;
+        float jitter = uBeat * 0.06 * aRand.w;
+        mat3 shardR = rotAxis(aRand.xyz, shardP * 5.0 + jitter * 2.0);
+        vec3 objectNormal = shardR * vec3(normal);
+        #ifdef USE_TANGENT
+          vec3 objectTangent = shardR * vec3(tangent.xyz);
+        #endif`)
+      .replace('#include <begin_vertex>', `
+        vec3 transformed = shardR * (position - aCenter) + aCenter + aDir * (shardP * 2.2 + jitter);`);
+  };
+  return mat;
+}
+
+/* ---------- 문장 텍스트 평면 (히어로) ---------- */
+function drawStatementTexture(canvas, lines, w, h, bg, fg, area) {
+  const ctx = canvas.getContext('2d');
+  canvas.width = w; canvas.height = h;
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, w, h);
+  ctx.fillStyle = fg; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  const family = css('--font-display-en') || 'serif';
+  // KODE: 3줄이 화면 높이 대부분을 채움. 가장 긴 줄이 폭의 92%를 넘지 않게
+  const top0 = area ? area.top : 0, availH = area ? area.bottom - area.top : h;
+  let size = availH / (lines.length * 0.9);
+  ctx.font = `400 ${size}px ${family}`;
+  const widest = Math.max(...lines.map((l) => ctx.measureText(l).width));
+  if (widest > w * 0.92) size *= (w * 0.92) / widest;
+  ctx.font = `400 ${size}px ${family}`;
+  const lh = size * 0.9; // display-0 line-height 0.9
+  const top = top0 + availH / 2 - (lh * (lines.length - 1)) / 2;
+  lines.forEach((l, i) => ctx.fillText(l, w / 2, top + i * lh));
+}
+
+/* ---------- 장면 ---------- */
+export async function createLogoScene(canvas, opts = {}) {
+  const {
+    mode = 'hero',            // 'hero' | 'footer'
+    statement = null,         // ['INTERACT', 'WITH THE', 'BEAT']
+    interactive = true,
+    textArea = null,          // () => ({ top, bottom }) 캔버스 기준 px. 문장·로고를 이 영역 안에 배치
+  } = opts;
+
+  let renderer;
+  try {
+    renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: mode !== 'hero', powerPreference: 'high-performance' });
+  } catch (e) { document.documentElement.classList.add('no-webgl'); return null; }
+  const dpr = Math.min(window.devicePixelRatio || 1, finePointer ? 2 : 1.5);
+  renderer.setPixelRatio(dpr);
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.05;
+
+  const scene = new THREE.Scene();
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+
+  const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
+  camera.position.set(0, 0, 8);
+
+  const font = await loadFont();
+  const accent = new THREE.Color(css('--color-accent') || '#FF3B1F');
+  const uniforms = { uBreak: { value: 0 }, uBeat: { value: 0 }, uTime: { value: 0 } };
+  const useTransmission = mode === 'hero' && finePointer; // 모바일은 성능 때문에 굴절 끔
+  const material = shatterMaterial(mode === 'hero' ? {
+    color: accent, metalness: 0.05, roughness: 0.08, clearcoat: 1, clearcoatRoughness: 0.05,
+    transmission: useTransmission ? 0.92 : 0, thickness: 0.9, ior: 1.45, attenuationColor: accent, attenuationDistance: 0.8,
+    envMapIntensity: 1.4, side: THREE.DoubleSide,
+  } : {
+    color: 0xffffff, metalness: 1, roughness: 0.18, envMapIntensity: 1.2,
+  }, uniforms);
+
+  const logo = new THREE.Mesh(buildShardGeometry(font, { cell: mode === 'hero' ? 0.2 : 0.26 }), material);
+  const pivot = new THREE.Group(); pivot.add(logo); scene.add(pivot);
+
+  // 문장 평면 (히어로만): 같은 장면에 있어야 유리 굴절에 비침
+  let plane = null, textCanvas = null;
+  if (mode === 'hero' && statement) {
+    textCanvas = document.createElement('canvas');
+    const tex = new THREE.CanvasTexture(textCanvas);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    plane = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: tex, toneMapped: false }));
+    plane.position.z = -2.5;
+    scene.add(plane);
+  }
+
+  function fit() {
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    if (!w || !h) return;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h; camera.updateProjectionMatrix();
+    // 로고가 화면 폭의 약 46% (모바일 78%)를 차지하도록
+    const dist = camera.position.z;
+    const viewH = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * dist;
+    const viewW = viewH * camera.aspect;
+    const logoW = logo.geometry.boundingBox ? (logo.geometry.computeBoundingBox(), logo.geometry.boundingBox.max.x - logo.geometry.boundingBox.min.x) : 3;
+    const target = (mode === 'hero' ? (w < 768 ? 0.78 : 0.46) : (w < 768 ? 0.7 : 0.4)) * viewW;
+    const s = Math.min(target / logoW, (viewH * 0.55) / 1);
+    pivot.scale.setScalar(s);
+    // 로고를 문장 영역의 세로 중앙에
+    baseY = 0;
+    if (textArea) { const a = textArea(); baseY = -(((a.top + a.bottom) / 2) / h - 0.5) * viewH; }
+    if (plane) {
+      const pd = dist - plane.position.z;
+      const ph = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * pd;
+      plane.scale.set(ph * camera.aspect, ph, 1);
+      const pw = Math.round(w * dpr), phx = Math.round(h * dpr);
+      const a = textArea ? textArea() : null;
+      drawStatementTexture(textCanvas, statement, pw, phx, css('--color-bg-accent'), css('--color-text-on-accent'), a && { top: a.top * dpr, bottom: a.bottom * dpr });
+      plane.material.map.needsUpdate = true;
+    }
+  }
+
+  /* ---------- 조작 ---------- */
+  const rot = { x: 0.15, y: -0.35, vx: 0, vy: 0 };
+  let baseY = 0;
+  const pointer = { x: 0, y: 0 };
+  let dragging = false, holding = false, holdStart = 0, startX = 0, startY = 0, lastX = 0, lastY = 0;
+  let breakTarget = 0;
+  if (interactive) {
+    canvas.addEventListener('pointerdown', (e) => {
+      holding = true; dragging = false; holdStart = performance.now();
+      startX = lastX = e.clientX; startY = lastY = e.clientY;
+      canvas.setPointerCapture(e.pointerId);
+    });
+    canvas.addEventListener('pointermove', (e) => {
+      const r = canvas.getBoundingClientRect();
+      pointer.x = ((e.clientX - r.left) / r.width) * 2 - 1;
+      pointer.y = ((e.clientY - r.top) / r.height) * 2 - 1;
+      if (!holding) return;
+      if (!dragging && Math.hypot(e.clientX - startX, e.clientY - startY) > 6) dragging = true;
+      if (dragging) {
+        rot.vy = (e.clientX - lastX) * 0.008; rot.vx = (e.clientY - lastY) * 0.006;
+        rot.y += rot.vy; rot.x += rot.vx;
+        breakTarget = 0;
+      }
+      lastX = e.clientX; lastY = e.clientY;
+    });
+    const end = () => { holding = false; dragging = false; breakTarget = 0; };
+    canvas.addEventListener('pointerup', end);
+    canvas.addEventListener('pointercancel', end);
+    canvas.addEventListener('contextmenu', (e) => e.preventDefault()); // 길게 누르기 메뉴 방지
+  }
+
+  /* ---------- 루프 ---------- */
+  let visible = true, raf = 0, last = performance.now();
+  const io = new IntersectionObserver(([en]) => { visible = en.isIntersecting; if (visible && !raf) raf = requestAnimationFrame(loop); }, { threshold: 0 });
+  io.observe(canvas);
+  function loop(now) {
+    raf = 0;
+    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    uniforms.uTime.value += dt;
+    if (holding && !dragging && now - holdStart > 220) breakTarget = 1;
+    const b = uniforms.uBreak.value;
+    uniforms.uBreak.value += (breakTarget - b) * (breakTarget > b ? 0.09 : 0.06);
+    const beat = parseFloat(css('--beat')) || 0;
+    uniforms.uBeat.value += (beat - uniforms.uBeat.value) * 0.3;
+
+    if (!dragging) {
+      rot.vx *= 0.94; rot.vy *= 0.94;
+      rot.x += rot.vx; rot.y += rot.vy;
+      if (!reduceMotion) rot.y += dt * (mode === 'hero' ? 0.12 : 0.25); // 천천히 자동 회전
+      rot.x += ((pointer.y * 0.25 + 0.1) - rot.x) * 0.02;              // 포인터 방향으로 살짝 기울기
+    }
+    pivot.rotation.set(rot.x, rot.y, Math.sin(uniforms.uTime.value * 0.5) * 0.04);
+    pivot.position.y = baseY + (reduceMotion ? 0 : Math.sin(uniforms.uTime.value * 0.8) * 0.05);
+    // 인트로가 화면을 덮고 있는 동안은 그리지 않음 (보이지 않는 프레임에 GPU를 쓰지 않게)
+    if (!document.documentElement.classList.contains('is-intro')) renderer.render(scene, camera);
+    if (visible && !(reduceMotion && Math.abs(breakTarget - b) < 0.001 && !holding && !dragging)) raf = requestAnimationFrame(loop);
+  }
+
+  const ro = new ResizeObserver(() => { fit(); if (!raf) raf = requestAnimationFrame(loop); });
+  ro.observe(canvas);
+  if (document.fonts) await document.fonts.ready;
+  fit();
+  raf = requestAnimationFrame(loop);
+  canvas.classList.add('is-ready');
+  return { renderer, uniforms };
+}

@@ -35,3 +35,30 @@
 | 카피 | 영상 제목, KEY BEATS·TRUST ME 등 일부 발매일, 이미주 소개 (`[needs-check]`, 화면 미노출) |
 | 실제 폰트 확인 | 배포 후 실제 브라우저에서 Instrument Serif·Geist·Pretendard로 최종 확인 |
 | 14단계 인터랙션 | 발매 기록 스크롤 고정 연도 전환, 메인 → 상세 사진 전환 효과 실기기 확인 |
+
+
+---
+
+## 추가 수정: KODE 인터랙션 복원 (2026-10-26)
+
+| # | 구분 | 내용 | 파일 |
+|---|---|---|---|
+| 9 | 기능 추가 | 인트로 (카운터·타이핑·AOMG·ENTER 2종, 포커스 가둠, 세션 재방문 생략) | `index.html`, `js/effects.js`, `css/style.css` |
+| 10 | 기능 추가 | 히어로 3D 유리 AOMG 로고 (드래그 회전, 누르면 조각, 비트 반응, 문장 굴절) | `js/logo3d.js`, `js/vendor/*`, `index.html`, `css/style.css` |
+| 11 | 기능 추가 | 발매 기록 스크롤 고정 (300vh, 진행 막대, 안 들어가면 고정 해제) | `js/script.js`, `index.html`, `css/style.css` |
+| 12 | 기능 추가 | 긁어서 드러나는 공연 포스터 + REVEAL 버튼 | `js/effects.js`, `index.html`, `css/style.css` |
+| 13 | 기능 추가 | 마우스 트레일, 푸터 크롬 3D 로고 | `js/effects.js`, `js/logo3d.js`, `index.html`, `artist.html` |
+| 14 | Major | 긁기 버튼 탐색 오류로 스크립트 중단 | `js/effects.js` |
+| 15 | Major | 하단 릴리즈 정보와 문장 겹침 | `css/style.css`, `js/logo3d.js`, `index.html` |
+| 16 | Major | 발매 기록 고정 해제 (1440×900, 모바일) | `css/style.css` |
+| 17 | Major | 인트로 중 3D 렌더링으로 메인 스레드 점유 | `js/logo3d.js` |
+| 18 | Minor | 경고 2건 (toNonIndexed, willReadFrequently) | `js/logo3d.js`, `js/effects.js` |
+
+### Defer에서 해소된 항목
+- 레퍼런스 대비 몰입감 부족 → 인트로·3D 히어로로 해소
+- 발매 기록 스크롤 고정 → 구현
+
+### 새 Defer (13단계)
+- 3D 로고 재질(유리 vs 크롬)과 조각 크기, 모바일 굴절 효과(현재 성능 때문에 끔)
+- 모바일 히어로 문장 크기 (폭 기준이라 위아래 여백이 큼)
+- 실제 GPU·실제 폰트 환경에서 프레임 확인

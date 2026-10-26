@@ -8,6 +8,7 @@
   <meta name="description" content="키비츠의 첫 EP [OXY_GEN]부터 AOMG 아티스트 10팀의 음악과 공연, 소식까지. (비공식 컨셉 리디자인)">
   <script>
     document.documentElement.classList.add('js');
+    try { if (sessionStorage.getItem('aomg-entered') === '1') document.documentElement.classList.add('intro-seen'); } catch (e) {}
     // 페이지 전환(View Transition)이 브라우저에서 취소될 때의 Promise 거부를 처리 → 콘솔 오류 방지
     ['pageswap', 'pagereveal'].forEach(function (t) {
       addEventListener(t, function (e) {
@@ -22,9 +23,22 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <link rel="preload" as="image" href="img/release-keyveatz-oxygen.webp">
   <link rel="stylesheet" href="css/style.css">
+  <script type="importmap">{ "imports": { "three": "./js/vendor/three.module.min.js" } }</script>
 </head>
 <body class="page-home">
   <a class="skip-link" href="#main" data-copy="skip">본문으로 건너뛰기</a>
+
+  <!-- ===== Intro (KODE 프리로더의 AOMG 버전) ===== -->
+  <div class="intro" id="intro" role="dialog" aria-modal="true" aria-label="AOMG 입장">
+    <p class="intro__counter" aria-hidden="true">000</p>
+    <p class="intro__typed" aria-hidden="true"><span class="intro__text"></span><span class="intro__cursor"></span></p>
+    <p class="intro__logo" hidden>AOMG</p>
+    <div class="intro__actions" hidden>
+      <button class="cta" type="button" data-action="enter-sound" aria-label="소리와 함께 입장"><span class="cta__label" data-copy="intro.enterSound">ENTER WITH SOUND</span></button>
+      <button class="cta" type="button" data-action="enter" aria-label="소리 없이 입장"><span class="cta__label" data-copy="intro.enter">ENTER</span></button>
+      <p class="intro__note" data-copy="intro.note">소리와 함께 들어가면 비트에 맞춰 화면이 반응해요.</p>
+    </div>
+  </div>
 
   <!-- ===== GNB (공통) ===== -->
   <header class="gnb container" id="gnb" data-tone="on-accent">
@@ -45,19 +59,22 @@
 
   <main id="main">
     <!-- ===== #hero: Immersive Hero ===== -->
-    <section class="hero container grid surface-accent" id="hero" data-tone="on-accent" aria-labelledby="hero-title">
-      <figure class="hero__cover">
-        <img src="img/release-keyveatz-oxygen.webp" alt="OXY_GEN 앨범 커버" width="1200" height="1200" fetchpriority="high">
-      </figure>
-      <div class="hero__body">
-        <p class="hero__label" data-copy="hero.label">KEYVEATZ <span aria-hidden="true">—</span> 1ST EP</p>
-        <h1 class="hero__title" id="hero-title" data-copy="hero.title">OXY_GEN</h1>
-        <p class="hero__date"><time datetime="2026-06-30" data-copy="hero.date">2026.06.30</time></p>
-        <p class="hero__subtitle" data-copy="hero.subtitle">AOMG의 새 걸크루,<br class="m-only"> 키비츠의 첫 EP.</p>
-        <p class="hero__text" data-copy="hero.body">소리를 켜면<br class="m-only"> 화면이 비트에 반응해요.</p>
-        <div class="hero__cta cta-row">
-          <button class="cta" type="button" data-action="audio-toggle" aria-pressed="false" aria-label="소리 켜기"><span class="cta__label" data-copy="hero.cta.audio">AUDIO ON</span></button>
-          <a class="cta" href="https://open.spotify.com/artist/6f8BfBKDA1P0yLj6uAmLLF" target="_blank" rel="noopener" aria-label="OXY_GEN 스트리밍에서 듣기, 새 창"><span class="cta__label" data-copy="hero.cta.listen">LISTEN</span></a>
+    <section class="hero surface-accent" id="hero" data-tone="on-accent" aria-labelledby="hero-title">
+      <canvas class="hero__canvas" id="hero-canvas" aria-hidden="true"></canvas>
+      <h1 class="hero__statement" id="hero-title" data-copy="hero.statement"><span>INTERACT</span> <span>WITH THE</span> <span>BEAT</span></h1>
+      <p class="hero__hint"><span lang="en">DRAG TO ROTATE · HOLD TO BREAK</span><span class="hero__hint-ko" data-copy="hero.hint">드래그하면 돌아가고, 누르고 있으면 깨져요.</span></p>
+      <div class="hero__release container">
+        <figure class="hero__cover">
+          <img src="img/release-keyveatz-oxygen.webp" alt="OXY_GEN 앨범 커버" width="1200" height="1200" fetchpriority="high">
+        </figure>
+        <div class="hero__body">
+          <p class="hero__label" data-copy="hero.label">KEYVEATZ <span aria-hidden="true">—</span> 1ST EP · <time datetime="2026-06-30" data-copy="hero.date">2026.06.30</time></p>
+          <p class="hero__title" data-copy="hero.title">OXY_GEN</p>
+          <p class="hero__subtitle" data-copy="hero.subtitle">AOMG의 새 걸크루,<br class="m-only"> 키비츠의 첫 EP.</p>
+          <div class="hero__cta cta-row">
+            <button class="cta" type="button" data-action="audio-toggle" aria-pressed="false" aria-label="소리 켜기"><span class="cta__label" data-copy="hero.cta.audio">AUDIO ON</span></button>
+            <a class="cta" href="https://open.spotify.com/artist/6f8BfBKDA1P0yLj6uAmLLF" target="_blank" rel="noopener" aria-label="OXY_GEN 스트리밍에서 듣기, 새 창"><span class="cta__label" data-copy="hero.cta.listen">LISTEN</span></a>
+          </div>
         </div>
       </div>
     </section>
@@ -89,22 +106,30 @@
     </section>
 
     <!-- ===== #discography: Discography Wall ===== -->
-    <section class="discography container surface-light" id="discography" data-tone="on-light" aria-labelledby="disco-title">
+    <section class="discography surface-light" id="discography" data-tone="on-light" aria-labelledby="disco-title">
+      <div class="discography__sticky container">
       <h2 class="section-title" id="disco-title" data-reveal><span data-copy="discography.title">RELEASES</span> <span class="section-caption" data-copy="discography.caption">연도별 발매 기록</span></h2>
       <p class="section-subtitle" data-copy="discography.subtitle" data-reveal>AOMG의 앨범을<br class="m-only"> 연도별로 넘겨본다.</p>
       <div class="discography__panel" data-render="discography" aria-live="polite"></div>
+      <div class="discography__progress" aria-hidden="true"></div>
       <div class="discography__controls">
         <button class="cta" type="button" data-action="year-prev" aria-label="이전 연도"><span class="cta__label">PREV</span></button>
         <span class="discography__count" data-render="year-count" aria-hidden="true"></span>
         <button class="cta" type="button" data-action="year-next" aria-label="다음 연도"><span class="cta__label">NEXT</span></button>
       </div>
+      </div>
     </section>
 
     <!-- ===== #live: Live Pulse ===== -->
     <section class="live container grid surface-dark" id="live" data-tone="on-dark" aria-labelledby="live-title">
-      <figure class="live__poster" data-reveal>
-        <img src="img/news-keyveatz-messygirls.webp" alt="키비츠 홍보 이미지" loading="lazy" width="800" height="1000">
-      </figure>
+      <div class="live__poster" data-reveal>
+        <figure class="scratch" data-scratch>
+          <img src="img/news-keyveatz-messygirls.webp" alt="키비츠 홍보 이미지" loading="lazy" width="800" height="1000">
+          <canvas class="scratch__canvas" aria-hidden="true"></canvas>
+        </figure>
+        <p class="scratch__hint"><span data-copy="live.scratchHint">긁어서 포스터를 확인해 보세요.</span>
+          <button class="cta" type="button" data-action="reveal" aria-label="포스터 바로 보기"><span class="cta__label" data-copy="live.reveal">REVEAL</span></button></p>
+      </div>
       <div class="live__body" data-reveal>
         <h2 class="section-title" id="live-title"><span data-copy="live.title">LIVE</span> <span class="section-caption" data-copy="live.caption">공연 일정</span></h2>
         <p class="section-subtitle" data-copy="live.subtitle">날짜와 장소, 예매 링크를 한곳에서 확인한다.</p>
@@ -126,6 +151,7 @@
 
   <!-- ===== Footer (공통) ===== -->
   <footer class="footer container grid" id="contact" data-tone="on-dark">
+    <canvas class="footer__canvas" id="footer-canvas" aria-hidden="true"></canvas>
     <div class="footer__info">
       <p class="footer__logo">AOMG</p>
       <p data-copy="footer.about.ko">AOMG는 2013년 설립된 힙합·R&amp;B 레이블이자 아티스트 매니지먼트 회사다. 레이블 투어와 월드 투어, 방송, 스포츠까지 활동 영역을 넓혀 왔다.</p>
@@ -161,5 +187,20 @@
   <script src="js/data.js"></script>
   <script src="js/player.js"></script>
   <script src="js/script.js"></script>
+  <script src="js/effects.js"></script>
+  <script type="module">
+    import { createLogoScene } from './js/logo3d.js';
+    const hero = document.getElementById('hero-canvas');
+    const heroEl = document.getElementById('hero');
+    const textArea = () => {
+      const h = heroEl.getBoundingClientRect(), gnb = document.getElementById('gnb').offsetHeight;
+      const rel = heroEl.querySelector('.hero__release').getBoundingClientRect();
+      return { top: gnb, bottom: rel.top - h.top };
+    };
+    createLogoScene(hero, { mode: 'hero', statement: ['INTERACT', 'WITH THE', 'BEAT'], textArea })
+      .then((s) => { if (s) document.getElementById('hero').classList.add('is-3d'); })
+      .catch(() => document.documentElement.classList.add('no-webgl'));
+    createLogoScene(document.getElementById('footer-canvas'), { mode: 'footer', interactive: false }).catch(() => {});
+  </script>
 </body>
 </html>

@@ -6,6 +6,8 @@
 
 ## 0. 확정 사항
 
+> **2026-10-26 사용자 결정:** 레퍼런스(KODE)의 핵심 인터랙션을 복원한다 — 인트로(타이핑 → 로고 → ENTER), 히어로 3D AOMG 로고(드래그 회전·누르면 깨짐), 스크롤 고정 발매 기록, 마우스 트레일, 긁어서 드러나는 포스터, 푸터 3D. 이전 문서에서 '가져오지 않음/범위 밖'으로 적었던 결정을 이 결정으로 대체한다.
+
 | 항목 | 결정 |
 |---|---|
 | 제작 범위 | **2페이지**: 메인(`index.html`) + 아티스트 상세(`artist.html`) |
@@ -14,6 +16,8 @@
 | 배포 | GitHub Pages |
 | 사운드 | Web Audio API (`AnalyserNode` + Canvas) |
 | 페이지 전환 | View Transitions API (cross-document). 미지원 브라우저는 일반 이동 |
+| 3D | Three.js r160 (`js/vendor/`에 포함, CDN 없음). 히어로·푸터 AOMG 로고 |
+| 인트로 | index 첫 방문 시 카운터 + 'ABOVE ORDINARY MUSIC GROUP' 타이핑 → 'AOMG' → `[ ENTER WITH SOUND ]` / `[ ENTER ]`. 같은 세션 재방문 시 생략 |
 | 성격 | 비공식 컨셉 리디자인 · 비상업적 포트폴리오 |
 
 ### 파일 구조 (고정)
@@ -26,7 +30,10 @@
 ├── js/
 │   ├── data.js        아티스트·릴리즈·영상·공연·뉴스 데이터
 │   ├── player.js      오디오 엔진, 미니 플레이어, 비주얼라이저
-│   └── script.js      GNB, 섹션 인터랙션, 상세페이지 렌더링
+│   ├── script.js      GNB, 섹션 인터랙션, 상세페이지 렌더링
+│   ├── effects.js     인트로, 긁기 포스터, 마우스 트레일
+│   ├── logo3d.js      3D AOMG 로고 (ES module)
+│   └── vendor/        three.module.min.js, RoomEnvironment.js, FontLoader.js, aomg-logo-font.json
 ├── img/               기존 AOMG 이미지 (img/README.md 참고)
 ├── audio/             데모 음원 (7장)
 ├── reference-analysis.md
@@ -151,7 +158,7 @@ artist.html?id={slug} (Artist Detail, 기본값 keyveatz)
 | 섹션 (id) | 섹션 역할 | 필요한 섹션 구성 | 필요한 이미지 | 필요한 카피 | 적용할 tokens.json 항목 | 완료 기준 |
 |---|---|---|---|---|---|---|
 | GNB | 섹션 이동 | 좌: 로고 / 우: 메뉴 5개. 모바일은 `[ MENU ]` 버튼 → 전체 화면 메뉴 | logo-aomg.webp | 메뉴명 5개 | component.header, typography.scale.body-1 | 상단 50px 고정, 앵커 이동 시 섹션 제목이 가려지지 않음 |
-| `#hero` | 최신 릴리즈 1건 인지 | 100vh, accent 배경. 5열 중 2열: 1:1 커버 / 3열: 릴리즈명, 아티스트, 발매일, 한글 서브타이틀, `[ AUDIO ON ]` `[ LISTEN ]` | release-keyveatz-oxygen.webp | 릴리즈명(영문), 아티스트명, 발매일, 서브타이틀(한글 1~2문장), CTA 2개 | color.bg-accent, color.text-on-accent, display-0, ko-lead, layout.grid-columns, layout.section-min-height | 첫 화면에 릴리즈명·아티스트·CTA가 스크롤 없이 보임. 텍스트는 HTML |
+| `#hero` | 레이블 컨셉 + 최신 릴리즈 1건 인지 | 100svh, accent 배경, 전체 3D 캔버스. 중앙: 문장 'INTERACT / WITH THE / BEAT' + 유리 AOMG 3D 로고. 하단 정보 줄: 커버 + 'KEYVEATZ — 1ST EP · 2026.06.30' + OXY_GEN + 서브타이틀 + `[ AUDIO ON ]` `[ LISTEN ]`. 조작 안내 문구 | release-keyveatz-oxygen.webp | 문장, 조작 안내(영/한), 라벨, 릴리즈명, 서브타이틀, CTA 2개 | color.bg-accent, display-4(문장), display-3(릴리즈명), body-2, ko-caption | 입장 직후 첫 화면에 릴리즈명·CTA 보임. 드래그 회전·누르면 깨짐·놓으면 복원. WebGL 불가 시 HTML 문장 표시 |
 | `#now-playing` | 미리듣기 + 비주얼라이저 | 100vh, 검정. 2열: 커버 + 트랙 목록(3곡) / 3열: 비주얼라이저 canvas + 현재 트랙명 + 재생 버튼 | release-keyveatz-oxygen.webp, release-keyveatz-keybeats.webp | 섹션 제목, 트랙명 3개, 무음 안내 문구 | display-1, display-3, body-1, color.accent | 트랙 클릭 시 재생·미니 플레이어 갱신. 무음 상태에서도 정적 파형과 트랙 정보가 보임 |
 | `#artists` | 아티스트 발견 → 상세 이동 | 패딩 128px. 영문 아티스트명 10개를 display-0 양쪽 정렬로 나열. hover/focus 시 1:1 프로필 표시 | artist-*.webp 10장 | 섹션 제목, 아티스트 영문명·한글명 10개 | display-0, display-1, ko-caption, spacing.section-pad-lg, component.artist-name-list, image.artist-profile | 10개 이름이 모두 링크. 키보드 Tab으로 이동 가능. 터치 기기는 이름 아래 작은 썸네일 표시 |
 | `#discography` | 연도별 릴리즈 탐색 | 흰색 배경, 스크롤 고정(최대 300vh). 좌: display-4 연도 숫자 / 우: 해당 연도 1:1 커버 그리드. `[ PREV ]` `[ NEXT ]` | release-*.webp | 섹션 제목, 연도, 릴리즈명·아티스트·발매일 | color.bg-inverse, display-4, body-4, component.pinned-counter, image.release-cover | 연도 전환이 스크롤·버튼·키보드 화살표로 모두 동작. reduced-motion에서는 고정 해제, 연도별 목록으로 표시 |
@@ -337,12 +344,18 @@ artist.html?id={slug} (Artist Detail, 기본값 keyveatz)
 - [ ] 버튼 터치 영역 44px 이상
 - [ ] GNB 메뉴 버튼으로 전체 메뉴 열림
 
-### 1차 구현에서 다음 단계로 넘긴 항목 (2026-10-26)
-- Discography 스크롤 고정(pin) 연도 전환 → 14단계 인터랙션 고도화. 1차는 `[ PREV ] [ NEXT ]`·화살표 키로 전환
+### KODE 인터랙션 복원 (2026-10-26, 사용자 결정)
+| 위치 | 구현 |
+|---|---|
+| 인트로 (index) | 검정 화면, 상단 카운터 000→100(로딩 진행), 커서 타이핑 → AOMG → ENTER 2종. 포커스 가둠, Esc = 소리 없이 입장, 동작 줄이기 = 즉시 버튼 |
+| `#hero` | 화면 전체 3D 캔버스. 초대형 문장 'INTERACT / WITH THE / BEAT'를 3D 장면 평면에 그려 유리 로고 굴절에 비침(HTML h1은 스크린리더용 유지). 하단 작은 정보 줄: 커버 + KEYVEATZ — 1ST EP · 날짜 + OXY_GEN + 서브타이틀 + AUDIO ON / LISTEN. 드래그 회전, 누르고 있으면 조각, 놓으면 복원, 비트에 미세 반응 |
+| `#discography` | 섹션 높이 300vh, 안쪽 화면 고정. 스크롤 진행도로 연도 전환 + 진행 막대. PREV/NEXT·화살표 키는 해당 위치로 스크롤. 화면 높이에 안 들어가면 고정 해제 |
+| `#live` | 포스터를 accent 막으로 덮고 긁으면(마우스는 올리기만, 터치는 누른 채) 드러남. 45% 이상 지우면 전체 공개. `[ REVEAL ]` 버튼 |
+| 공통 | 마우스 트레일(마우스 환경만, 배경 톤에 맞춰 검정/흰색). 푸터 배경 크롬 3D 로고(보일 때만 렌더링) |
 - 실제 데모 음원 파일 → 없을 때 Web Audio 합성 비트로 동작 (구현 완료)
 
 ### 범위 밖 (이번에 하지 않음)
-다국어 전환, CMS, 실제 예매·결제, 뉴스레터 가입, 3D(WebGL) 오브젝트, 커서 트레일
+다국어 전환, CMS, 실제 예매·결제, 뉴스레터 가입, AR
 
 ---
 
