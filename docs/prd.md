@@ -150,26 +150,26 @@ artist.html?id={slug} (Artist Detail, 기본값 keyveatz)
 
 | 섹션 (id) | 섹션 역할 | 필요한 섹션 구성 | 필요한 이미지 | 필요한 카피 | 적용할 tokens.json 항목 | 완료 기준 |
 |---|---|---|---|---|---|---|
-| GNB | 섹션 이동 | 좌: 로고 / 우: 메뉴 5개. 모바일은 `[ MENU ]` 버튼 → 전체 화면 메뉴 | logo-aomg.png | 메뉴명 5개 | component.header, typography.scale.body-1 | 상단 50px 고정, 앵커 이동 시 섹션 제목이 가려지지 않음 |
-| `#hero` | 최신 릴리즈 1건 인지 | 100vh, accent 배경. 5열 중 2열: 1:1 커버 / 3열: 릴리즈명, 아티스트, 발매일, 한글 서브타이틀, `[ AUDIO ON ]` `[ LISTEN ]` | release-keyveatz-oxygen.jpg | 릴리즈명(영문), 아티스트명, 발매일, 서브타이틀(한글 1~2문장), CTA 2개 | color.bg-accent, color.text-on-accent, display-0, ko-lead, layout.grid-columns, layout.section-min-height | 첫 화면에 릴리즈명·아티스트·CTA가 스크롤 없이 보임. 텍스트는 HTML |
-| `#now-playing` | 미리듣기 + 비주얼라이저 | 100vh, 검정. 2열: 커버 + 트랙 목록(3곡) / 3열: 비주얼라이저 canvas + 현재 트랙명 + 재생 버튼 | release-keyveatz-oxygen.jpg, release-keyveatz-keybeats.jpg | 섹션 제목, 트랙명 3개, 무음 안내 문구 | display-1, display-3, body-1, color.accent | 트랙 클릭 시 재생·미니 플레이어 갱신. 무음 상태에서도 정적 파형과 트랙 정보가 보임 |
-| `#artists` | 아티스트 발견 → 상세 이동 | 패딩 128px. 영문 아티스트명 10개를 display-0 양쪽 정렬로 나열. hover/focus 시 1:1 프로필 표시 | artist-*.jpg 10장 | 섹션 제목, 아티스트 영문명·한글명 10개 | display-0, display-1, ko-caption, spacing.section-pad-lg, component.artist-name-list, image.artist-profile | 10개 이름이 모두 링크. 키보드 Tab으로 이동 가능. 터치 기기는 이름 아래 작은 썸네일 표시 |
-| `#discography` | 연도별 릴리즈 탐색 | 흰색 배경, 스크롤 고정(최대 300vh). 좌: display-4 연도 숫자 / 우: 해당 연도 1:1 커버 그리드. `[ PREV ]` `[ NEXT ]` | release-*.jpg | 섹션 제목, 연도, 릴리즈명·아티스트·발매일 | color.bg-inverse, display-4, body-4, component.pinned-counter, image.release-cover | 연도 전환이 스크롤·버튼·키보드 화살표로 모두 동작. reduced-motion에서는 고정 해제, 연도별 목록으로 표시 |
-| `#live` | 공연 확인 → 예매 | 패딩 96px. 2열: 4:5 포스터 / 3열: 공연 목록(날짜·도시·장소·상태·`[ TICKETS ]`) | news-keyveatz-messygirls.jpg (포스터 대체) | 섹션 제목, 공연명, 날짜, 장소, 상태 라벨, 공연 없을 때 문구 | spacing.section-pad-sm, body-6, image.live-poster | 날짜·장소·예매 링크가 모션 없이 즉시 읽힘. 예시 데이터는 화면에 "예시" 표시 |
-| `#news` | 최근 소식 | 패딩 112px 0 256px. 5열(모바일 2열) 4:5 카드 4개 | news-*.jpg 4장 | 섹션 제목, 뉴스 제목 4개, 날짜, 분류 라벨 | spacing.section-pad-md, spacing.section-pad-end, component.card, image.news-poster | 카드 클릭 시 원문(공식 SNS) 새 탭 |
-| `#contact` Footer | 레이블 정보·문의 | 100vh, 검정. 좌: 레이블 소개(한/영) / 우: 대형 링크(INSTAGRAM, YOUTUBE, FACEBOOK, SOUNDCLOUD), 이메일, 면책 문구 | logo-aomg.png | 레이블 소개, 이메일, 면책 문구, 저작권 | component.footer, display-2, body-6 | 하단 미니 플레이어에 가려지는 내용 없음 |
-| 미니 플레이어 | 전역 재생 제어 | 하단 60px 고정, 3열: 로고 / 트랙 정보·재생·진행바 / `[ AUDIO ON ]` | logo-aomg.png | 기본 문구("재생 중인 곡 없음") | component.mini-player | 모든 섹션에서 보임, 키보드로 조작 가능 |
+| GNB | 섹션 이동 | 좌: 로고 / 우: 메뉴 5개. 모바일은 `[ MENU ]` 버튼 → 전체 화면 메뉴 | logo-aomg.webp | 메뉴명 5개 | component.header, typography.scale.body-1 | 상단 50px 고정, 앵커 이동 시 섹션 제목이 가려지지 않음 |
+| `#hero` | 최신 릴리즈 1건 인지 | 100vh, accent 배경. 5열 중 2열: 1:1 커버 / 3열: 릴리즈명, 아티스트, 발매일, 한글 서브타이틀, `[ AUDIO ON ]` `[ LISTEN ]` | release-keyveatz-oxygen.webp | 릴리즈명(영문), 아티스트명, 발매일, 서브타이틀(한글 1~2문장), CTA 2개 | color.bg-accent, color.text-on-accent, display-0, ko-lead, layout.grid-columns, layout.section-min-height | 첫 화면에 릴리즈명·아티스트·CTA가 스크롤 없이 보임. 텍스트는 HTML |
+| `#now-playing` | 미리듣기 + 비주얼라이저 | 100vh, 검정. 2열: 커버 + 트랙 목록(3곡) / 3열: 비주얼라이저 canvas + 현재 트랙명 + 재생 버튼 | release-keyveatz-oxygen.webp, release-keyveatz-keybeats.webp | 섹션 제목, 트랙명 3개, 무음 안내 문구 | display-1, display-3, body-1, color.accent | 트랙 클릭 시 재생·미니 플레이어 갱신. 무음 상태에서도 정적 파형과 트랙 정보가 보임 |
+| `#artists` | 아티스트 발견 → 상세 이동 | 패딩 128px. 영문 아티스트명 10개를 display-0 양쪽 정렬로 나열. hover/focus 시 1:1 프로필 표시 | artist-*.webp 10장 | 섹션 제목, 아티스트 영문명·한글명 10개 | display-0, display-1, ko-caption, spacing.section-pad-lg, component.artist-name-list, image.artist-profile | 10개 이름이 모두 링크. 키보드 Tab으로 이동 가능. 터치 기기는 이름 아래 작은 썸네일 표시 |
+| `#discography` | 연도별 릴리즈 탐색 | 흰색 배경, 스크롤 고정(최대 300vh). 좌: display-4 연도 숫자 / 우: 해당 연도 1:1 커버 그리드. `[ PREV ]` `[ NEXT ]` | release-*.webp | 섹션 제목, 연도, 릴리즈명·아티스트·발매일 | color.bg-inverse, display-4, body-4, component.pinned-counter, image.release-cover | 연도 전환이 스크롤·버튼·키보드 화살표로 모두 동작. reduced-motion에서는 고정 해제, 연도별 목록으로 표시 |
+| `#live` | 공연 확인 → 예매 | 패딩 96px. 2열: 4:5 포스터 / 3열: 공연 목록(날짜·도시·장소·상태·`[ TICKETS ]`) | news-keyveatz-messygirls.webp (포스터 대체) | 섹션 제목, 공연명, 날짜, 장소, 상태 라벨, 공연 없을 때 문구 | spacing.section-pad-sm, body-6, image.live-poster | 날짜·장소·예매 링크가 모션 없이 즉시 읽힘. 예시 데이터는 화면에 "예시" 표시 |
+| `#news` | 최근 소식 | 패딩 112px 0 256px. 5열(모바일 2열) 4:5 카드 4개 | news-*.webp 4장 | 섹션 제목, 뉴스 제목 4개, 날짜, 분류 라벨 | spacing.section-pad-md, spacing.section-pad-end, component.card, image.news-poster | 카드 클릭 시 원문(공식 SNS) 새 탭 |
+| `#contact` Footer | 레이블 정보·문의 | 100vh, 검정. 좌: 레이블 소개(한/영) / 우: 대형 링크(INSTAGRAM, YOUTUBE, FACEBOOK, SOUNDCLOUD), 이메일, 면책 문구 | logo-aomg.webp | 레이블 소개, 이메일, 면책 문구, 저작권 | component.footer, display-2, body-6 | 하단 미니 플레이어에 가려지는 내용 없음 |
+| 미니 플레이어 | 전역 재생 제어 | 하단 60px 고정, 3열: 로고 / 트랙 정보·재생·진행바 / `[ AUDIO ON ]` | logo-aomg.webp | 기본 문구("재생 중인 곡 없음") | component.mini-player | 모든 섹션에서 보임, 키보드로 조작 가능 |
 
 ### 4-2. artist.html
 
 | 섹션 (id) | 섹션 역할 | 필요한 섹션 구성 | 필요한 이미지 | 필요한 카피 | 적용할 tokens.json 항목 | 완료 기준 |
 |---|---|---|---|---|---|---|
-| `#artist-hero` | 아티스트 정체성 | 100vh. 2열: 1:1 프로필 / 3열: 영문명(display-0), 한글명, 소속 표기, `[ BACK TO ARTISTS ]`. 아티스트 테마 색 적용 | artist-keyveatz.jpg | 영문명, 한글명, 한 줄 소개 | component.detail-hero, component.artist-theme, display-0 | 메인에서 이동 시 프로필 이미지가 이어지는 전환(지원 브라우저) |
+| `#artist-hero` | 아티스트 정체성 | 100vh. 2열: 1:1 프로필 / 3열: 영문명(display-0), 한글명, 소속 표기, `[ BACK TO ARTISTS ]`. 아티스트 테마 색 적용 | artist-keyveatz.webp | 영문명, 한글명, 한 줄 소개 | component.detail-hero, component.artist-theme, display-0 | 메인에서 이동 시 프로필 이미지가 이어지는 전환(지원 브라우저) |
 | `#about` | 소개 | 2열 라벨 `ABOUT` / 3열 한글 소개 + 영문 소개 | — | 한글 소개, 영문 소개 (공식 사이트 원문) | ko-body, paragraph-en, layout.readable-max-width | 한글 본문 한 줄 40자 이내 |
-| `#releases` | 음악 | 1:1 커버 카드. `[ PLAY ]`(미리듣기) `[ LISTEN ]`(외부) | release-keyveatz-*.jpg | 릴리즈명, 유형(EP/Single), 발매일 | component.card, image.release-cover | PLAY 시 미니 플레이어에 반영 |
-| `#videos` | 영상 | 16:9 카드 3개, `[ WATCH ]` → 유튜브 새 탭 | video-keyveatz-*.jpg | 영상 제목 | image.video-thumb | 썸네일 비율 16:9 유지 (cover 크롭) |
+| `#releases` | 음악 | 1:1 커버 카드. `[ PLAY ]`(미리듣기) `[ LISTEN ]`(외부) | release-keyveatz-*.webp | 릴리즈명, 유형(EP/Single), 발매일 | component.card, image.release-cover | PLAY 시 미니 플레이어에 반영 |
+| `#videos` | 영상 | 16:9 카드 3개, `[ WATCH ]` → 유튜브 새 탭 | video-keyveatz-*.webp | 영상 제목 | image.video-thumb | 썸네일 비율 16:9 유지 (cover 크롭) |
 | `#artist-live` | 공연 | 메인 `#live` 목록 축소판 | — | 공연 정보 또는 "예정된 공연이 없습니다" | body-6 | 데이터 없을 때 빈 상태 문구 + 공식 SNS 링크 |
-| `#artist-news` | 뉴스 | 해당 아티스트 뉴스 카드 | news-keyveatz-*.jpg | 뉴스 제목, 날짜 | component.card, image.news-poster | 해당 아티스트 뉴스만 표시 |
+| `#artist-news` | 뉴스 | 해당 아티스트 뉴스 카드 | news-keyveatz-*.webp | 뉴스 제목, 날짜 | component.card, image.news-poster | 해당 아티스트 뉴스만 표시 |
 | `#related` | 다음 아티스트 탐색 | 다른 아티스트 3~4명 이름 양쪽 정렬 | — | 섹션 제목, 아티스트명 | component.artist-name-list | 클릭 시 해당 `artist.html?id=` 이동 |
 | `#links` | 공식 채널 | 대괄호 링크 목록 | — | 채널명 | body-3 | 모든 링크 새 탭, `rel="noopener"` |
 | Footer, GNB, 미니 플레이어 | index와 동일 | | | | | index와 동일 마크업 |
@@ -241,15 +241,15 @@ artist.html?id={slug} (Artist Detail, 기본값 keyveatz)
 
 | 파일 | 적용 페이지 · 섹션 |
 |---|---|
-| logo-aomg.png | 공통 GNB, 미니 플레이어, Footer (저해상도 → SVG 텍스트 로고 재작업 권장) |
+| logo-aomg.webp | 공통 GNB, 미니 플레이어, Footer (저해상도 → SVG 텍스트 로고 재작업 권장) |
 | artist-yugyeom / jvckiwai / kian84 / koreanzombie / leemijoo / uglyduck / kimkipyo / punchnello / sikkoo | index `#artists`, artist.html `#artist-hero` |
-| artist-keyveatz.jpg | index `#artists`, artist.html `#artist-hero` |
-| release-keyveatz-oxygen.jpg | index `#hero` `#now-playing` `#discography`, artist.html `#releases` |
-| release-keyveatz-keybeats.jpg | index `#now-playing` `#discography`, artist.html `#releases` |
-| news-keyveatz-messygirls.jpg | index `#live`(포스터) `#news`, artist.html `#artist-news` |
-| news-kian84-baeksang.jpg | index `#news` |
-| news-keyveatz-kangyeseul.jpg, news-keyveatz-umjione.jpg | index `#news`, artist.html `#artist-news` |
-| video-keyveatz-01~03.jpg | artist.html `#videos` |
+| artist-keyveatz.webp | index `#artists`, artist.html `#artist-hero` |
+| release-keyveatz-oxygen.webp | index `#hero` `#now-playing` `#discography`, artist.html `#releases` |
+| release-keyveatz-keybeats.webp | index `#now-playing` `#discography`, artist.html `#releases` |
+| news-keyveatz-messygirls.webp | index `#live`(포스터) `#news`, artist.html `#artist-news` |
+| news-kian84-baeksang.webp | index `#news` |
+| news-keyveatz-kangyeseul.webp, news-keyveatz-umjione.webp | index `#news`, artist.html `#artist-news` |
+| video-keyveatz-01~03.webp | artist.html `#videos` |
 
 ### ChatGPT로 제작할 이미지
 **없음.** 히어로용 16:9 키비주얼은 원본에 없지만, 1:1 커버 + accent 배경 + 초대형 타이포로 대신한다 (reference-analysis.md 9장). Discography 커버가 부족한 연도는 연도·릴리즈명만 타이포로 보여주는 텍스트 카드로 처리하고 이미지를 생성하지 않는다.

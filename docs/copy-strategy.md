@@ -130,8 +130,8 @@
 
 | 연도 (display-4) | 릴리즈 | 아티스트 | 유형 | 발매일 | 이미지 |
 |---|---|---|---|---|---|
-| 2026 | [OXY_GEN] | KEYVEATZ | 1ST EP | 2026.06.30 | release-keyveatz-oxygen.jpg |
-| 2026 | [KEY BEATS] | KEYVEATZ | PRE-RELEASE SINGLE | 2026.05 `[needs-check]` | release-keyveatz-keybeats.jpg |
+| 2026 | [OXY_GEN] | KEYVEATZ | 1ST EP | 2026.06.30 | release-keyveatz-oxygen.webp |
+| 2026 | [KEY BEATS] | KEYVEATZ | PRE-RELEASE SINGLE | 2026.05 `[needs-check]` | release-keyveatz-keybeats.webp |
 | 2026 | [CHECK OUT] | KIMKIPYØ | EP | 2026.04.12 | 텍스트 카드 |
 | 2024 | [TRUST ME] | YUGYEOM | 1ST ALBUM | 2024 `[needs-check: 월일]` | 텍스트 카드 |
 | 2024 | [HAN : Cooked] | SIKKOO | SPECIAL ALBUM | 2024.08 | 텍스트 카드 |
@@ -159,10 +159,10 @@
 
 | # | 분류 라벨 | 제목 (body-4) | 날짜 | 이미지 | 링크 |
 |---|---|---|---|---|---|
-| 1 | `RELEASE` | 키비츠 첫 EP [OXY_GEN] 발매 | 2026.06 | news-keyveatz-messygirls.jpg | AOMG 인스타그램 원문 |
-| 2 | `AWARD` | 기안84, 제62회 백상예술대상 방송부문 남자 예능상 | 2026.05 | news-kian84-baeksang.jpg | AOMG 인스타그램 원문 |
-| 3 | `CREW` | 키비츠 크루 소개 — KANG YESEUL | 2026.04 | news-keyveatz-kangyeseul.jpg | AOMG 인스타그램 원문 |
-| 4 | `CREW` | 키비츠 크루 소개 — UM JIONE | 2026.04 | news-keyveatz-umjione.jpg | AOMG 인스타그램 원문 |
+| 1 | `RELEASE` | 키비츠 첫 EP [OXY_GEN] 발매 | 2026.06 | news-keyveatz-messygirls.webp | AOMG 인스타그램 원문 |
+| 2 | `AWARD` | 기안84, 제62회 백상예술대상 방송부문 남자 예능상 | 2026.05 | news-kian84-baeksang.webp | AOMG 인스타그램 원문 |
+| 3 | `CREW` | 키비츠 크루 소개 — KANG YESEUL | 2026.04 | news-keyveatz-kangyeseul.webp | AOMG 인스타그램 원문 |
+| 4 | `CREW` | 키비츠 크루 소개 — UM JIONE | 2026.04 | news-keyveatz-umjione.webp | AOMG 인스타그램 원문 |
 
 - 날짜는 공식 사이트 게시 시점 기준 월 단위. 멤버 한글 이름은 공식 표기를 확인하지 못해 영문 그대로 쓴다.
 - 계약 종료 공지(후디)는 브랜드 랜딩에 맞지 않아 제외.
