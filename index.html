@@ -25,7 +25,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400&family=Instrument+Serif&display=swap">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <link rel="preload" as="image" href="img/release-keyveatz-oxygen.webp">
-  <link rel="stylesheet" href="css/style.css?v=20261026-obj">
+  <link rel="stylesheet" href="css/style.css?v=20261026-logo">
   <script type="importmap">{ "imports": { "three": "./js/vendor/three.module.min.js" } }</script>
 </head>
 <body class="page-home">
@@ -34,8 +34,10 @@
   <!-- ===== Intro (KODE 프리로더의 AOMG 버전) ===== -->
   <div class="intro" id="intro" role="dialog" aria-modal="true" aria-label="AOMG 입장">
     <p class="intro__counter" aria-hidden="true">000</p>
-    <p class="intro__typed" aria-hidden="true"><span class="intro__text"></span><span class="intro__cursor"></span></p>
-    <p class="intro__logo" hidden>AOMG</p>
+    <div class="intro__stage">
+      <p class="intro__typed" aria-hidden="true"><span class="intro__text"></span><span class="intro__cursor"></span></p>
+      <img class="intro__logo" src="img/logo-white.png" alt="AOMG" width="1004" height="348">
+    </div>
     <div class="intro__actions" hidden>
       <button class="cta" type="button" data-action="enter" aria-label="입장"><span class="cta__label" data-copy="intro.enter">ENTER</span></button>
     </div>
@@ -63,7 +65,6 @@
     <section class="hero surface-accent" id="hero" data-tone="on-accent" aria-labelledby="hero-title">
       <canvas class="hero__canvas" id="hero-canvas" aria-hidden="true"></canvas>
       <h1 class="hero__statement" id="hero-title" data-copy="hero.statement"><span>ABOVE</span> <span>ORDINARY</span> <span>MUSIC</span> <span>GROUP</span></h1>
-      <p class="hero__hint"><span lang="en">DRAG TO ROTATE · HOLD TO BREAK</span><span class="hero__hint-ko" data-copy="hero.hint">드래그하면 돌아가고, 누르고 있으면 깨져요.</span></p>
       <div class="hero__release container">
         <figure class="hero__cover">
           <img src="img/release-keyveatz-oxygen.webp" alt="OXY_GEN 앨범 커버" width="1200" height="1200" fetchpriority="high">
@@ -83,7 +84,7 @@
     <!-- ===== #now-playing ===== -->
     <section class="now-playing container grid surface-dark" id="now-playing" data-tone="on-dark" aria-labelledby="np-title">
       <div class="now-playing__side" data-reveal>
-        <h2 class="section-title" id="np-title"><span data-copy="nowPlaying.title">NOW PLAYING</span> <span class="section-caption" data-copy="nowPlaying.caption">지금 재생</span></h2>
+        <h2 class="section-title" id="np-title"><span data-copy="nowPlaying.title">NOW PLAYING</span></h2>
         <p class="section-subtitle" data-copy="nowPlaying.subtitle">트랙을 고르면 파형이<br class="m-only"> 그 비트를 따라 움직인다.</p>
         <figure class="now-playing__cover">
           <img src="img/release-keyveatz-oxygen.webp" alt="OXY_GEN 앨범 커버" loading="lazy" width="1200" height="1200">
@@ -94,13 +95,12 @@
       <div class="now-playing__stage" data-reveal>
         <canvas class="visualizer" id="visualizer" width="1200" height="675" aria-hidden="true"></canvas>
         <p class="now-playing__current" aria-live="polite" data-render="current-track">DEMO BEAT 01</p>
-        <p class="now-playing__muted" data-copy="nowPlaying.muted">소리가 꺼져 있어요. [ AUDIO ON ]을 누르면 재생돼요.</p>
       </div>
     </section>
 
     <!-- ===== #artists: Artist Universe ===== -->
     <section class="artists container surface-dark" id="artists" data-tone="on-dark" aria-labelledby="artists-title">
-      <h2 class="section-title" id="artists-title" data-reveal><span data-copy="artists.title">ARTISTS</span> <span class="section-caption" data-copy="artists.caption">AOMG 아티스트 10팀</span></h2>
+      <h2 class="section-title" id="artists-title" data-reveal><span data-copy="artists.title">ARTISTS</span></h2>
       <p class="section-subtitle" data-copy="artists.subtitle" data-reveal>래퍼, 보컬, 크루, 방송인, 파이터까지.</p>
       <p class="section-text" data-copy="artists.body" data-reveal>이름을 누르면 음악과 영상,<br class="m-only"> 공연이 한 페이지에 모여 있어요.</p>
       <ul class="artist-names" data-render="artists"></ul>
@@ -109,7 +109,7 @@
     <!-- ===== #discography: Discography Wall ===== -->
     <section class="discography surface-light" id="discography" data-tone="on-light" aria-labelledby="disco-title">
       <div class="discography__sticky container">
-      <h2 class="section-title" id="disco-title" data-reveal><span data-copy="discography.title">RELEASES</span> <span class="section-caption" data-copy="discography.caption">연도별 발매 기록</span></h2>
+      <h2 class="section-title" id="disco-title" data-reveal><span data-copy="discography.title">RELEASES</span></h2>
       <p class="section-subtitle" data-copy="discography.subtitle" data-reveal>AOMG의 앨범을<br class="m-only"> 연도별로 넘겨본다.</p>
       <div class="discography__panel" data-render="discography" aria-live="polite"></div>
       <div class="discography__progress" aria-hidden="true"></div>
@@ -128,11 +128,10 @@
           <img src="img/news-keyveatz-messygirls.webp" alt="키비츠 홍보 이미지" loading="lazy" width="800" height="1000">
           <canvas class="scratch__canvas" aria-hidden="true"></canvas>
         </figure>
-        <p class="scratch__hint"><span data-copy="live.scratchHint">긁어서 포스터를 확인해 보세요.</span>
-          <button class="cta" type="button" data-action="reveal" aria-label="포스터 바로 보기"><span class="cta__label" data-copy="live.reveal">REVEAL</span></button></p>
+        <p class="scratch__hint"><button class="cta" type="button" data-action="reveal" aria-label="포스터 바로 보기"><span class="cta__label" data-copy="live.reveal">REVEAL</span></button></p>
       </div>
       <div class="live__body" data-reveal>
-        <h2 class="section-title" id="live-title"><span data-copy="live.title">LIVE</span> <span class="section-caption" data-copy="live.caption">공연 일정</span></h2>
+        <h2 class="section-title" id="live-title"><span data-copy="live.title">LIVE</span></h2>
         <p class="section-subtitle" data-copy="live.subtitle">날짜와 장소, 예매 링크를 한곳에서 확인한다.</p>
         <ul class="event-list" data-render="events"></ul>
         <div class="empty-state" data-empty="events" hidden>
@@ -144,7 +143,7 @@
 
     <!-- ===== #news: Stories & News ===== -->
     <section class="news container surface-dark" id="news" data-tone="on-dark" aria-labelledby="news-title">
-      <h2 class="section-title" id="news-title" data-reveal><span data-copy="news.title">NEWS</span> <span class="section-caption" data-copy="news.caption">AOMG 소식</span></h2>
+      <h2 class="section-title" id="news-title" data-reveal><span data-copy="news.title">NEWS</span></h2>
       <p class="section-subtitle" data-copy="news.subtitle" data-reveal>발매, 수상, 새 얼굴 소식.</p>
       <ul class="card-grid" data-render="news"></ul>
     </section>
@@ -185,12 +184,12 @@
 
   <img class="artist-preview" alt="" aria-hidden="true">
 
-  <script src="js/data.js?v=20261026-obj"></script>
-  <script src="js/player.js?v=20261026-obj"></script>
-  <script src="js/script.js?v=20261026-obj"></script>
-  <script src="js/effects.js?v=20261026-obj"></script>
+  <script src="js/data.js?v=20261026-logo"></script>
+  <script src="js/player.js?v=20261026-logo"></script>
+  <script src="js/script.js?v=20261026-logo"></script>
+  <script src="js/effects.js?v=20261026-logo"></script>
   <script type="module">
-    import { createLogoScene } from './js/logo3d.js?v=20261026-obj';
+    import { createLogoScene } from './js/logo3d.js?v=20261026-logo';
     const hero = document.getElementById('hero-canvas');
     const heroEl = document.getElementById('hero');
     const textArea = () => {

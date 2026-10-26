@@ -1,6 +1,6 @@
 /* AOMG Concept Redesign — effects.js
  * KODE 레퍼런스 인터랙션의 AOMG 버전
- * 1) 인트로: 카운터 + 커서 → "ABOVE ORDINARY MUSIC GROUP" 타이핑 → "AOMG" → [ ENTER ]
+ * 1) 인트로: 카운터 + 커서 → "ABOVE ORDINARY MUSIC GROUP" 타이핑 → A·O·M·G가 모여 로고(img/logo-white.png) → [ ENTER ]
  * 2) 긁어서 드러나는 포스터 (Live Pulse)
  * 3) 마우스 트레일 (마우스 사용 환경만)
  * 모든 효과는 prefers-reduced-motion에서 끄거나 즉시 결과만 보여줌
@@ -22,30 +22,64 @@
     const counter = $('.intro__counter', intro);
     const typed = $('.intro__typed', intro);
     const typedText = $('.intro__text', intro);
+    const cursor = $('.intro__cursor', intro);
     const logo = $('.intro__logo', intro);
     const actions = $('.intro__actions', intro);
     const TEXT = 'ABOVE ORDINARY MUSIC GROUP';
+    // 로고(img/logo-white.png) 안에서 A·O·M·G 각 글자의 중심과 높이 (로고 폭·높이 대비 비율, 실측)
+    const SLOT = { 0: [0.1125, 0.530, 0.69], 6: [0.3795, 0.500, 1.0], 15: [0.6355, 0.530, 0.69], 21: [0.8845, 0.530, 0.69] };
     document.documentElement.classList.add('is-intro');
     intro.hidden = false;
 
+    // 글자마다 span → 타이핑은 span을 하나씩 켜는 방식 (위치 측정 가능)
+    typedText.innerHTML = [...TEXT].map((c, i) => `<span class="intro__ch${i in SLOT ? ' is-initial' : ''}" data-i="${i}">${c === ' ' ? '&nbsp;' : c}</span>`).join('');
+    const chars = [...typedText.children];
+
     const showActions = () => {
-      typed.hidden = true; logo.hidden = false; actions.hidden = false;
-      intro.classList.add('is-ready');
+      actions.hidden = false;
+      requestAnimationFrame(() => intro.classList.add('is-ready'));
       $('button', actions).focus();
     };
-    if (reduceMotion) { counter.textContent = '100'; showActions(); }
+    const showLogoNow = () => { typed.hidden = true; logo.classList.add('is-in'); showActions(); };
+
+    // 타이핑이 끝나면: 첫 글자 A·O·M·G만 남기고 → 로고 속 자리로 모이며 → 실제 로고로 바뀜
+    function assemble() {
+      cursor.hidden = true;
+      intro.classList.add('is-collapsing');                       // 나머지 글자 사라짐 (CSS)
+      setTimeout(() => {
+        const L = logo.getBoundingClientRect();
+        chars.filter((c) => c.classList.contains('is-initial')).forEach((c, k) => {
+          const [fx, fy, fh] = SLOT[c.dataset.i];
+          const r = c.getBoundingClientRect();
+          const cap = parseFloat(getComputedStyle(c).fontSize) * 0.71;  // 대문자 높이
+          const sc = (L.height * fh) / cap;
+          const dx = L.left + L.width * fx - (r.left + r.width / 2);
+          const dy = L.top + L.height * fy - (r.top + r.height / 2);
+          c.style.transitionDelay = `${k * 70}ms`;
+          c.style.transform = `translate(${dx}px, ${dy}px) scale(${sc})`;
+        });
+        setTimeout(() => {                                         // 모인 자리에서 로고로 교체
+          logo.classList.add('is-in');
+          intro.classList.add('is-assembled');
+          setTimeout(() => { typed.hidden = true; showActions(); }, 600);
+        }, 950);
+      }, 450);
+    }
+
+    if (reduceMotion) { counter.textContent = '100'; showLogoNow(); }
     else {
       // 카운터 000 → 100 = 로딩 진행 표시 (KODE 프리로더). 최소 2.4초 타이핑,
-      // 페이지(3D 파일 포함) 로딩이 끝나기 전에는 99에서 대기 → 100이 되면 로고 → 버튼
+      // 페이지(3D 파일 포함) 로딩이 끝나기 전에는 99에서 대기
       let loaded = document.readyState === 'complete';
       addEventListener('load', () => { loaded = true; }, { once: true });
       const start = performance.now(), dur = 2400;
       const tick = (now) => {
         const p = Math.min(loaded ? 1 : 0.99, (now - start) / dur);
         counter.textContent = String(Math.round(p * 100)).padStart(3, '0');
-        typedText.textContent = TEXT.slice(0, Math.round(p * TEXT.length));
+        const n = Math.round(p * TEXT.length);
+        chars.forEach((c, i) => c.classList.toggle('is-on', i < n));
         if (p < 1) requestAnimationFrame(tick);
-        else setTimeout(showActions, 500);
+        else setTimeout(assemble, 350);
       };
       requestAnimationFrame(tick);
     }
