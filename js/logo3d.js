@@ -93,16 +93,18 @@ function shatterMaterial(params, uniforms) {
       .replace('#include <beginnormal_vertex>', `
         // 커서 주변 조각만: 거리에 따라 0~1, 조각마다 세기가 다름
         float hd = distance(aCenter.xy, uHover.xy);
-        float hov = (1.0 - smoothstep(uHoverR * 0.2, uHoverR, hd)) * uHoverAmt * aRand.w;
+        float g = uHoverAmt * aRand.w;
+        float hov = (1.0 - smoothstep(uHoverR * 0.2, uHoverR, hd)) * g;   // 커서 주변: 강하게
+        float spread = 0.38 * g;                                          // 오브제 전체: 조각 사이가 벌어짐
         float jitter = uBeat * 0.06 * aRand.w;
-        mat3 shardR = rotAxis(aRand.xyz, hov * 2.6 + jitter * 2.0);
+        mat3 shardR = rotAxis(aRand.xyz, hov * 2.6 + spread * 1.3 + jitter * 2.0);
         vec3 objectNormal = shardR * vec3(normal);
         #ifdef USE_TANGENT
           vec3 objectTangent = shardR * vec3(tangent.xyz);
         #endif`)
       .replace('#include <begin_vertex>', `
         vec3 away = normalize(vec3(aCenter.xy - uHover.xy, 0.0) + vec3(0.0, 0.0, 0.9) + aDir * 0.35);
-        vec3 transformed = shardR * (position - aCenter) + aCenter + away * hov * 1.1 + aDir * jitter;`);
+        vec3 transformed = shardR * (position - aCenter) + aCenter + away * hov * 1.1 + aDir * (spread * 0.55 + jitter);`);
   };
   return mat;
 }
@@ -112,18 +114,23 @@ function drawStatementTexture(canvas, lines, w, h, bg, fg, area) {
   const ctx = canvas.getContext('2d');
   canvas.width = w; canvas.height = h;
   ctx.fillStyle = bg; ctx.fillRect(0, 0, w, h);
-  ctx.fillStyle = fg; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = fg; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+  const TRACK = -0.045; // 자간 (em). KODE처럼 촘촘하게
   const family = css('--font-display-en') || 'serif';
   // KODE: 3줄이 화면 높이 대부분을 채움. 가장 긴 줄이 폭의 92%를 넘지 않게
   const top0 = area ? area.top : 0, availH = area ? area.bottom - area.top : h;
   let size = availH / (lines.length * 0.9);
   ctx.font = `400 ${size}px ${family}`;
-  const widest = Math.max(...lines.map((l) => ctx.measureText(l).width));
+  const lineWidth = (l, sz) => [...l].reduce((sum, ch) => sum + ctx.measureText(ch).width, 0) + TRACK * sz * (l.length - 1);
+  const widest = Math.max(...lines.map((l) => lineWidth(l, size)));
   if (widest > w * 0.92) size *= (w * 0.92) / widest;
   ctx.font = `400 ${size}px ${family}`;
   const lh = size * 0.9; // display-0 line-height 0.9
   const top = top0 + availH / 2 - (lh * (lines.length - 1)) / 2;
-  lines.forEach((l, i) => ctx.fillText(l, w / 2, top + i * lh));
+  lines.forEach((l, i) => {
+    let x = w / 2 - lineWidth(l, size) / 2;
+    [...l].forEach((ch) => { ctx.fillText(ch, x, top + i * lh); x += ctx.measureText(ch).width + TRACK * size; });
+  });
 }
 
 /* ---------- 장면 ---------- */
@@ -133,6 +140,7 @@ export async function createLogoScene(canvas, opts = {}) {
     statement = null,         // ['INTERACT', 'WITH THE', 'BEAT']
     interactive = true,
     textArea = null,          // () => ({ top, bottom }) 캔버스 기준 px. 문장·로고를 이 영역 안에 배치
+    onRing = null,            // ({ x, y, r, visible }) 커서 영역 표시용 (KODE 'HOLD AND DRAG' 원)
   } = opts;
 
   let renderer;
@@ -217,10 +225,11 @@ export async function createLogoScene(canvas, opts = {}) {
   const raycaster = new THREE.Raycaster(), ndc = new THREE.Vector2(), localRay = new THREE.Ray();
   const hoverPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0), hit = new THREE.Vector3(), inv = new THREE.Matrix4();
   const hoverTarget = new THREE.Vector3(99, 99, 0);
-  let hoverOn = 0;
+  let hoverOn = 0, lastPX = 0, lastPY = 0;
   function updateHover(e) {
     if (reduceMotion) return;
     const r = canvas.getBoundingClientRect();
+    lastPX = e.clientX - r.left; lastPY = e.clientY - r.top;
     ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
     raycaster.setFromCamera(ndc, camera);
     inv.copy(logo.matrixWorld).invert();
@@ -280,6 +289,12 @@ export async function createLogoScene(canvas, opts = {}) {
     }
     pivot.rotation.set(rot.x, rot.y, Math.sin(uniforms.uTime.value * 0.5) * 0.04);
     pivot.position.y = baseY + (reduceMotion ? 0 : Math.sin(uniforms.uTime.value * 0.8) * 0.05);
+    if (onRing) {
+      // 깨지는 반경(uHoverR, 오브제 로컬 단위) → 화면 px
+      const viewH = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.position.z;
+      const rpx = (uniforms.uHoverR.value * pivot.scale.x / viewH) * canvas.clientHeight;
+      onRing({ x: lastPX, y: lastPY, r: rpx, visible: hoverOn === 1 && finePointer && !reduceMotion });
+    }
     // 인트로가 화면을 덮고 있는 동안은 그리지 않음 (보이지 않는 프레임에 GPU를 쓰지 않게)
     if (!document.documentElement.classList.contains('is-intro')) renderer.render(scene, camera);
     if (visible && !(reduceMotion && !down)) raf = requestAnimationFrame(loop);

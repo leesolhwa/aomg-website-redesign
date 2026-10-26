@@ -9,6 +9,7 @@
 - OXY_GEN 커버 확인 완료: `release-keyveatz-oxygen.webp`에 'OXY_GEN' 표기 확인
 - 생성 이미지: 없음. 히어로용 16:9 키비주얼은 원본에 없지만, 1:1 커버 + accent 배경 + 초대형 타이포 구성으로 대신함
 - 스톡 이미지: 사용하지 않음
+- 사용자 제공 그래픽: `obj-bold.svg`(3D 오브제), `favicon.svg`(탭 아이콘, logo_thin), `logo/a.svg`·`o.svg`·`m.svg`·`g.svg`(인트로 로고 조각, 흰색으로 변환)
 
 | 파일명 | 원본 페이지 | 원본 크기 | 비율 | 적용 섹션 | 대체 텍스트 (alt) |
 |---|---|---|---|---|---|
@@ -45,4 +46,4 @@
 | favicon.svg | 사용자 제공 logo_thin.svg (다크 모드에서 흰색으로 바뀌도록 style 추가) | 브라우저 탭 아이콘 |
 | favicon-32.png, apple-touch-icon.png | favicon.svg에서 렌더링 | SVG 아이콘 미지원 브라우저·iOS 홈 화면 |
 | logo.svg | 사용자 제공 logo.svg (내부는 1004×348 PNG) | 원본 보관 |
-| logo-white.png | logo.svg 안의 PNG를 흰색으로 변환 | 인트로 로고 (검정 배경) |
+| logo/a·o·m·g.svg | 사용자 제공 글자 SVG (fill 흰색으로 변경) | 인트로 로고 조각 — 합쳐져 AOMG 로고가 됨 |
