@@ -53,10 +53,11 @@
 
 ## 2. 한글 콘텐츠 적용 기준
 
-> ⚠️ **jy-ux-lab.md를 받지 못해 문체 기준은 needs-check.** 아래는 레퍼런스 구조에서 나온 규칙이며, jy-ux-lab.md를 받으면 문체·표현 밀도 항목을 갱신한다.
+> **문체 기준은 `copy-strategy.md` 3장으로 확정** (jy-ux-lab.md는 출처 확인 불가로 사용하지 않음).
+> ~~jy-ux-lab.md를 받지 못해 문체 기준은 needs-check.~~ 아래는 레퍼런스 구조에서 나온 규칙이며, jy-ux-lab.md를 받으면 문체·표현 밀도 항목을 갱신한다.
 
 ### 공통 원칙
-- 모든 한글 문구는 jy-ux-lab.md의 문체, 정보 구조, 표현 밀도를 기준으로 작성한다. *(needs-check)*
+- 모든 한글 문구는 `copy-strategy.md` 3장의 문체, 정보 구조, 표현 밀도를 기준으로 작성한다.
 - Kode의 영문 카피 구조를 그대로 번역하지 않는다. "INNOVATE WITH PURPOSE" 같은 선언형 영문 카피는 **영문 그대로** 두고, 한글은 정보 전달용으로 쓴다.
 - **영문 = 브랜드 표현, 한글 = 정보 전달.** 초대형 디스플레이(display-0, display-4)는 영문 고유명사(아티스트명, 앨범명, 연도)만 쓴다.
 
@@ -126,7 +127,7 @@
 |---|---|---|---|
 | 디스플레이 | OT Brut (콘덴스드 세리프) | Instrument Serif | OT Brut는 유료. Google Fonts 무료 대체 |
 | 산세리프 | Aeonik Pro | Geist | Aeonik Pro는 유료. Google Fonts 무료 대체 |
-| 한글 | — | Pretendard Variable | **needs-check: jy-ux-lab.md 기준으로 확정** |
+| 한글 | — | Pretendard Variable | 확정 (jsDelivr CDN으로 로드) |
 
 ### font-weight
 - Kode: **전부 400.** 굵기 없이 크기와 대문자로만 위계를 만든다.
@@ -276,7 +277,7 @@
 ### AOMG에 맞게 변형할 것
 - 오렌지 #FF4C00 → AOMG accent #FF3B1F, 기본 배경은 검정
 - 한글 타이포 스케일 별도 운영 (2장 표)
-- 유료 폰트 → 무료 대체 (Instrument Serif, Geist, 한글은 jy-ux-lab.md 기준)
+- 유료 폰트 → 무료 대체 (Instrument Serif, Geist, 한글은 Pretendard)
 - 스크롤 고정 구간 9900px → 최대 300vh
 - 하단 바 배경 투명 → 검정 (플레이어 가독성)
 - 버튼 시각 크기는 유지하되 터치 영역 44px 확보
@@ -315,7 +316,7 @@
 ## 10. 확인 필요값 / temporary token / 결정 필요
 
 ### needs-check
-- 한글 폰트와 문체 기준 (jy-ux-lab.md 필요)
+- ~~한글 폰트와 문체 기준~~ → Pretendard, copy-strategy.md 3장으로 확정
 - 모바일 섹션 패딩 실측값 (현재 데스크톱의 50% 임시)
 - 영상 썸네일 유튜브 ID
 - 공연 일정 데이터 (현재 공식 사이트는 페이스북 이벤트로 연결, 실제 일정 확인 필요)

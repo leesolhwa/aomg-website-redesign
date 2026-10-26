@@ -15,6 +15,7 @@ AOMG Website Redesign — Brand Identity, UI/UX & Interactive Web Experience
 | 파일 | 내용 |
 |---|---|
 | [prd.md](prd.md) | 사이트맵, 페이지별 섹션, 완료 기준 |
+| [copy-strategy.md](copy-strategy.md) | 세계관, 문체 기준, 페이지별 카피 |
 | [reference-analysis.md](reference-analysis.md) | 레퍼런스 분석, 적용·변형·금지 기준 |
 | [tokens.json](tokens.json) | 디자인 토큰 (실측·조정·임시 구분) |
 | [docs/kode-reference-measurements.md](docs/kode-reference-measurements.md) | 레퍼런스 실측 원본 기록 |
