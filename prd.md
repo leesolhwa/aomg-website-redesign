@@ -207,7 +207,7 @@ artist.html?id={slug} (Artist Detail, 기본값 keyveatz)
 |---|---|---|---|
 | 영문 디스플레이 | Instrument Serif (OT Brut 대체) | display-4 60→200px, display-0 60→120px, display-1 30→60px | 400 |
 | 영문 산세리프 | Geist (Aeonik Pro 대체) | display-3 24→34px, display-2 22→34px, body 12→22px | 400 |
-| 한글 | Pretendard Variable (jy-ux-lab.md 확정 전 임시) | ko-display 40→80px, ko-title 24→39px, ko-lead 20→26px, ko-body 15→17px, ko-caption 13→15px | 대형 제목 700, 나머지 400 |
+| 한글 | Pretendard Variable | ko-display 40→80px, ko-title 24→39px, ko-lead 20→26px, ko-body 15→17px, ko-caption 13→15px | 대형 제목 700, 나머지 400 |
 
 - 크기는 390px 미만 고정, 390~1440px `calc()` 유동, 1440px 이상 고정 (tokens.json 값 그대로)
 - 영문 디스플레이 굵기는 **decision-needed**. 결정 전까지 400
@@ -344,7 +344,7 @@ artist.html?id={slug} (Artist Detail, 기본값 keyveatz)
 
 ## 9. 다음 단계: copy-strategy.md에서 작성할 카피 목록
 
-> jy-ux-lab.md의 문체 기준으로 작성. 영문 고유명사·CTA는 영문 유지.
+> → `copy-strategy.md`로 작성 완료. 문체 기준은 그 문서 3장.
 
 ### 공통
 - GNB 메뉴명 5개, 모바일 `[ MENU ]` `[ CLOSE ]`
