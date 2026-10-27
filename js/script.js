@@ -33,11 +33,15 @@
   document.addEventListener('click', (e) => {
     const a = e.target.closest('a[href^="#"]');
     if (!a || e.defaultPrevented || e.metaKey || e.ctrlKey) return;
-    const target = document.getElementById(a.getAttribute('href').slice(1));
+    let id = a.getAttribute('href').slice(1);
+    // NOW PLAYING: 3D가 없으면 대체 섹션으로
+    if (id === 'now-playing' && document.documentElement.classList.contains('no-webgl')) id = 'now-playing-fallback';
+    const target = document.getElementById(id);
     if (!target) return;
     e.preventDefault();
     target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
     history.pushState(null, '', a.getAttribute('href'));
+    if (target.classList.contains('sound__anchor')) return; // 고정 무대의 끝 지점(표시 요소 아님)
     target.setAttribute('tabindex', '-1');
     target.focus({ preventScroll: true });
   });
@@ -50,12 +54,13 @@
     if (hit) gnb.dataset.tone = hit.dataset.tone;
     if (!isArtistPage) {
       $$('.gnb__menu a').forEach((a) => a.toggleAttribute('aria-current', false));
-      const link = hit && $(`.gnb__menu a[href="#${hit.id}"]`);
+      const link = hit && $(`.gnb__menu a[href="#${hit.dataset.section || hit.id}"]`);
       if (link) link.setAttribute('aria-current', 'true');
     }
   }
   window.addEventListener('scroll', updateTone, { passive: true });
   window.addEventListener('resize', updateTone);
+  window.addEventListener('sound:tone', updateTone); // 고정 무대의 배경이 레드 ↔ 검정으로 바뀔 때
 
   /* ---------- 카드 템플릿 ---------- */
   const releaseCard = (r, { withPlay = false } = {}) => `
@@ -311,6 +316,67 @@
     });
   }
 
+  /* ---------- NOW PLAYING (CD 컬렉션) 정보 패널 ----------
+   * sound3d.js가 선택된 CD가 바뀔 때 show(i, release)를 부름. 트랙·재생은 기존 Player 사용.
+   * 데모 트랙이 없는 앨범은 아무것도 재생하지 않고 '데모 트랙 없음' + 스트리밍 링크만 보여 줌 */
+  function initNowPlaying() {
+    const np = $('#np');
+    if (!np || !window.Player) return;
+    const LOOP = 30;
+    const fmt = (sec) => `${Math.floor(sec / 60)}:${String(Math.floor(sec % 60)).padStart(2, '0')}`;
+    let rel = null;
+    $('[data-render="np-total"]').textContent = String(RELEASES.length).padStart(2, '0');
+    function show(i, r) {
+      rel = r;
+      $('[data-render="np-title"]').textContent = r.title;
+      $('[data-render="np-artist"]').textContent = r.artist;
+      $('[data-render="np-type"]').textContent = r.type;
+      $('[data-render="np-date"]').textContent = r.date;
+      $('[data-render="np-index"]').textContent = String(i + 1).padStart(2, '0');
+      const t = r.trackId && TRACKS.find((x) => x.id === r.trackId);
+      const list = $('[data-render="np-tracks"]');
+      if (t) {
+        const no = TRACKS.indexOf(t) + 1;
+        list.innerHTML = `<li class="np__track" data-track-row="${esc(t.id)}">
+          <span class="np__no">DEMO ${String(no).padStart(2, '0')}</span>
+          <span class="np__name">${esc(t.title)}</span>
+          <button class="cta" type="button" data-action="play-track" data-track="${esc(t.id)}" aria-label="${esc(t.title)} 재생"><span class="cta__label">PLAY</span></button>
+        </li>`;
+      } else {
+        list.innerHTML = `<li class="np__track is-empty"><span class="np__no">—</span><span class="np__name">데모 트랙 없음</span>${r.listen ? cta('LISTEN', ext(r.listen, `${r.title} 스트리밍에서 듣기`)) : ''}</li>`;
+      }
+      np.classList.toggle('has-track', !!t);
+      paint(Player.state);
+    }
+    function paint(s) {
+      const mine = rel && rel.trackId && s.trackId === rel.trackId;
+      const prog = mine ? s.progress : 0;
+      $('.np__progress span').style.width = `${Math.round(prog * 100)}%`;
+      $('.np__progress').setAttribute('aria-valuenow', String(Math.round(prog * 100)));
+      $('[data-render="np-time"]').textContent = fmt(prog * LOOP);
+      $('[data-render="np-dur"]').textContent = rel && rel.trackId ? fmt(LOOP) : '—';
+      $$('[data-track-row]', np).forEach((row) => {
+        const on = s.playing && row.dataset.trackRow === s.trackId;
+        const b = $('[data-action="play-track"]', row);
+        if (b) { $('.cta__label', b).textContent = on ? 'PAUSE' : 'PLAY'; b.setAttribute('aria-label', `${$('.np__name', row).textContent} ${on ? '정지' : '재생'}`); }
+        row.classList.toggle('is-current', on);
+      });
+    }
+    Player.subscribe(paint);
+    document.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-action="cd-prev"], [data-action="cd-next"]');
+      if (!b || !window.SoundScene) return;
+      b.dataset.action === 'cd-next' ? SoundScene.next() : SoundScene.prev();
+    });
+    np.addEventListener('keydown', (e) => {
+      if (!window.SoundScene) return;
+      if (e.key === 'ArrowRight') { e.preventDefault(); SoundScene.next(); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); SoundScene.prev(); }
+    });
+    window.NowPlaying = { show };
+    show(0, RELEASES[0]);
+  }
+
   /* ---------- 등장 효과 ---------- */
   function initReveal() {
     const items = $$('[data-reveal]');
@@ -323,6 +389,7 @@
 
   if (isArtistPage) renderArtist(); else renderHome();
   bindPlayer();
+  if (!isArtistPage) initNowPlaying();
   initReveal();
   updateTone();
 })();
