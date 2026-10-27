@@ -1,7 +1,7 @@
 /* AOMG Concept Redesign — logo3d.js (ES module)
  * KODE 히어로의 3D 오브제를 AOMG 오브제(img/obj-bold.svg, 사용자 제공)로 재구성
  * - 드래그: 회전 (관성)
- * - 마우스를 올리면 그 지점에서 물결(파형)이 퍼져 오브제가 출렁임 → 벗어나면 잔잔해짐
+ * - 마우스를 올린 부분만 조각으로 깨짐 → 벗어나면 다시 모임 (KODE 히어로 방식)
  * - 미니 플레이어 비트(--beat)에 맞춰 조각이 미세하게 반응 (깜빡임 없음)
  * - 히어로: 문장 텍스트를 같은 장면의 평면에 그려 유리(transmission) 굴절이 보이게 함
  * - WebGL 실패 시 html에 .no-webgl → HTML 텍스트가 그대로 보임
@@ -24,45 +24,56 @@ const loadShapes = () => (shapePromise ||= fetch(new URL('../img/obj-bold.svg', 
   return { shapes, scale: 3.2 / (box.max.x - box.min.x), cx: (box.min.x + box.max.x) / 2, cy: (box.min.y + box.max.y) / 2 };
 }));
 
-/* 면 잘게 나누기: 압출 단면은 도형을 가로지르는 가늘고 긴 삼각형이라 그대로 휘면 각이 짐
- * → 가장 긴 변이 maxLen 이하가 될 때까지 반으로 나눠 물결이 매끈하게 지나가게 함 */
-function tessellate(geo, maxLen) {
-  const names = Object.keys(geo.attributes);
-  const src = names.map((n) => geo.attributes[n]);
-  const out = names.map(() => []);
-  const P = geo.attributes.position;
-  const vert = (i) => src.map((a) => Array.from({ length: a.itemSize }, (_, k) => a.array[i * a.itemSize + k]));
-  const mid = (a, b) => a.map((arr, j) => arr.map((v, k) => (v + b[j][k]) / 2));
-  const len = (a, b) => Math.hypot(a[0][0] - b[0][0], a[0][1] - b[0][1]); // 앞면 기준 길이 (옆면을 깊이 방향으로 쪼개지 않게)
-  const stack = [];
-  for (let t = 0; t < P.count / 3; t++) stack.push([vert(t * 3), vert(t * 3 + 1), vert(t * 3 + 2)]);
-  while (stack.length) {
-    const [a, b, c] = stack.pop();
-    const ab = len(a, b), bc = len(b, c), ca = len(c, a), m = Math.max(ab, bc, ca);
-    if (m <= maxLen) { [a, b, c].forEach((v) => v.forEach((arr, j) => out[j].push(...arr))); continue; }
-    if (m === ab) { const d = mid(a, b); stack.push([a, d, c], [d, b, c]); }
-    else if (m === bc) { const d = mid(b, c); stack.push([a, b, d], [a, d, c]); }
-    else { const d = mid(c, a); stack.push([a, b, d], [d, b, c]); }
-  }
-  const g = new THREE.BufferGeometry();
-  names.forEach((n, j) => g.setAttribute(n, new THREE.Float32BufferAttribute(out[j], src[j].itemSize)));
-  return g;
-}
-
-/* ---------- 오브제 지오메트리 ---------- */
-function buildObjectGeometry({ shapes, scale, cx, cy }, { depth = 0.34 } = {}) {
+/* ---------- 조각난 로고 지오메트리 ---------- */
+function buildShardGeometry({ shapes, scale, cx, cy }, { depth = 0.34, cell = 0.22 }) {
   // SVG 좌표 그대로 입체화한 뒤 한 번에 정규화 (깊이·베벨은 SVG 단위로 환산)
   const k = 1 / scale;
-  let geo = new THREE.ExtrudeGeometry(shapes, {
-    depth: depth * k, curveSegments: 10, bevelEnabled: true, bevelThickness: 0.06 * k, bevelSize: 0.03 * k, bevelSegments: 3,
-  });
+  const geo = new THREE.ExtrudeGeometry(shapes, {
+    depth: depth * k, curveSegments: 12, bevelEnabled: true, bevelThickness: 0.06 * k, bevelSize: 0.03 * k, bevelSegments: 4,
+  }); // ExtrudeGeometry는 이미 non-indexed
   geo.translate(-cx, -cy, 0);
   geo.scale(scale, scale, scale);
-  geo.rotateX(Math.PI); // SVG y축(아래로 증가)을 위로
+  geo.rotateX(Math.PI); // SVG y축(아래로 증가)을 위로 — 뒤집기(scale -1) 대신 회전이라 면 방향이 유지됨
   geo.computeBoundingBox();
   const c = new THREE.Vector3(); geo.boundingBox.getCenter(c);
   geo.translate(-c.x, -c.y, -c.z);
-  geo = tessellate(geo, 0.09);
+
+  const pos = geo.attributes.position;
+  const triCount = pos.count / 3;
+  const clusters = new Map(); // 격자 셀 → 삼각형 목록 (같은 셀의 앞·뒤·옆면이 한 조각으로 움직임)
+  const v = new THREE.Vector3();
+  for (let t = 0; t < triCount; t++) {
+    v.set(0, 0, 0);
+    for (let k = 0; k < 3; k++) v.add(new THREE.Vector3().fromBufferAttribute(pos, t * 3 + k));
+    v.divideScalar(3);
+    const key = `${Math.floor(v.x / cell)},${Math.floor(v.y / cell)}`;
+    if (!clusters.has(key)) clusters.set(key, []);
+    clusters.get(key).push(t);
+  }
+  const center = new Float32Array(pos.count * 3);
+  const dir = new Float32Array(pos.count * 3);
+  const rand = new Float32Array(pos.count * 4);
+  const tmp = new THREE.Vector3();
+  clusters.forEach((tris) => {
+    const cc = new THREE.Vector3();
+    tris.forEach((t) => { for (let k = 0; k < 3; k++) cc.add(tmp.fromBufferAttribute(pos, t * 3 + k)); });
+    cc.divideScalar(tris.length * 3);
+    const d = new THREE.Vector3(cc.x, cc.y, (Math.random() - 0.3) * 1.6).normalize();
+    d.x += (Math.random() - 0.5) * 0.6; d.y += (Math.random() - 0.5) * 0.6; d.normalize();
+    const axis = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
+    const speed = 0.6 + Math.random() * 0.8;
+    tris.forEach((t) => {
+      for (let k = 0; k < 3; k++) {
+        const i = t * 3 + k;
+        center.set([cc.x, cc.y, cc.z], i * 3);
+        dir.set([d.x, d.y, d.z], i * 3);
+        rand.set([axis.x, axis.y, axis.z, speed], i * 4);
+      }
+    });
+  });
+  geo.setAttribute('aCenter', new THREE.BufferAttribute(center, 3));
+  geo.setAttribute('aDir', new THREE.BufferAttribute(dir, 3));
+  geo.setAttribute('aRand', new THREE.BufferAttribute(rand, 4));
   geo.computeBoundingSphere();
   return geo;
 }
@@ -73,31 +84,29 @@ function shatterMaterial(params, uniforms) {
     Object.assign(shader.uniforms, uniforms);
     shader.vertexShader = shader.vertexShader
       .replace('#include <common>', `#include <common>
+        attribute vec3 aCenter; attribute vec3 aDir; attribute vec4 aRand;
         uniform float uBeat; uniform float uTime; uniform vec3 uHover; uniform float uHoverAmt; uniform float uHoverR;
-        // 커서 지점에서 동심원 물결이 바깥으로 퍼짐 (가까울수록 크고 멀수록 잦아듦)
-        const float WK = 8.5;    // 물결 촘촘함
-        const float WS = 4.2;    // 퍼지는 속도
-        const float FALL = 0.55; // 멀어질수록 잦아드는 정도
-        float waveEnv(float d) { return uHoverAmt * exp(-d * FALL) * (1.0 + uBeat * 0.6); }`)
+        mat3 rotAxis(vec3 a, float r) { a = normalize(a); float s = sin(r), c = cos(r), o = 1.0 - c;
+          return mat3(o*a.x*a.x + c, o*a.x*a.y + a.z*s, o*a.z*a.x - a.y*s,
+                      o*a.x*a.y - a.z*s, o*a.y*a.y + c, o*a.y*a.z + a.x*s,
+                      o*a.z*a.x + a.y*s, o*a.y*a.z - a.x*s, o*a.z*a.z + c); }`)
       .replace('#include <beginnormal_vertex>', `
-        vec2 wv = position.xy - uHover.xy;
-        float wd = length(wv) + 1e-4;
-        vec2 wdir = wv / wd;
-        float wph = wd * WK - uTime * WS;
-        float wenv = waveEnv(wd);
-        float wave = sin(wph) * wenv;
-        // 면 기울기(법선)도 물결을 따라감 → 빛이 물결 모양으로 흐름
-        float dwave = wenv * (WK * cos(wph) - FALL * sin(wph));
-        vec2 grad = wdir * dwave * 0.26;
-        vec3 objectNormal = normalize(vec3(normal) + vec3(-grad * normal.z, 0.0));
+        // 커서 주변 조각만: 거리에 따라 0~1, 조각마다 세기가 다름
+        float hd = distance(aCenter.xy, uHover.xy);
+        float g = uHoverAmt * aRand.w;
+        float hov = (1.0 - smoothstep(uHoverR * 0.2, uHoverR, hd)) * g;   // 커서 주변: 강하게
+        float spread = 0.42 * g;                                          // 오브제 전체: 조각 사이가 벌어짐
+        float jitter = uBeat * 0.06 * aRand.w;
+        mat3 shardR = rotAxis(aRand.xyz, hov * 1.55 + spread * 0.75 + jitter * 2.0);   // 회전(깨짐) 약 60%
+        vec3 objectNormal = shardR * vec3(normal);
         #ifdef USE_TANGENT
-          vec3 objectTangent = vec3(tangent.xyz);
+          vec3 objectTangent = shardR * vec3(tangent.xyz);
         #endif`)
       .replace('#include <begin_vertex>', `
-        // 앞뒤로 출렁이고(z), 물결 마루마다 바깥으로 살짝 밀려 퍼짐(xy)
-        vec3 transformed = vec3(position);
-        transformed.z += wave * 0.26;
-        transformed.xy += wdir * (wave * 0.05 + wenv * 0.1);`);
+        vec3 away = normalize(vec3(aCenter.xy - uHover.xy, 0.0) + vec3(0.0, 0.0, 0.5) + aDir * 0.35);
+        // 오브제 전체가 화면 쪽으로 넓게 퍼짐: 중심에서 먼 조각일수록 멀리
+        vec3 outward = vec3(aCenter.xy * (0.55 + 0.45 * aRand.w), aDir.z * 0.6);
+        vec3 transformed = shardR * (position - aCenter) + aCenter + away * hov * 1.3 + outward * spread * 1.15 + aDir * (spread * 0.9 + jitter);`);
   };
   return mat;
 }
@@ -106,7 +115,7 @@ function shatterMaterial(params, uniforms) {
 function drawStatementTexture(canvas, lines, w, h, bg, fg, area) {
   const ctx = canvas.getContext('2d');
   canvas.width = w; canvas.height = h;
-  ctx.fillStyle = bg; ctx.fillRect(0, 0, w, h);
+  if (bg) { ctx.fillStyle = bg; ctx.fillRect(0, 0, w, h); } else ctx.clearRect(0, 0, w, h); // bg 없음 = 투명 (배경색이 바뀌는 장면용)
   ctx.fillStyle = fg; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
   const TRACK = -0.045; // 자간 (em). KODE처럼 촘촘하게
   const family = css('--font-display-en') || 'serif';
@@ -155,20 +164,18 @@ export async function createLogoScene(canvas, opts = {}) {
 
   const svg = await loadShapes();
   const accent = new THREE.Color(css('--color-accent') || '#FF3B1F');
-  const uniforms = { uBeat: { value: 0 }, uTime: { value: 0 }, uHover: { value: new THREE.Vector3(99, 99, 0) }, uHoverAmt: { value: 0 }, uHoverR: { value: 1.1 } };
-  const deepRed = accent.clone().lerp(new THREE.Color('#9e0d06'), 0.45);
+  const uniforms = { uBeat: { value: 0 }, uTime: { value: 0 }, uHover: { value: new THREE.Vector3(99, 99, 0) }, uHoverAmt: { value: 0 }, uHoverR: { value: 0.95 } };
   const useTransmission = mode === 'hero' && finePointer; // 모바일은 성능 때문에 굴절 끔
   const material = shatterMaterial(mode === 'hero' ? {
-    // 유리 느낌은 유지하되 배경 주황이 덜 비치도록: 투과를 낮추고 색·흡수를 깊은 빨강으로
-    color: deepRed, metalness: 0.05, roughness: 0.1, clearcoat: 1, clearcoatRoughness: 0.05,
-    transmission: useTransmission ? 0.6 : 0, thickness: 1.2, ior: 1.5, attenuationColor: deepRed, attenuationDistance: 0.35,
-    envMapIntensity: 1.3, side: THREE.DoubleSide,
+    color: accent, metalness: 0.05, roughness: 0.08, clearcoat: 1, clearcoatRoughness: 0.05,
+    transmission: useTransmission ? 0.92 : 0, thickness: 0.9, ior: 1.45, attenuationColor: accent, attenuationDistance: 0.8,
+    envMapIntensity: 1.4, side: THREE.DoubleSide,
   } : {
     // 푸터: 검정 배경에서 잘 보이는 밝은 실버(크롬)
     color: 0xffffff, metalness: 1, roughness: 0.14, envMapIntensity: 2.4,
   }, uniforms);
 
-  const logo = new THREE.Mesh(buildObjectGeometry(svg), material);
+  const logo = new THREE.Mesh(buildShardGeometry(svg, { cell: 0.3 /* KODE처럼 큼직한 조각 */ }), material);
   const pivot = new THREE.Group(); pivot.add(logo); scene.add(pivot);
   if (mode === 'footer') { // 실버 하이라이트: 위 왼쪽 주광 + 오른쪽 뒤 테두리광
     const key = new THREE.DirectionalLight(0xffffff, 3.2); key.position.set(-4, 5, 6); scene.add(key);
@@ -221,7 +228,7 @@ export async function createLogoScene(canvas, opts = {}) {
   let baseY = 0;
   const pointer = { x: 0, y: 0 };
   let dragging = false, down = false, startX = 0, startY = 0, lastX = 0, lastY = 0;
-  // 커서 위치 → 오브제 로컬 좌표의 중앙 평면(z=0)과의 교점 = 물결이 시작되는 지점
+  // 커서 위치 → 오브제 로컬 좌표의 중앙 평면(z=0)과의 교점 = 깨질 지점
   const raycaster = new THREE.Raycaster(), ndc = new THREE.Vector2(), localRay = new THREE.Ray();
   const hoverPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0), hit = new THREE.Vector3(), inv = new THREE.Matrix4();
   const hoverTarget = new THREE.Vector3(99, 99, 0);
@@ -274,11 +281,10 @@ export async function createLogoScene(canvas, opts = {}) {
     raf = 0;
     const dt = Math.min(0.05, (now - last) / 1000); last = now;
     uniforms.uTime.value += dt;
-    // 물결 중심은 커서를 부드럽게 따라가고, 세기는 약 0.5초에 차오르고 약 1초에 걸쳐 잦아듦
+    // 깨질 지점은 커서를 부드럽게 따라가고, 세기는 빠르게 켜지고 천천히 복원
     uniforms.uHover.value.lerp(hoverTarget, 0.22);
     const ha = uniforms.uHoverAmt.value;
-    const ease = (k) => 1 - Math.pow(1 - k, dt * 60);
-    uniforms.uHoverAmt.value += (hoverOn - ha) * ease(hoverOn > ha ? 0.08 : 0.045);
+    uniforms.uHoverAmt.value += (hoverOn - ha) * (hoverOn > ha ? 0.18 : 0.06);
     const beat = parseFloat(css('--beat')) || 0;
     uniforms.uBeat.value += (beat - uniforms.uBeat.value) * 0.3;
 
@@ -291,7 +297,7 @@ export async function createLogoScene(canvas, opts = {}) {
     pivot.rotation.set(rot.x, rot.y, Math.sin(uniforms.uTime.value * 0.5) * 0.04);
     pivot.position.y = baseY + (reduceMotion ? 0 : Math.sin(uniforms.uTime.value * 0.8) * 0.05);
     if (onRing) {
-      // 물결이 크게 이는 반경(uHoverR, 오브제 로컬 단위) → 화면 px
+      // 깨지는 반경(uHoverR, 오브제 로컬 단위) → 화면 px
       const viewH = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.position.z;
       const rpx = (uniforms.uHoverR.value * pivot.scale.x / viewH) * canvas.clientHeight;
       onRing({ x: lastPX, y: lastPY, r: rpx, visible: hoverOn === 1 && finePointer && !reduceMotion });
@@ -309,3 +315,6 @@ export async function createLogoScene(canvas, opts = {}) {
   canvas.classList.add('is-ready');
   return { renderer, uniforms };
 }
+
+// 히어로→NOW PLAYING 장면(sound3d.js)이 같은 오브제·재질·문장 그리기를 재사용
+export { loadShapes, buildShardGeometry, shatterMaterial, drawStatementTexture };

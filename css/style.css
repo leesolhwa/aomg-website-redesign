@@ -338,6 +338,47 @@ html.is-intro { overflow: hidden; }
   .hero__release { grid-template-columns: calc(var(--hit-area) * 2.5) minmax(0, 1fr); }
 }
 
+/* ==== FROM IDENTITY TO SOUND: 히어로 → NOW PLAYING 스크롤 고정 무대 ====
+ * .sound = 스크롤 길이(진행도 0~1), .hero = 화면에 고정되는 무대. 배경색은 JS가 진행도에 맞춰 레드 → 검정으로 바꿈 */
+.sound { position: relative; }
+html.js .sound { height: 480vh; }                      /* JS가 없으면 고정 없이 일반 히어로 */
+html.js .sound > .hero { position: sticky; top: 0; height: 100vh; height: 100svh; min-height: 0; }
+.sound__anchor { position: absolute; left: 0; bottom: 0; width: 1px; height: 100vh; pointer-events: none; } /* NOW PLAYING 링크 도착 지점 = 진행도 100% */
+@media (min-width: 1024px) { html.js .sound { height: 600vh; } }
+@media (prefers-reduced-motion: reduce) { html.js .sound { height: 220vh; } } /* 처음·끝 두 상태만 */
+html.no-webgl .sound { height: auto !important; }
+html.no-webgl .sound > .hero { position: relative; height: auto; min-height: 100svh; }
+html:not(.js) .np, html.no-webgl .np { display: none; }
+html.js:not(.no-webgl) #now-playing-fallback { display: none; } /* WebGL·JS가 없을 때만 보이는 대체 섹션 */
+
+/* 05 NOW PLAYING 패널: A24처럼 왼쪽 위 제목·정보 표, 아래 가운데 트랙·재생, 오른쪽 아래 이전/다음 */
+.np { position: absolute; inset: 0; pointer-events: none; color: var(--color-white); opacity: var(--np, 0); transform: translateY(calc((1 - var(--np, 0)) * 16px)); }
+.np.is-on .np__player, .np.is-on .np__nav { pointer-events: auto; }
+.np__head { position: absolute; top: calc(var(--header-h) + var(--space-card-text)); left: var(--gutter-x); width: min(22rem, calc(100% - var(--gutter-x) * 2)); }
+.np__head .np__title { width: max-content; max-width: calc(100vw - var(--gutter-x) * 2); }
+.np__eyebrow { font-family: var(--font-sans-en); font-size: var(--fs-body-1); line-height: var(--lh-body-1); text-transform: uppercase; color: var(--color-accent); }
+.np__title { margin-top: 4px; font-family: var(--type-display); font-weight: var(--fw-display); font-size: clamp(36px, 5vw, 80px); line-height: 0.95; letter-spacing: -0.02em; text-transform: uppercase; white-space: nowrap; }
+.np__meta { margin-top: var(--space-card-text); border-top: 1px solid currentColor; }
+.np__meta div { display: flex; justify-content: space-between; column-gap: var(--grid-gap-x); padding-block: 6px; border-bottom: 1px solid rgb(255 255 255 / 0.35); font-family: var(--font-sans-en); font-size: var(--fs-body-1); line-height: var(--lh-body-1); text-transform: uppercase; }
+.np__meta dt { opacity: 0.6; }
+.np__player { position: absolute; right: var(--gutter-x); bottom: calc(var(--player-h) + var(--hit-area) + var(--space-heading-body)); width: min(24rem, calc(100% - var(--gutter-x) * 2)); } /* 오른쪽 아래 빈 자리 (가운데 CD·왼쪽 CD를 가리지 않게) */
+.np:not(.has-track) .np__progress, .np:not(.has-track) .np__time { visibility: hidden; }
+.np__track { display: grid; grid-template-columns: auto 1fr auto; align-items: center; column-gap: var(--grid-gap-x); min-height: var(--hit-area); text-align: left; font-family: var(--font-sans-en); text-transform: uppercase; }
+.np__no { font-size: var(--fs-body-1); line-height: var(--lh-body-1); opacity: 0.6; }
+.np__name { font-size: var(--fs-body-4); line-height: var(--lh-body-4); }
+.np__track.is-current .np__name { color: var(--color-accent); }
+.np__track.is-empty .np__name { font-family: var(--type-ko); font-size: var(--fs-ko-caption); line-height: var(--lh-ko-caption); text-transform: none; opacity: 0.7; }
+.np__progress { position: relative; height: 1px; margin-top: var(--space-card-text); background: rgb(255 255 255 / 0.3); }
+.np__progress span { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--color-white); transition: width 0.25s linear; }
+.np__time { margin-top: 8px; display: flex; justify-content: space-between; font-family: var(--font-sans-en); font-size: var(--fs-body-1); line-height: var(--lh-body-1); font-variant-numeric: tabular-nums; }
+.np__time span[aria-hidden] { display: none; }
+.np__nav { position: absolute; right: var(--gutter-x); bottom: calc(var(--player-h) + var(--space-heading-body)); display: flex; align-items: center; column-gap: var(--space-card-text); }
+.np__count { font-family: var(--font-sans-en); font-size: var(--fs-body-1); line-height: var(--lh-body-1); font-variant-numeric: tabular-nums; }
+@media (max-width: 767px) {
+  .np__player { left: var(--gutter-x); right: var(--gutter-x); width: auto; bottom: calc(var(--player-h) + var(--hit-area) + var(--space-card-text) * 2); }
+  .np__nav { left: var(--gutter-x); right: var(--gutter-x); justify-content: space-between; bottom: calc(var(--player-h) + var(--space-card-text)); }
+}
+
 /* ==== Now Playing (Kode sub-hero: 100vh, 5열 2:3) ==== */
 .now-playing { min-height: var(--section-screen); padding-block: var(--section-space); row-gap: var(--section-pad-sm); align-content: center; }
 .now-playing__side, .now-playing__stage { grid-column: 1 / -1; }

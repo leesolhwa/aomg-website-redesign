@@ -25,7 +25,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400&family=Instrument+Serif&display=swap">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <link rel="preload" as="image" href="img/release-keyveatz-oxygen.webp">
-  <link rel="stylesheet" href="css/style.css?v=20261027-wave">
+  <link rel="stylesheet" href="css/style.css?v=20261027-cd">
   <script type="importmap">{ "imports": { "three": "./js/vendor/three.module.min.js" } }</script>
 </head>
 <body class="page-home">
@@ -66,12 +66,14 @@
   </header>
 
   <main id="main">
-    <!-- ===== #hero: Immersive Hero ===== -->
-    <section class="hero surface-accent" id="hero" data-tone="on-accent" aria-labelledby="hero-title">
+    <!-- ===== #hero → #now-playing: FROM IDENTITY TO SOUND (스크롤 고정 + 스크럽) =====
+         로고 오브제 → 선으로 풀림 → 흩어진 선·파형 → CD → NOW PLAYING. .sound가 스크롤 길이, .hero가 화면에 고정되는 무대 -->
+    <section class="sound" id="sound" data-tone="on-accent" data-section="hero" aria-label="AOMG 히어로와 지금 재생">
+    <div class="hero surface-accent" id="hero" aria-labelledby="hero-title">
       <canvas class="hero__canvas" id="hero-canvas" aria-hidden="true"></canvas>
       <div class="hero__ring" aria-hidden="true"><span>HOLD AND DRAG</span></div>
       <h1 class="hero__statement" id="hero-title" data-copy="hero.statement"><span>ABOVE</span> <span>ORDINARY</span> <span>MUSIC</span> <span>GROUP</span></h1>
-      <div class="hero__release container">
+      <div class="hero__release container" data-np-fade>
         <figure class="hero__cover">
           <img src="img/release-keyveatz-oxygen.webp" alt="OXY_GEN 앨범 커버" width="1200" height="1200" fetchpriority="high">
         </figure>
@@ -85,12 +87,36 @@
           </div>
         </div>
       </div>
+      <!-- 05 NOW PLAYING: CD가 다 생긴 뒤 나타나는 앨범·오디오 정보 -->
+      <div class="np container" id="np" aria-labelledby="np-title" inert>
+        <div class="np__head">
+          <p class="np__eyebrow" data-copy="nowPlaying.title">NOW PLAYING</p>
+          <h2 class="np__title" id="np-title" data-render="np-title" aria-live="polite">OXY_GEN</h2>
+          <dl class="np__meta">
+            <div><dt>ARTIST</dt><dd data-render="np-artist">KEYVEATZ</dd></div>
+            <div><dt>RELEASE</dt><dd data-render="np-type">1ST EP</dd></div>
+            <div><dt>DATE</dt><dd data-render="np-date">2026.06.30</dd></div>
+          </dl>
+        </div>
+        <div class="np__player">
+          <ol class="np__tracks" data-render="np-tracks"></ol>
+          <div class="np__progress" role="progressbar" aria-label="재생 위치" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></div>
+          <p class="np__time"><span data-render="np-time">0:00</span> <span aria-hidden="true">/</span> <span data-render="np-dur">0:30</span></p>
+        </div>
+        <div class="np__nav">
+          <button class="cta" type="button" data-action="cd-prev" aria-label="이전 앨범"><span class="cta__label">PREV</span></button>
+          <p class="np__count" aria-live="polite"><span data-render="np-index">01</span> / <span data-render="np-total">09</span></p>
+          <button class="cta" type="button" data-action="cd-next" aria-label="다음 앨범"><span class="cta__label">NEXT</span></button>
+        </div>
+      </div>
+    </div>
+    <span class="sound__anchor" id="now-playing" aria-hidden="true"></span>
     </section>
 
-    <!-- ===== #now-playing ===== -->
-    <section class="now-playing container grid surface-dark" id="now-playing" data-tone="on-dark" aria-labelledby="np-title">
+    <!-- ===== Now Playing 대체 화면: WebGL을 쓸 수 없을 때만 보임 ===== -->
+    <section class="now-playing container grid surface-dark" id="now-playing-fallback" data-tone="on-dark" aria-labelledby="np-fallback-title">
       <div class="now-playing__side" data-reveal>
-        <h2 class="section-title" id="np-title"><span data-copy="nowPlaying.title">NOW PLAYING</span></h2>
+        <h2 class="section-title" id="np-fallback-title"><span data-copy="nowPlaying.title">NOW PLAYING</span></h2>
         <p class="section-subtitle" data-copy="nowPlaying.subtitle">트랙을 고르면 파형이<br class="m-only"> 그 비트를 따라 움직인다.</p>
         <figure class="now-playing__cover">
           <img src="img/release-keyveatz-oxygen.webp" alt="OXY_GEN 앨범 커버" loading="lazy" width="1200" height="1200">
@@ -190,20 +216,23 @@
 
   <img class="artist-preview" alt="" aria-hidden="true">
 
-  <script src="js/data.js?v=20261027-wave"></script>
-  <script src="js/player.js?v=20261027-wave"></script>
-  <script src="js/script.js?v=20261027-wave"></script>
-  <script src="js/effects.js?v=20261027-wave"></script>
+  <script src="js/data.js?v=20261027-cd"></script>
+  <script src="js/player.js?v=20261027-cd"></script>
+  <script src="js/script.js?v=20261027-cd"></script>
+  <script src="js/effects.js?v=20261027-cd"></script>
   <script type="module">
-    import { createLogoScene } from './js/logo3d.js?v=20261027-wave';
-    const hero = document.getElementById('hero-canvas');
+    import { createSoundScene } from './js/sound3d.js?v=20261027-cd';
+    import { createLogoScene } from './js/logo3d.js?v=20261027-cd';
+    const section = document.getElementById('sound');
     const heroEl = document.getElementById('hero');
+    const np = document.getElementById('np');
+    const fades = heroEl.querySelectorAll('[data-np-fade]');
     const textArea = () => {
       const h = heroEl.getBoundingClientRect(), gnb = document.getElementById('gnb').offsetHeight;
       const rel = heroEl.querySelector('.hero__release').getBoundingClientRect();
       return { top: gnb, bottom: rel.top - h.top };
     };
-    // 커서 영역 표시 (KODE 기준 화면의 원): 깨지는 반경과 같은 크기로 커서를 따라감
+    // 커서 영역 표시 (KODE 'HOLD AND DRAG'): 깨지는 반경과 같은 크기로 커서를 따라감
     const ring = heroEl.querySelector('.hero__ring');
     let rx = 0, ry = 0;
     const onRing = ({ x, y, r, visible }) => {
@@ -212,9 +241,29 @@
       ring.style.transform = `translate(${rx - r}px, ${ry - r}px)`;
       heroEl.classList.toggle('is-hovering', visible);
     };
-    createLogoScene(hero, { mode: 'hero', statement: ['ABOVE', 'ORDINARY', 'MUSIC', 'GROUP'], textArea, onRing })
-      .then((s) => { if (s) document.getElementById('hero').classList.add('is-3d'); })
-      .catch(() => document.documentElement.classList.add('no-webgl'));
+    const smooth = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+    let npOn = false;
+    const onProgress = (p, bg) => {
+      heroEl.style.backgroundColor = `#${bg.getHexString()}`;
+      const rel = 1 - smooth(0.06, 0.18, p);
+      fades.forEach((el) => { el.style.opacity = rel; el.style.visibility = rel < 0.01 ? 'hidden' : ''; });
+      const v = smooth(0.9, 0.97, p);
+      np.style.setProperty('--np', v);
+      if ((v > 0.5) !== npOn) { npOn = v > 0.5; np.inert = !npOn; np.classList.toggle('is-on', npOn); }
+      const tone = p < 0.42 ? 'on-accent' : 'on-dark', sec = p > 0.85 ? 'now-playing' : 'hero';
+      if (tone !== section.dataset.tone || sec !== section.dataset.section) {
+        section.dataset.tone = tone; section.dataset.section = sec;
+        dispatchEvent(new Event('sound:tone'));
+      }
+    };
+    const onSelect = (i, rel) => window.NowPlaying && window.NowPlaying.show(i, rel);
+    createSoundScene({ canvas: document.getElementById('hero-canvas'), section, stage: heroEl, statement: ['ABOVE', 'ORDINARY', 'MUSIC', 'GROUP'], textArea, onRing, onProgress, onSelect })
+      .then((api) => {
+        if (!api) return;
+        heroEl.classList.add('is-3d'); document.documentElement.classList.add('has-sound3d');
+        window.SoundScene = api;
+      })
+      .catch((e) => { console.warn(e); document.documentElement.classList.add('no-webgl'); });
     createLogoScene(document.getElementById('footer-canvas'), { mode: 'footer', interactive: false }).catch(() => {});
   </script>
 </body>
