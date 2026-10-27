@@ -96,6 +96,7 @@
   --section-pad-lg: 64px;
   --section-pad-end: 128px;
   --section-inner-gap: 80px;
+  --section-space: 104px;     /* 섹션 사이 여백 (위·아래 패딩). 화면 높이 고정(100vh)은 그대로 두고 여백만 늘림 */
   --space-heading-body: 40px; /* temporary */
   --space-body-cta: 32px; /* temporary */
   --space-card-text: 10px; /* adjusted */
@@ -160,6 +161,7 @@
     --section-pad-lg: 128px;
     --section-pad-end: 256px;
     --section-inner-gap: 160px;
+    --section-space: clamp(176px, 22vh, 260px);
   }
 }
 
@@ -337,7 +339,7 @@ html.is-intro { overflow: hidden; }
 }
 
 /* ==== Now Playing (Kode sub-hero: 100vh, 5열 2:3) ==== */
-.now-playing { min-height: var(--section-screen); padding-block: var(--section-pad-md); row-gap: var(--section-pad-sm); align-content: center; }
+.now-playing { min-height: var(--section-screen); padding-block: var(--section-space); row-gap: var(--section-pad-sm); align-content: center; }
 .now-playing__side, .now-playing__stage { grid-column: 1 / -1; }
 .now-playing__cover { margin-top: var(--space-heading-body); width: 50%; }
 .now-playing__cover img { width: 100%; aspect-ratio: var(--ratio-release-cover); object-fit: cover; }
@@ -355,7 +357,7 @@ html.is-intro { overflow: hidden; }
 }
 
 /* ==== Artist Universe (Kode justified-text: 128px 패딩, display-0 양쪽 정렬) ==== */
-.artists { padding-block: var(--section-pad-lg); position: relative; }
+.artists { padding-block: var(--section-space); position: relative; }
 .artist-names { margin-top: var(--section-pad-sm); font-family: var(--type-display); font-weight: var(--fw-display); font-size: var(--fs-display-0); line-height: var(--lh-display-0); text-transform: uppercase; }
 .artist-names li { display: block; }
 .artist-names li + li { margin-top: var(--space-card-text); }
@@ -384,7 +386,7 @@ html.is-intro { overflow: hidden; }
 .discography:not(.is-static) .discography__controls { margin-top: var(--space-card-text); }
 @media (max-width: 767px) { .discography:not(.is-static) .discography__list { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: var(--space-heading-body); } .discography:not(.is-static) .card__text-cover { font-size: var(--fs-body-4); line-height: var(--lh-paragraph-en); } }
 .discography.is-static { height: auto; }
-.discography.is-static .discography__sticky { position: static; min-height: 0; padding-block: var(--section-pad-lg); }
+.discography.is-static .discography__sticky { position: static; min-height: 0; padding-block: var(--section-space); }
 .discography__progress { height: 2px; margin-top: var(--space-card-text); background: currentColor; transform-origin: left; transform: scaleX(var(--disco-progress, 0)); }
 .discography__wall { margin-top: var(--section-pad-sm); row-gap: var(--section-pad-sm); }
 .discography__year { grid-column: 1 / -1; font-family: var(--type-display); font-weight: var(--fw-display); font-size: var(--fs-display-4); line-height: var(--lh-display-4); letter-spacing: var(--ls-display-4); }
@@ -422,7 +424,7 @@ html.is-intro { overflow: hidden; }
 @media (min-width: 768px) { .card-grid { grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr)); } }
 
 /* ==== Live Pulse (Kode logo-draw: 96px 패딩, 큰 비주얼 + 문단 비대칭) ==== */
-.live { padding-block: var(--section-pad-sm); row-gap: var(--section-pad-sm); }
+.live { padding-block: var(--section-space); row-gap: var(--section-pad-sm); }
 .live__poster { grid-column: 1 / span 4; }
 .live__poster img { width: 100%; aspect-ratio: var(--ratio-live-poster); object-fit: cover; }
 /* 긁어서 드러나는 포스터 (reference: logo-draw "scratch around") */
@@ -443,7 +445,7 @@ html.is-intro { overflow: hidden; }
 }
 
 /* ==== News (Kode justified-text-02: 112 / 256 패딩) ==== */
-.news { padding-top: var(--section-pad-md); padding-bottom: var(--section-pad-end); }
+.news { padding-top: var(--section-space); padding-bottom: var(--section-pad-end); }
 
 /* ==== Footer (Kode footer: 100vh 검정) ==== */
 .footer { position: relative; overflow: hidden; min-height: var(--section-screen); padding-block: var(--section-pad-md); row-gap: var(--section-pad-sm); align-content: space-between; background: var(--color-bg); color: var(--color-text-on-dark); }
@@ -488,7 +490,7 @@ html.is-intro { overflow: hidden; }
   .detail-hero__image { grid-column: 1 / span 2; align-self: end; }
   .detail-hero__body { grid-column: 3 / span 3; align-self: end; }
 }
-.detail-about, .detail-releases, .detail-videos, .detail-live, .detail-news { padding-block: var(--section-pad-sm); }
+.detail-about, .detail-releases, .detail-videos, .detail-live, .detail-news { padding-block: calc(var(--section-space) * 0.75); }
 .detail-about { row-gap: var(--space-heading-body); }
 .detail-about .section-title { grid-column: 1 / -1; }
 .detail-about__body { grid-column: 1 / -1; display: flex; flex-direction: column; row-gap: var(--space-heading-body); max-width: var(--readable-max); }
@@ -496,7 +498,7 @@ html.is-intro { overflow: hidden; }
   .detail-about .section-title { grid-column: 1 / span 2; }
   .detail-about__body { grid-column: 3 / span 3; }
 }
-.detail-related { padding-top: var(--section-pad-lg); padding-bottom: var(--section-pad-sm); }
+.detail-related { padding-top: var(--section-space); padding-bottom: var(--section-pad-sm); }
 .detail-links { padding-top: var(--section-pad-sm); padding-bottom: var(--section-pad-end); }
 .link-list { margin-top: var(--space-heading-body); display: flex; flex-wrap: wrap; column-gap: var(--space-body-cta); }
 .link-list .cta { font-size: var(--fs-body-3); line-height: var(--lh-body-3); }
