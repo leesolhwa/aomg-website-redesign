@@ -341,12 +341,12 @@ html.is-intro { overflow: hidden; }
 /* ==== FROM IDENTITY TO SOUND: 히어로 → NOW PLAYING 스크롤 고정 무대 ====
  * .sound = 스크롤 길이(진행도 0~1), .hero = 화면에 고정되는 무대. 배경색은 JS가 진행도에 맞춰 레드 → 검정으로 바꿈 */
 .sound { position: relative; }
-html.js .sound { height: 480vh; }                      /* JS가 없으면 고정 없이 일반 히어로 */
+html.js .sound { height: 1000vh; }                     /* JS가 없으면 고정 없이 일반 히어로. 형태 변화 60% + CD 9장 넘기기 40% */
 html.js .sound > .hero { position: sticky; top: 0; height: 100vh; height: 100svh; min-height: 0; }
-.sound__anchor { position: absolute; left: 0; bottom: 0; width: 1px; height: 100vh; pointer-events: none; } /* NOW PLAYING 링크 도착 지점 = 진행도 100% */
-@media (min-width: 1024px) { html.js .sound { height: 600vh; } }
-@media (prefers-reduced-motion: reduce) { html.js .sound { height: 220vh; } } /* 처음·끝 두 상태만 */
+.sound__anchor { position: absolute; left: 0; top: 0; width: 1px; height: 1px; pointer-events: none; } /* NOW PLAYING 링크 도착 지점 = CD 5장이 다 생긴 순간(진행도 60%), JS가 top을 맞춤 */
+@media (min-width: 1024px) { html.js .sound { height: 1300vh; } }
 html.no-webgl .sound { height: auto !important; }
+.np [data-action][disabled] { opacity: 0.35; pointer-events: none; }
 html.no-webgl .sound > .hero { position: relative; height: auto; min-height: 100svh; }
 html:not(.js) .np, html.no-webgl .np { display: none; }
 html.js:not(.no-webgl) #now-playing-fallback { display: none; } /* WebGL·JS가 없을 때만 보이는 대체 섹션 */
