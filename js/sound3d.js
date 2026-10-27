@@ -100,7 +100,8 @@ function contourStrands({ shapes, scale, cx, cy }, geoBox, strandLen) {
       while (acc + d * (1 - t0) >= step) { t0 += (step - acc) / d; acc = 0; out.push(a.clone().lerp(b, t0)); }
       acc += d * (1 - t0);
     }
-    for (let i = 0; i + SUB < out.length; i += SUB) strands.push({ pts: out.slice(i, i + SUB + 1), z });
+    // 조각은 곧은 바늘 모양 (휘어진 호 X): 첫 점과 마지막 점을 잇는 직선 위에 같은 간격으로
+    for (let i = 0; i + SUB < out.length; i += SUB) { const a0 = out[i], a1 = out[i + SUB]; strands.push({ pts: Array.from({ length: SUB + 1 }, (_, j) => a0.clone().lerp(a1, j / SUB)), z }); }
   }));
   return strands;
 }
@@ -110,7 +111,7 @@ const STRAND_VS = /* glsl */`
   uniform float uP; uniform float uTime; uniform mat4 uGlobeM; uniform float uS; uniform vec3 uGlobeC;
   uniform mat4 uCdM[5]; uniform float uCdR[5]; uniform float uHH; uniform float uAspect; uniform float uThick;
   attribute vec4 aA; attribute vec3 aAd; attribute vec4 aS; attribute vec4 aB; attribute vec4 aC; attribute vec4 aT; attribute vec3 aAx;
-  varying float vShow; varying float vTone;
+  varying float vShow; varying float vTone; varying float vGlint;
   float sm(float a, float b, float x) { float t = clamp((x - a) / (b - a), 0.0, 1.0); return t * t * (3.0 - 2.0 * t); }
   mat3 rotAxis(vec3 a, float r) { a = normalize(a); float s = sin(r), c = cos(r), o = 1.0 - c;
     return mat3(o*a.x*a.x + c, o*a.x*a.y + a.z*s, o*a.z*a.x - a.y*s, o*a.x*a.y - a.z*s, o*a.y*a.y + c, o*a.y*a.z + a.x*s,
@@ -148,14 +149,20 @@ const STRAND_VS = /* glsl */`
     float show = sm(0.07, 0.12, p) * (1.0 - sm(0.53, 0.6, p)) * step(0.5, aT.w + 1.0);
     vec3 up = abs(D.y) < 0.95 ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0);
     vec3 Y = normalize(cross(up, D)), Z = cross(D, Y);
-    float w = uThick * show;
-    vec3 world = P + D * position.x * L * 1.04 + Y * position.y * w + Z * position.z * w;
-    vShow = show; vTone = sm(0.12, 0.3, p);
+    // 바늘처럼: 가운데가 가장 굵고 양 끝으로 갈수록 0에 가깝게
+    float u = (aS.w + position.x + 0.5) / ${SUB.toFixed(1)};
+    float taper = pow(max(sin(3.14159 * u), 0.0), 0.8);
+    float w = uThick * show * mix(0.25, 1.0, taper);
+    vec3 world = P + D * position.x * L * 1.02 + Y * position.y * w + Z * position.z * w;
+    vShow = show * mix(0.55, 1.0, taper);
+    vTone = sm(0.12, 0.3, p);
+    // 날아가며 빛을 받는 순간 반짝임 (조각마다 다른 박자)
+    vGlint = 0.7 + 0.6 * pow(abs(sin(aT.w * 31.0 + p * 18.0 * (0.5 + aT.y))), 3.0);
     gl_Position = projectionMatrix * viewMatrix * vec4(world, 1.0);
   }`;
 const STRAND_FS = /* glsl */`
-  uniform vec3 uCol0; uniform vec3 uCol1; varying float vShow; varying float vTone;
-  void main() { if (vShow < 0.01) discard; gl_FragColor = vec4(mix(uCol0, uCol1, vTone), 1.0); }`;
+  uniform vec3 uCol0; uniform vec3 uCol1; varying float vShow; varying float vTone; varying float vGlint;
+  void main() { if (vShow < 0.01) discard; gl_FragColor = vec4(mix(uCol0, uCol1, vTone) * vShow * vGlint, 1.0); }`;
 
 /* ---------- 장면 ---------- */
 export async function createSoundScene(opts) {
@@ -186,7 +193,7 @@ export async function createSoundScene(opts) {
     uP: { value: 0 }, uTime: { value: 0 }, uBeat: { value: 0 }, uGlobeM: { value: new THREE.Matrix4() }, uS: { value: 1 }, uGlobeC: { value: new THREE.Vector3() },
     uHover: { value: new THREE.Vector3(99, 99, 0) }, uHoverAmt: { value: 0 }, uHoverR: { value: 0.95 },
     uCdM: { value: Array.from({ length: 5 }, () => new THREE.Matrix4()) }, uCdR: { value: [1, 1, 1, 1, 1] },
-    uHH: { value: TAN * CAM_Z }, uAspect: { value: 1.6 }, uThick: { value: lite ? 0.008 : 0.0058 },
+    uHH: { value: TAN * CAM_Z }, uAspect: { value: 1.6 }, uThick: { value: lite ? 0.0055 : 0.0034 },
     uCol0: { value: new THREE.Color('#ffe2dc') }, uCol1: { value: new THREE.Color('#e9edf2') },
   };
   const cdM = U.uCdM.value;
@@ -243,7 +250,7 @@ export async function createSoundScene(opts) {
       const i = si * SUB + j, a0 = st.pts[j], a1 = st.pts[j + 1];
       const dx = a1.x - a0.x, dy = a1.y - a0.y, len = Math.hypot(dx, dy) || 1e-4;
       A.set([(a0.x + a1.x) / 2, (a0.y + a1.y) / 2, st.z, len], i * 4); Ad.set([dx / len, dy / len, 0], i * 3);
-      S4.set([...st.c, 0], i * 4); B4.set([...st.burst, 0], i * 4);
+      S4.set([...st.c, j], i * 4); B4.set([...st.burst, 0], i * 4);
       C4.set([st.ring.k, st.ring.r, st.ring.th + (j + 0.5 - SUB / 2) * sub, sub], i * 4);
       T4.set(st.t, i * 4); AX.set(st.ax, i * 3);
     }
@@ -251,7 +258,8 @@ export async function createSoundScene(opts) {
   const ia = (arr, n) => new THREE.InstancedBufferAttribute(arr, n);
   lineGeo.setAttribute('aA', ia(A, 4)); lineGeo.setAttribute('aAd', ia(Ad, 3)); lineGeo.setAttribute('aS', ia(S4, 4)); lineGeo.setAttribute('aB', ia(B4, 4));
   lineGeo.setAttribute('aC', ia(C4, 4)); lineGeo.setAttribute('aT', ia(T4, 4)); lineGeo.setAttribute('aAx', ia(AX, 3));
-  const lines = new THREE.Mesh(lineGeo, new THREE.ShaderMaterial({ uniforms: U, vertexShader: STRAND_VS, fragmentShader: STRAND_FS }));
+  // 더하기 합성: 얇은 선이 겹치는 곳은 은은하게 밝아짐 (흰 막대처럼 보이지 않게)
+  const lines = new THREE.Mesh(lineGeo, new THREE.ShaderMaterial({ uniforms: U, vertexShader: STRAND_VS, fragmentShader: STRAND_FS, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true }));
   lines.frustumCulled = false; scene.add(lines);
 
   // 문장 평면: 같은 장면에 있어야 유리 굴절에 비침. 배경은 투명(장면 배경색이 바뀜)
