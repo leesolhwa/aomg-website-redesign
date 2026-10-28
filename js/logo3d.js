@@ -143,8 +143,9 @@ function footerGlassMaterial(uniforms) {
     vertexShader: /* glsl */`
       attribute vec3 aCenter; attribute vec3 aDir; attribute vec4 aRand;
       uniform float uBeat;
-      varying vec3 vN; varying vec3 vV; varying vec3 vObj;
+      varying vec3 vN; varying vec3 vV; varying vec3 vObj; varying float vSide;
       void main() {
+        vSide = 1.0 - abs(normal.z);
         float jitter = uBeat * 0.06 * aRand.w;
         vec3 tr = position + aDir * jitter;
         vec4 mv = modelViewMatrix * vec4(tr, 1.0);
@@ -152,17 +153,22 @@ function footerGlassMaterial(uniforms) {
         gl_Position = projectionMatrix * mv;
       }`,
     fragmentShader: /* glsl */`
-      uniform float uTime; varying vec3 vN; varying vec3 vV; varying vec3 vObj;
+      uniform float uTime; varying vec3 vN; varying vec3 vV; varying vec3 vObj; varying float vSide;
+      float h2(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
+      float vnoise(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
+        return mix(mix(h2(i), h2(i + vec2(1, 0)), f.x), mix(h2(i + vec2(0, 1)), h2(i + vec2(1, 1)), f.y), f.y); }
       void main() {
         vec3 n = normalize(vN); if (!gl_FrontFacing) n = -n;
         vec3 V = normalize(vV);
         float ndv = abs(dot(n, V));
-        float fres = pow(1.0 - ndv, 3.0);                                   // 가장자리 = 얇은 빛의 선
+        float dash = smoothstep(0.47, 0.53, vnoise(vObj.xy * 3.2 + vObj.z * 2.0));
+        float fres = pow(1.0 - ndv, 8.0);
         vec3 R = reflect(-V, n);
         float top = pow(max(R.y, 0.0), 4.0);                                // 위에서 오는 넓은 빛
         float strip = smoothstep(0.86, 0.99, 0.5 + 0.5 * sin(R.x * 7.0 + R.y * 2.5 + vObj.x * 2.2 - vObj.y * 1.4 + uTime * 0.35));   // 비스듬한 조명 띠가 유리 위를 천천히 지나감
         float spec = pow(max(dot(n, normalize(vec3(-0.35, 0.55, 0.76) + V)), 0.0), 80.0);
-        float glow = fres * 1.0 + top * 0.3 + strip * 0.55 + spec * 1.6;
+        float glow = (fres * 2.8 + top * 0.12 + strip * 0.4 + spec * 1.7) * mix(1.0, 0.18, smoothstep(0.5, 0.9, vSide)) + fres * 2.0 * smoothstep(0.5, 0.9, vSide) * pow(1.0 - ndv, 6.0);   // 옆면(두께)은 거의 숨기고 가장자리 선만
+        glow *= mix(1.0, dash, smoothstep(0.15, 0.5, 1.0 - ndv));   // 윤곽(옆면·모서리) 빛은 절반 정도만 — 군데군데 끊김
         vec3 col = vec3(0.9, 0.93, 1.0) * glow;
         col += vec3(0.06, -0.01, 0.08) * fres * sin(vObj.x * 6.0 + vObj.y * 4.0);   // 아주 옅은 색 번짐
         float a = clamp(0.025 + glow * 0.9, 0.0, 1.0);   // 몸체는 거의 투명
