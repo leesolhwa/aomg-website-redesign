@@ -558,14 +558,41 @@ html.js [data-reveal].is-in { opacity: 1; transform: none; }
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
 
-/* RELEASES: 제목은 왼쪽 그대로, 연도 + 앨범 묶음(지금 구성 그대로)을 화면 가운데에. 진행 바·버튼은 그대로 */
+/* RELEASES: 안쪽 콘텐츠를 화면 폭의 90%로 줄여 가운데에 (안의 배치는 그대로: 제목·연도 왼쪽, 앨범 오른쪽) */
 @media (min-width: 768px) {
-  .discography:not(.is-static) .discography__wall { display: flex; justify-content: center; align-items: flex-start; column-gap: calc(var(--grid-gap-x) * 4); }
-  .discography:not(.is-static) .discography__year { flex: none; }
-  .discography:not(.is-static) .discography__list { flex: none; display: flex; column-gap: var(--grid-gap-x); width: auto; max-width: none; }
-  .discography:not(.is-static) .discography__list > .card { flex: none; width: min(30vh, 22vw); }   /* 앨범 수와 상관없이 묶음 전체가 가운데 */
+  .discography__sticky { width: 90%; margin-inline: auto; padding-inline: 0; }
 }
-@media (min-width: 768px) and (max-width: 1199px) {
-  .discography:not(.is-static) .discography__wall { column-gap: calc(var(--grid-gap-x) * 2); }
-  .discography:not(.is-static) .discography__list > .card { width: min(30vh, 18vw); }
+
+/* 헤더: 안쪽 폭 90% + 가운데, 메뉴 간격 48px, 로고는 이미지(현재 글자색을 따라감) */
+@media (min-width: 768px) {
+  .gnb { padding-inline: 5%; }
+  .gnb__menu ul { column-gap: 48px; }
 }
+.gnb__logo-mark { display: block; height: 22px; aspect-ratio: 502 / 174; background: currentColor;
+  -webkit-mask: url(../img/logo-aomg.png) center / contain no-repeat; mask: url(../img/logo-aomg.png) center / contain no-repeat; }
+
+/* LIVE: 안쪽 폭 90% + 가운데, 포스터 50% · 글과 100px 간격 */
+@media (min-width: 768px) {
+  .live { width: 90%; margin-inline: auto; padding-inline: 0; grid-template-columns: 1fr 1fr; column-gap: 100px; }
+  .live__poster { grid-column: 1; }
+  .live__body { grid-column: 2; }
+}
+
+/* NEWS: 안쪽 폭 90% + 가운데 */
+@media (min-width: 768px) { .news { width: 90%; margin-inline: auto; padding-inline: 0; } }
+
+/* 플레이어: 곡이 적어서 평소엔 오른쪽 아래 작은 버튼, 누르면(또는 재생하면) 아래에서 바가 올라옴 */
+.player { transition: transform var(--dur-md) var(--ease-out), visibility var(--dur-md); }
+.player.is-collapsed { transform: translateY(100%); visibility: hidden; }
+@media (min-width: 768px) { .player { padding-inline: 5%; } }
+.player__end { display: flex; align-items: center; column-gap: var(--space-card-text); }
+.player-pill { position: fixed; right: 5%; bottom: 20px; z-index: var(--z-player); display: inline-flex; align-items: center; column-gap: 10px; height: var(--hit-area); padding-inline: 16px; border-radius: calc(var(--hit-area) / 2); background: var(--color-black); color: var(--color-white); border: 1px solid rgba(255, 255, 255, 0.28); font-family: var(--font-sans-en); font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; cursor: pointer; }
+.player-pill[hidden] { display: none; }
+.player-pill:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }
+.player-pill__eq { display: inline-flex; align-items: flex-end; column-gap: 2px; height: 12px; }
+.player-pill__eq i { width: 2px; background: currentColor; transform-origin: bottom; animation: pill-eq 1.1s ease-in-out infinite; }
+.player-pill__eq i:nth-child(1) { height: 40%; }
+.player-pill__eq i:nth-child(2) { height: 100%; animation-delay: -0.4s; }
+.player-pill__eq i:nth-child(3) { height: 65%; animation-delay: -0.7s; }
+@keyframes pill-eq { 50% { transform: scaleY(0.4); } }
+@media (prefers-reduced-motion: reduce) { .player-pill__eq i { animation: none; } }

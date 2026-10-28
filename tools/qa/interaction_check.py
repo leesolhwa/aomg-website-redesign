@@ -83,7 +83,7 @@ async def main():
     # 3 navigate to artist, restore, back
     await pg.click('a[data-artist=kimkipyo]'); await pg.wait_for_load_state('load'); await pg.wait_for_timeout(400)
     check('artist link -> kimkipyo', 'KIMKIPY' in await pg.inner_text('#artist-name'))
-    t=await pg.inner_text('.player__title'); check('player restored after nav', 'DEMO BEAT 01' in t, t)  # 마지막으로 재생한 트랙 = NOW PLAYING의 DEMO 01
+    t=await pg.evaluate("document.querySelector('.player__title').textContent"); check('player restored after nav', 'DEMO BEAT 01' in t, t)  # 플레이어가 접혀 있어도 마지막으로 재생한 트랙 = NOW PLAYING의 DEMO 01
     await pg.click('.detail-hero__body .cta'); await pg.wait_for_load_state('load')
     check('back to artists -> index#artists', pg.url.endswith('index.html#artists'), pg.url)
     check('no console/http errors (desktop flow)', not errs, '; '.join(errs[:3]))

@@ -204,3 +204,13 @@
 | 78 | 변경 | 섹션 여백 데스크톱 화면 높이 22%(176~260px) → 35%(280~420px), 모바일 104px → 144px | `css/style.css` |
 | 79 | 변경 | RELEASES: 제목은 왼쪽 그대로, 연도 + 앨범 묶음을 화면 가운데(앨범 수와 상관없이). 진행 바·버튼은 그대로. 768~1199px는 카드·간격을 줄여 넘침 방지 | `css/style.css` |
 | 80 | 삭제 | RELEASES 부제 "AOMG의 앨범을 연도별로 넘겨본다." | `index.html`, `docs/copy-strategy.md` |
+
+### 17차: 강사님 피드백 2차 — 90% 정렬·로고·접히는 플레이어 (2026-10-28, 체크리스트 v4~v6 컨펌)
+
+| # | 구분 | 내용 | 파일 |
+|---|---|---|---|
+| 76 | 변경 | RELEASES: 연도+앨범 묶음만 가운데로 모으던 방식 취소 → 안쪽 콘텐츠 폭 90% + 가운데, 안의 배치(제목·연도 왼쪽, 앨범 오른쪽)는 그대로 | `css/style.css` |
+| 77 | 변경 | 헤더: 안쪽 폭 90%, 메뉴 간격 96 → 48px, 왼쪽 AOMG 글자 → 로고 이미지(글자색을 따라 검정/흰색) | `index.html`, `artist.html`, `css/style.css`, `img/logo-aomg.png` |
+| 78 | 변경 | LIVE: 안쪽 폭 90%, 포스터 50%, 글과 100px 간격 / NEWS: 안쪽 폭 90%, 부제 삭제 | `index.html`, `css/style.css` |
+| 79 | 변경 | 미니 플레이어: 평소엔 오른쪽 아래 작은 PLAYER 버튼, 누르거나 곡을 재생하면 바가 열림, CLOSE로 접힘 | `index.html`, `artist.html`, `css/style.css`, `js/script.js` |
+| 80 | QA | 플레이어가 접혀 있어도 마지막 트랙이 복원되는지 확인하도록 점검 방식 수정 (보이는 글자 → DOM 글자) | `tools/qa/interaction_check.py` |

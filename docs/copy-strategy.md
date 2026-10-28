@@ -124,7 +124,7 @@
 | index.html | Home | `#artists` | **ARTISTS** / AOMG 아티스트 10팀 | 래퍼, 보컬, 크루, 방송인, 파이터까지. | 이름을 누르면 음악과 영상, 공연이 한 페이지에 모여 있어요. | 아티스트명 10개 (링크) | 공식 About: "스포츠 엔터테인먼트 산업에도 진출". 실제 로스터 구성 그대로. 메시지 3 |
 | index.html | Home | `#discography` | **RELEASES** / 연도별 발매 기록 | (없음 — 2026-10-28 피드백으로 삭제) | 연도별 목록 (아래 4-3 표) | `[ PREV ]` `[ NEXT ]` `[ LISTEN ]` | 각 아티스트 페이지에 적힌 발매 기록 (2019~2026). 2013~2018년은 공식 출처 확인 후 추가 `[needs-check]` |
 | index.html | Home | `#live` | **LIVE** / 공연 일정 | 날짜와 장소, 예매 링크를 한곳에서 확인한다. | 공연 목록 (아래 4-4) | `[ TICKETS ]` | 현재 사이트는 Schedule이 페이스북으로 나감 → 사이트 안에서 해결 (prd 1장) |
-| index.html | Home | `#news` | **NEWS** / AOMG 소식 | 발매, 수상, 새 얼굴 소식. | 카드 4개 (아래 4-5) | `[ READ ]` | 공식 홈 피드의 실제 게시물 |
+| index.html | Home | `#news` | **NEWS** / AOMG 소식 | (부제 없음 — 강사님 피드백으로 삭제) | 카드 4개 (아래 4-5) | `[ READ ]` | 공식 홈 피드의 실제 게시물 |
 | index.html | Home | `#contact` (Footer) | **AOMG** | — | 4-6 Footer 참고 | `[ INSTAGRAM ]` `[ YOUTUBE ]` `[ FACEBOOK ]` `[ SOUNDCLOUD ]` | 공식 사이트 SNS 링크, 공식 문의 이메일 |
 
 ### 4-2. artist.html (Artist Detail) — Keyveatz
@@ -366,7 +366,7 @@
 | `live.empty` | 지금 예정된 공연이 없어요. 새 일정은 공식 인스타그램에서 확인할 수 있어요. |
 | `news.title` | NEWS |
 | `news.caption` | AOMG 소식 |
-| `news.subtitle` | 발매, 수상, 새 얼굴 소식. |
+| `news.subtitle` | (삭제) |
 
 ### artist.html
 

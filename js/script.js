@@ -387,8 +387,24 @@
     items.forEach((el) => io.observe(el));
   }
 
+  /* ---------- 접히는 플레이어: 평소엔 작은 PLAYER 버튼, 누르거나 곡을 재생하면 바가 열림 ---------- */
+  function initPlayerDock() {
+    const bar = $('#player'), pill = $('.player-pill');
+    if (!bar || !pill) return;
+    const set = (open) => {
+      bar.classList.toggle('is-collapsed', !open); pill.hidden = open;
+      pill.setAttribute('aria-expanded', String(open));
+      if (open) bar.removeAttribute('inert'); else bar.setAttribute('inert', '');
+    };
+    set(false);
+    pill.addEventListener('click', () => { set(true); const b = bar.querySelector('[data-action="play-toggle"]'); b && b.focus({ preventScroll: true }); });
+    bar.addEventListener('click', (e) => { if (e.target.closest('[data-action="player-close"]')) { set(false); pill.focus({ preventScroll: true }); } });
+    if (window.Player) window.Player.subscribe((st) => { if (st.playing) set(true); });   // 어디서든 재생이 시작되면 열림
+  }
+
   if (isArtistPage) renderArtist(); else renderHome();
   bindPlayer();
+  initPlayerDock();
   if (!isArtistPage) initNowPlaying();
   initReveal();
   updateTone();
