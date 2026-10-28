@@ -91,14 +91,10 @@ export function createCracks({ lite, dpr, seed: s0 = 11 }) {
       branches.push(addPath(n, 0.32 * WAVES[wi].b + 0.12, 'branch', { src: waves[wi], at, off }));
     }
   });
-  // 깨진 자리에서 사방으로 뻗는 금 (지구본 로컬 크기 기준)
-  const radials = [];
-  for (let i = 0; i < 13; i++) {
-    let a = (i / 13) * Math.PI * 2 + (rnd() - 0.5) * 0.3, x = 0, y = 0; const n = 9, off = [[0, 0]];
-    const L = 0.55 + rnd() * 0.75;
-    for (let m = 1; m < n; m++) { a += (rnd() - 0.5) * 0.35; const st = L / (n - 1) * (0.7 + rnd() * 0.6); x += Math.cos(a) * st; y += Math.sin(a) * st; off.push([x, y]); }
-    radials.push(addPath(n, 0.55 + rnd() * 0.35, 'radial', { off }));
-  }
+  // 빛의 선: 깨진 유리 파편 중 빛을 받은 몇 군데(spark)에서 시작해, 가까운 파동 줄기에 합류한 뒤 대각선 끝까지 뻗음
+  const NTR = lite ? 24 : 36, LEAD = 14;
+  const trails = [];
+  for (let i = 0; i < NTR; i++) trails.push(addPath(LEAD + M, 0.6 + rnd() * 0.5, 'trail', { c: [0, 0, 0, 1, 1, 2][i % 6], off: (rnd() - 0.5) * 0.05, sp: 0.85 + 0.15 * rnd(), side: i % 2 ? 1 : -1 }));
   // CD 자리마다 동심원 균열 (테두리 → 트랙 → 허브 순) + 방사형 잔금
   const RINGS = [0.985, 0.9, 0.72, 0.55, 0.36, 0.31];
   const rings = [];
@@ -143,7 +139,7 @@ export function createCracks({ lite, dpr, seed: s0 = 11 }) {
   // --- 글린트(점 스프라이트): 파형 위 고정 자리 + CD 동심원 시작점 + CD 뒷면 테두리 ---
   const starSpots = [];
   for (let i = 0; i < (lite ? 14 : 22); i++) starSpots.push({ w: i % 3 === 2 ? 1 : 0, j: Math.floor((0.06 + rnd() * 0.88) * M), ph: rnd() * 6.28, sz: 70 + rnd() * 80 });
-  const NSTAR = starSpots.length + 5 + 12;
+  const NSTAR = starSpots.length + NTR + 5 + 12;
   const sPos = new Float32Array(NSTAR * 3), sK = new Float32Array(NSTAR), sSz = new Float32Array(NSTAR);
   const sGeo = new THREE.BufferGeometry();
   sGeo.setAttribute('position', new THREE.BufferAttribute(sPos, 3).setUsage(THREE.DynamicDrawUsage));
@@ -189,14 +185,14 @@ export function createCracks({ lite, dpr, seed: s0 = 11 }) {
 
   const tmp = new THREE.Vector3();
   /* 매 프레임: p와 CD 자리(cdM)·지구본 중심으로 모든 금의 점 위치·투명도를 계산 */
-  function update({ p, t, globeC, globeS, cdM, slots, amp, rim }) {
+  function update({ p, t, cdM, slots, amp, rim, sparks }) {
     LU.uP.value = p; LU.uT.value = t;
     const on = p > 0.07 && p < 0.62;
     lines.visible = on; dust.visible = p > 0.1 && p < 0.58;
     if (on) {
       spine(slots.map((k) => new THREE.Vector3().setFromMatrixPosition(cdM[k])));
-      const show = smooth(0.085, 0.12, p) * (1 - smooth(0.47, 0.53, p));
-      const R = smooth(0.1, 0.3, p) * 1.08;                    // 가운데서 양 끝으로 뻗어 나감
+      const show = smooth(0.26, 0.34, p) * (1 - smooth(0.47, 0.53, p));   // 빛의 선들이 다 모이면 파동 줄기가 또렷해짐
+      const R = 1.08;
       const R2 = 1.08 * (1 - smooth(0.38, 0.5, p));              // 04에서 양 끝부터 거둬들임
       // 파형 금
       waves.forEach((q) => {
@@ -225,13 +221,33 @@ export function createCracks({ lite, dpr, seed: s0 = 11 }) {
           q.al[m] = src.al[s] * clamp01((grow * 1.2 - m / q.n) / 0.2);
         }
       });
-      // 깨진 자리에서 사방으로
-      const tR = smooth(0.085, 0.17, p), fR = 1 - smooth(0.2, 0.3, p);
-      radials.forEach((q) => {
-        for (let m = 0; m < q.n; m++) {
-          q.pos[m * 3] = globeC.x + q.off[m][0] * globeS; q.pos[m * 3 + 1] = globeC.y + q.off[m][1] * globeS; q.pos[m * 3 + 2] = globeC.z + 0.4;
-          q.al[m] = fR * clamp01((tR * 1.15 - m / (q.n - 1)) / 0.15);
+      // 빛의 선 (spark → 파동 줄기 합류 → 대각선 끝까지)
+      const tau = clamp01((p - 0.13) / 0.19), fT = 1 - smooth(0.4, 0.5, p);
+      const ex = SP[(M - 1) * 3] - SP[0], ey = SP[(M - 1) * 3 + 1] - SP[1], mx = SP[((M - 1) >> 1) * 3], my = SP[((M - 1) >> 1) * 3 + 1];
+      trails.forEach((q, i) => {
+        const s0 = sparks && sparks[i];
+        if (!s0 || tau <= 0) { q.al.fill(0); return; }
+        const src = waves[q.c].pos;
+        let j0 = 0, bd = 1e9;
+        for (let j = 0; j < M; j += 2) { const dx = src[j * 3] - s0.x, dy = src[j * 3 + 1] - s0.y, d = dx * dx + dy * dy; if (d < bd) { bd = d; j0 = j; } }
+        const pr = (s0.x - mx) * ex + (s0.y - my) * ey, d = Math.abs(pr) < 1e-3 ? q.side : Math.sign(pr);
+        const nt = d > 0 ? M - 1 - j0 : j0, rev = tau * q.sp * nt;
+        const bx = (k) => src[k * 3] + SN[k * 2] * q.off, by = (k) => src[k * 3 + 1] + SN[k * 2 + 1] * q.off;
+        const b0x = bx(j0), b0y = by(j0), b0z = src[j0 * 3 + 2];
+        const lk = 0.35 * (1 - Math.min(1, tau * 2.2)) ** 2 * fT;   // 파편 → 줄기 합류 선은 짧게 보였다 금방 사라짐
+        for (let m = 0; m < LEAD; m++) {
+          const u = m / (LEAD - 1), cx = (s0.x + b0x) / 2, cy = (s0.y + b0y) / 2;
+          q.pos[m * 3] = (1 - u) ** 2 * s0.x + 2 * (1 - u) * u * cx + u * u * b0x;
+          q.pos[m * 3 + 1] = (1 - u) ** 2 * s0.y + 2 * (1 - u) * u * cy + u * u * b0y;
+          q.pos[m * 3 + 2] = s0.z * (1 - u) + b0z * u;
+          q.al[m] = lk;
         }
+        for (let s = 0; s < M; s++) {
+          const k = j0 + d * Math.min(s, nt), i3 = (LEAD + s) * 3;
+          q.pos[i3] = bx(k); q.pos[i3 + 1] = by(k); q.pos[i3 + 2] = src[k * 3 + 2];
+          q.al[LEAD + s] = s <= rev && s <= nt ? fT * (0.3 + 0.7 * Math.pow(s / Math.max(1, rev), 1.4)) : 0;
+        }
+        q.head = Math.min(Math.floor(rev), nt);
       });
       // CD 자리 동심원 균열
       ringPaths.forEach((q) => {
@@ -268,6 +284,20 @@ export function createCracks({ lite, dpr, seed: s0 = 11 }) {
       const tw = Math.pow(Math.max(Math.sin(s.ph + p * 34), 0), 3) * (0.8 + 0.2 * Math.sin(t * 1.7 + s.ph)) * 1.3;
       sPos.set([q.pos[s.j * 3], q.pos[s.j * 3 + 1], q.pos[s.j * 3 + 2]], si * 3);
       sK[si] = on ? q.al[s.j] * tw * (s.w ? 0.6 : 1) : 0; sSz[si] = s.sz; si++;
+    });
+    // 깨질 때 빛 받은 파편 자리 → 빛의 선 머리
+    const tau2 = clamp01((p - 0.13) / 0.19);
+    trails.forEach((q, i) => {
+      const s0 = sparks && sparks[i];
+      if (!s0) { sK[si++] = 0; return; }
+      if (tau2 <= 0) {
+        sPos.set([s0.x, s0.y, s0.z], si * 3);
+        sK[si] = s0.k * (0.55 + 0.45 * Math.pow(Math.max(Math.sin(i * 2.7 + p * 90 + t * 2), 0), 3)); sSz[si] = 64; si++;
+      } else {
+        const h = LEAD + (q.head || 0);
+        sPos.set([q.pos[h * 3], q.pos[h * 3 + 1], q.pos[h * 3 + 2]], si * 3);
+        sK[si] = on ? q.b * 0.9 * (1 - smooth(0.3, 0.36, p)) : 0; sSz[si] = 80; si++;
+      }
     });
     ringStarTh.forEach((r) => {
       const dk = [0.05, 0.025, 0, 0.025, 0.05][r.k], tr = smooth(0.35 + dk, 0.45 + dk, p);
