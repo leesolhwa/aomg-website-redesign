@@ -135,6 +135,50 @@ function drawStatementTexture(canvas, lines, w, h, bg, fg, area) {
   });
 }
 
+/* ---------- 푸터: 투명 유리 + 실버 빛 (히어로 전환의 빛나는 선과 같은 결) ----------
+ * 몸체는 거의 투명, 가장자리(옆면·모서리)와 빛을 받는 면만 실버로 빛남. 반사는 가상의 스튜디오 조명 띠 */
+function footerGlassMaterial(uniforms) {
+  const mat = new THREE.ShaderMaterial({
+    uniforms: { ...uniforms },
+    vertexShader: /* glsl */`
+      attribute vec3 aCenter; attribute vec3 aDir; attribute vec4 aRand;
+      uniform float uBeat;
+      varying vec3 vN; varying vec3 vV; varying vec3 vObj; varying float vSide;
+      void main() {
+        vSide = 1.0 - abs(normal.z);
+        float jitter = uBeat * 0.06 * aRand.w;
+        vec3 tr = position + aDir * jitter;
+        vec4 mv = modelViewMatrix * vec4(tr, 1.0);
+        vN = normalize(normalMatrix * normal); vV = normalize(-mv.xyz); vObj = position;
+        gl_Position = projectionMatrix * mv;
+      }`,
+    fragmentShader: /* glsl */`
+      uniform float uTime; varying vec3 vN; varying vec3 vV; varying vec3 vObj; varying float vSide;
+      float h2(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
+      float vnoise(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
+        return mix(mix(h2(i), h2(i + vec2(1, 0)), f.x), mix(h2(i + vec2(0, 1)), h2(i + vec2(1, 1)), f.y), f.y); }
+      void main() {
+        vec3 n = normalize(vN); if (!gl_FrontFacing) n = -n;
+        vec3 V = normalize(vV);
+        float ndv = abs(dot(n, V));
+        float dash = smoothstep(0.47, 0.53, vnoise(vObj.xy * 3.2 + vObj.z * 2.0));
+        float fres = pow(1.0 - ndv, 8.0);
+        vec3 R = reflect(-V, n);
+        float top = pow(max(R.y, 0.0), 4.0);                                // 위에서 오는 넓은 빛
+        float strip = smoothstep(0.86, 0.99, 0.5 + 0.5 * sin(R.x * 7.0 + R.y * 2.5 + vObj.x * 2.2 - vObj.y * 1.4 + uTime * 0.35));   // 비스듬한 조명 띠가 유리 위를 천천히 지나감
+        float spec = pow(max(dot(n, normalize(vec3(-0.35, 0.55, 0.76) + V)), 0.0), 80.0);
+        float glow = (fres * 2.8 + top * 0.12 + strip * 0.4 + spec * 1.7) * mix(1.0, 0.18, smoothstep(0.5, 0.9, vSide)) + fres * 2.0 * smoothstep(0.5, 0.9, vSide) * pow(1.0 - ndv, 6.0);   // 옆면(두께)은 거의 숨기고 가장자리 선만
+        glow *= mix(1.0, dash, smoothstep(0.15, 0.5, 1.0 - ndv));   // 윤곽(옆면·모서리) 빛은 절반 정도만 — 군데군데 끊김
+        vec3 col = vec3(0.9, 0.93, 1.0) * glow;
+        col += vec3(0.06, -0.01, 0.08) * fres * sin(vObj.x * 6.0 + vObj.y * 4.0);   // 아주 옅은 색 번짐
+        float a = clamp(0.025 + glow * 0.9, 0.0, 1.0);   // 몸체는 거의 투명
+        gl_FragColor = vec4(col, a);
+      }`,
+    side: THREE.DoubleSide, transparent: true, depthWrite: false,
+  });
+  return mat;
+}
+
 /* ---------- 장면 ---------- */
 export async function createLogoScene(canvas, opts = {}) {
   const {
@@ -166,21 +210,14 @@ export async function createLogoScene(canvas, opts = {}) {
   const accent = new THREE.Color(css('--color-accent') || '#FF3B1F');
   const uniforms = { uBeat: { value: 0 }, uTime: { value: 0 }, uHover: { value: new THREE.Vector3(99, 99, 0) }, uHoverAmt: { value: 0 }, uHoverR: { value: 0.95 } };
   const useTransmission = mode === 'hero' && finePointer; // 모바일은 성능 때문에 굴절 끔
-  const material = shatterMaterial(mode === 'hero' ? {
+  const material = mode === 'hero' ? shatterMaterial({
     color: accent, metalness: 0.05, roughness: 0.08, clearcoat: 1, clearcoatRoughness: 0.05,
     transmission: useTransmission ? 0.92 : 0, thickness: 0.9, ior: 1.45, attenuationColor: accent, attenuationDistance: 0.8,
     envMapIntensity: 1.4, side: THREE.DoubleSide,
-  } : {
-    // 푸터: 검정 배경에서 잘 보이는 밝은 실버(크롬)
-    color: 0xffffff, metalness: 1, roughness: 0.14, envMapIntensity: 2.4,
-  }, uniforms);
+  }, uniforms) : footerGlassMaterial(uniforms);   // 푸터: 투명 유리 + 실버 빛
 
   const logo = new THREE.Mesh(buildShardGeometry(svg, { cell: 0.3 /* KODE처럼 큼직한 조각 */ }), material);
   const pivot = new THREE.Group(); pivot.add(logo); scene.add(pivot);
-  if (mode === 'footer') { // 실버 하이라이트: 위 왼쪽 주광 + 오른쪽 뒤 테두리광
-    const key = new THREE.DirectionalLight(0xffffff, 3.2); key.position.set(-4, 5, 6); scene.add(key);
-    const rim = new THREE.DirectionalLight(0xffffff, 2.2); rim.position.set(5, -2, -3); scene.add(rim);
-  }
 
   // 문장 평면 (히어로만): 같은 장면에 있어야 유리 굴절에 비침
   let plane = null, textCanvas = null;
