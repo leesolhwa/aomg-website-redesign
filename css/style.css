@@ -96,7 +96,7 @@
   --section-pad-lg: 64px;
   --section-pad-end: 128px;
   --section-inner-gap: 80px;
-  --section-space: 104px;     /* 섹션 사이 여백 (위·아래 패딩). 화면 높이 고정(100vh)은 그대로 두고 여백만 늘림 */
+  --section-space: 144px;     /* 섹션 사이 여백 (위·아래 패딩). 화면 높이 고정(100vh)은 그대로 두고 여백만 늘림 */
   --space-heading-body: 40px; /* temporary */
   --space-body-cta: 32px; /* temporary */
   --space-card-text: 10px; /* adjusted */
@@ -161,7 +161,7 @@
     --section-pad-lg: 128px;
     --section-pad-end: 256px;
     --section-inner-gap: 160px;
-    --section-space: clamp(176px, 22vh, 260px);
+    --section-space: clamp(280px, 35vh, 420px);
   }
 }
 
@@ -556,4 +556,16 @@ html.js [data-reveal].is-in { opacity: 1; transform: none; }
   html.js [data-reveal] { opacity: 1; transform: none; }
   .hero__title { transform: none; }
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+/* RELEASES: 제목은 왼쪽 그대로, 연도 + 앨범 묶음(지금 구성 그대로)을 화면 가운데에. 진행 바·버튼은 그대로 */
+@media (min-width: 768px) {
+  .discography:not(.is-static) .discography__wall { display: flex; justify-content: center; align-items: flex-start; column-gap: calc(var(--grid-gap-x) * 4); }
+  .discography:not(.is-static) .discography__year { flex: none; }
+  .discography:not(.is-static) .discography__list { flex: none; display: flex; column-gap: var(--grid-gap-x); width: auto; max-width: none; }
+  .discography:not(.is-static) .discography__list > .card { flex: none; width: min(30vh, 22vw); }   /* 앨범 수와 상관없이 묶음 전체가 가운데 */
+}
+@media (min-width: 768px) and (max-width: 1199px) {
+  .discography:not(.is-static) .discography__wall { column-gap: calc(var(--grid-gap-x) * 2); }
+  .discography:not(.is-static) .discography__list > .card { width: min(30vh, 18vw); }
 }

@@ -42,7 +42,7 @@ async function makeCdTexture(rel, artist) {
   g.fillStyle = '#141414'; g.fillRect(0, 0, N, N);
   if (cover) draw(cover);
   else {
-    if (photo) draw(photo, 'grayscale(1) contrast(1.08) brightness(0.72)');
+    if (photo) draw(photo, 'contrast(1.04) brightness(0.8)');   // 컬러 그대로, 글자가 읽히게 살짝만 어둡게
     const serif = css('--font-display-en') || 'serif', sans = css('--font-sans-en') || 'sans-serif';
     g.fillStyle = '#f2f2f2'; g.textAlign = 'center'; g.textBaseline = 'alphabetic';
     let fs = 150; g.font = `400 ${fs}px ${serif}`;
