@@ -81,6 +81,82 @@ function cdBodyGeometry(hole, thick) {
 
 const HUB_N = 0.3; // 투명 허브 바깥 반지름 (CD 반지름 1 기준)
 
+/* ---------- 히어로 유리 (완전 투명, 볼드) ----------
+ * 배경(색 + 문장)을 먼저 화면 크기 텍스처로 그리고, 유리 면의 법선만큼 어긋나게 읽어 굴절을 흉내 냄 → 뒤 문장이 크게 일그러짐.
+ * 색은 넣지 않고, 빛 받는 면·얇은 가장자리만 흰색/실버. 깨진 상태에서는 파편 경계선을 절반 정도만, 얇게. */
+const GLASS_VS = /* glsl */`
+  uniform float uBeat; uniform float uHoverAmt; uniform float uHoverR; uniform vec3 uHover;
+  attribute vec3 aCenter; attribute vec3 aDir; attribute vec4 aRand; attribute vec3 aBary; attribute vec3 aEdge;
+  varying vec3 vN; varying vec4 vClip; varying vec3 vObj; varying vec3 vBary; varying vec3 vEdge; varying float vBreak; varying float vKeep;
+  mat3 rotAxis(vec3 a, float r) { a = normalize(a); float s = sin(r), c = cos(r), o = 1.0 - c;
+    return mat3(o*a.x*a.x + c, o*a.x*a.y + a.z*s, o*a.z*a.x - a.y*s, o*a.x*a.y - a.z*s, o*a.y*a.y + c, o*a.y*a.z + a.x*s,
+                o*a.z*a.x + a.y*s, o*a.y*a.z - a.x*s, o*a.z*a.z + c); }
+  void main() {
+    float hd = distance(aCenter.xy, uHover.xy);
+    float g = uHoverAmt * aRand.w;
+    float hov = (1.0 - smoothstep(uHoverR * 0.2, uHoverR, hd)) * g;
+    float spread = 0.42 * g, jitter = uBeat * 0.06 * aRand.w;
+    mat3 R = rotAxis(aRand.xyz, hov * 1.55 + spread * 0.75 + jitter * 2.0);
+    // 커서 기준 좌우로 쫙 벌어짐 (가운데가 열려 뒤 문장이 드러남)
+    vec3 wide = vec3(sign(aCenter.x - uHover.x + 1e-4) * (1.2 + abs(aCenter.x) * 0.9), (aCenter.y - uHover.y) * 0.35, aDir.z * 0.4);
+    vec3 outward = vec3(aCenter.xy * (0.55 + 0.45 * aRand.w), aDir.z * 0.6);
+    vec3 tr = R * (position - aCenter) + aCenter + wide * hov * 1.6 + outward * spread * 1.15 + aDir * (spread * 0.9 + jitter);
+    vN = normalize(normalMatrix * (R * normal));
+    vObj = position; vBary = aBary; vEdge = aEdge; vBreak = clamp(g * 2.5, 0.0, 1.0);
+    vKeep = step(0.3, fract(aRand.x * 43.758 + aRand.y * 12.9 + aRand.z * 7.1));   // 파편의 약 70%
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(tr, 1.0); vClip = gl_Position;
+  }`;
+const GLASS_FS = /* glsl */`
+  uniform sampler2D uBg; uniform float uK; uniform float uAspect; uniform float uOpacity; uniform vec3 uL;
+  varying vec3 vN; varying vec4 vClip; varying vec3 vObj; varying vec3 vBary; varying vec3 vEdge; varying float vBreak; varying float vKeep;
+  float h2(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
+  void main() {
+    vec2 uv = vClip.xy / vClip.w * 0.5 + 0.5;
+    vec3 n = normalize(vN);
+    if (!gl_FrontFacing) n = -n;
+    vec2 wob = vec2(sin(vObj.y * 3.0 + vObj.x * 2.0), cos(vObj.x * 2.6 - vObj.y * 2.2)) * 0.32
+             + vec2(sin(vObj.y * 7.0 - vObj.x * 5.0), cos(vObj.x * 6.0 + vObj.y * 4.0)) * 0.1;   // 유리 표면의 완만한 굴곡 (액체처럼 휨)
+    vec2 off = (n.xy + wob) * uK;
+    vec3 refr = texture2D(uBg, uv - vec2(off.x / uAspect, off.y)).rgb;
+    float fres = pow(1.0 - abs(n.z), 4.0);
+    float spec = pow(max(dot(n, normalize(uL + vec3(0.0, 0.0, 1.0))), 0.0), 60.0) * 1.6;
+    vec3 col = refr * 0.92 + fres * 0.25 + spec;
+    // 파편 경계선: 깨졌을 때만, 파편의 일부·길이의 절반 정도만, 1px 안팎
+    vec3 fw = fwidth(vBary) * 0.9;
+    vec3 eb = 1.0 - smoothstep(vec3(0.0), fw, vBary);
+    float edge = max(max(eb.x * vEdge.x, eb.y * vEdge.y), eb.z * vEdge.z);
+    float dash = step(0.3, h2(floor(vObj.xy * 11.0)));
+    col += edge * vBreak * vKeep * dash * (0.7 + spec);
+    gl_FragColor = vec4(col, uOpacity);
+  }`;
+function glassMaterial(U) {
+  return new THREE.ShaderMaterial({ uniforms: U, vertexShader: GLASS_VS, fragmentShader: GLASS_FS, side: THREE.DoubleSide, transparent: true, depthWrite: false, extensions: { derivatives: true } });
+}
+/* 파편 경계(다른 파편과 맞닿는 삼각형 변)를 표시: 꼭짓점마다 무게중심 좌표 + 변마다 경계 여부 */
+function addShardEdges(geo) {
+  const pos = geo.attributes.position, cen = geo.attributes.aCenter, n = pos.count, T = n / 3;
+  const bary = new Float32Array(n * 3), flag = new Float32Array(n * 3);
+  const q = (v) => Math.round(v * 2000);
+  const vk = (i) => `${q(pos.getX(i))},${q(pos.getY(i))},${q(pos.getZ(i))}`;
+  const ck = (t) => `${q(cen.getX(t * 3))},${q(cen.getY(t * 3))}`;
+  const keys = new Array(T * 3), edges = new Map();
+  for (let t = 0; t < T; t++) {
+    const c = ck(t);
+    for (let k = 0; k < 3; k++) {
+      const a = vk(t * 3 + ((k + 1) % 3)), b = vk(t * 3 + ((k + 2) % 3));
+      const key = a < b ? a + '|' + b : b + '|' + a; keys[t * 3 + k] = key;
+      const e = edges.get(key); if (e) e.push(c); else edges.set(key, [c]);
+    }
+  }
+  for (let t = 0; t < T; t++) {
+    const c = ck(t), f = [0, 0, 0];
+    for (let k = 0; k < 3; k++) f[k] = edges.get(keys[t * 3 + k]).some((x) => x !== c) ? 1 : 0;
+    for (let k = 0; k < 3; k++) { bary[(t * 3 + k) * 3 + k] = 1; flag.set(f, (t * 3 + k) * 3); }
+  }
+  geo.setAttribute('aBary', new THREE.BufferAttribute(bary, 3));
+  geo.setAttribute('aEdge', new THREE.BufferAttribute(flag, 3));
+}
+
 /* ---------- CD 뒷면 (실버) ----------
  * 방사형으로 번지는 흰 빛줄기(트랙 결에 비친 빛) + 미세한 트랙 결 + 투명 테두리 + 허브 링.
  * 빛줄기 방향은 빛·시선 방향을 원판 면에 투영해서 정함 → CD를 돌리면 빛줄기가 따라 돎 */
@@ -147,7 +223,8 @@ export async function createSoundScene(opts) {
   const camera = new THREE.PerspectiveCamera(FOV, 1, 0.1, 100);
   camera.position.set(0, 0, CAM_Z);
   const BG = [new THREE.Color(css('--color-bg-accent') || '#FF3B1F'), new THREE.Color('#5e0c06'), new THREE.Color('#0e0201'), new THREE.Color('#000000')];
-  scene.background = BG[0].clone();
+  const bgColor = BG[0].clone();
+  scene.background = bgColor;
 
   /* --- 01 지구본 (기존 히어로와 같은 모양·재질·마우스 깨짐). 02에서 면이 투명해지며 사라짐 --- */
   const svg = await L3.loadShapes();
@@ -157,12 +234,13 @@ export async function createSoundScene(opts) {
     uHover: { value: new THREE.Vector3(99, 99, 0) }, uHoverAmt: { value: 0 }, uHoverR: { value: 0.95 },
   };
   const cdM = Array.from({ length: 5 }, () => new THREE.Matrix4());   // 형성 단계 CD 자리 5칸 (왼쪽 아래 → 오른쪽 위)
-  const gMat = L3.shatterMaterial({
-    color: accent, metalness: 0.05, roughness: 0.08, clearcoat: 1, clearcoatRoughness: 0.05,
-    transmission: lite ? 0 : 0.92, thickness: 0.9, ior: 1.45, attenuationColor: accent, attenuationDistance: 0.8,
-    envMapIntensity: 1.4, side: THREE.DoubleSide, transparent: true,
-  }, U);
+  // 배경(색 + 문장)을 먼저 그려 두는 텍스처 → 유리가 이걸 어긋나게 읽어 굴절
+  const bgRT = new THREE.WebGLRenderTarget(4, 4, { depthBuffer: false });
+  bgRT.texture.colorSpace = THREE.SRGBColorSpace;
+  Object.assign(U, { uBg: { value: bgRT.texture }, uK: { value: 0.2 }, uAspect: { value: 1.6 }, uOpacity: { value: 1 }, uL: { value: new THREE.Vector3(-0.35, 0.5, 0.79).normalize() } });
+  const gMat = glassMaterial(U);
   const gGeo = L3.buildShardGeometry(svg, { cell: 0.3 });
+  addShardEdges(gGeo);
   gGeo.computeBoundingBox();
   const bbox = gGeo.boundingBox.clone();
   const logo = new THREE.Mesh(gGeo, gMat);
@@ -174,12 +252,40 @@ export async function createSoundScene(opts) {
   const SLOTS = finePointer || window.innerWidth >= 768 ? [0, 1, 2, 3, 4] : [1, 2, 3];   // 모바일은 CD 3장
   const cracks = createCracks({ lite, dpr });
   scene.add(cracks.group);
+  // 빛을 받을 파편 몇 개 (빛의 선이 시작되는 자리): 파편 중심·방향·무작위값을 셰이더와 같은 식으로 움직임
+  const SHARDS = (() => {
+    const c = gGeo.attributes.aCenter, d = gGeo.attributes.aDir, r = gGeo.attributes.aRand, seen = new Map();
+    for (let i = 0; i < c.count; i += 3) {
+      const key = `${c.getX(i).toFixed(3)},${c.getY(i).toFixed(3)}`;
+      if (!seen.has(key) && c.getZ(i) > -0.05) seen.set(key, { c: new THREE.Vector3(c.getX(i), c.getY(i), c.getZ(i)), d: new THREE.Vector3(d.getX(i), d.getY(i), d.getZ(i)), w: r.getW(i) });
+    }
+    const all = [...seen.values()];
+    const out = []; const n = lite ? 24 : 36;
+    for (let i = 0; i < n && all.length; i++) out.push(all.splice(Math.floor(rnd() * all.length), 1)[0]);
+    return out;
+  })();
+  const sparkV = new THREE.Vector3(), sparks = SHARDS.map(() => ({ x: 0, y: 0, z: 0, k: 0 }));
+  function updateSparks() {
+    const hv = U.uHover.value, amt = Math.min(U.uHoverAmt.value, 0.45), HR = U.uHoverR.value, k = smooth(0.085, 0.12, p);   // 선 시작점은 지구본 근처에 머물게
+    SHARDS.forEach((s, i) => {
+      const g = amt * s.w, hd = Math.hypot(s.c.x - hv.x, s.c.y - hv.y);
+      const hov = (1 - smooth(HR * 0.2, HR, hd)) * g, spread = 0.42 * g;
+      const sx = Math.sign(s.c.x - hv.x + 1e-4) * (1.2 + Math.abs(s.c.x) * 0.9);
+      sparkV.set(s.c.x + sx * hov * 1.6 + s.c.x * (0.55 + 0.45 * s.w) * spread * 1.15 + s.d.x * spread * 0.9,
+        s.c.y + (s.c.y - hv.y) * 0.35 * hov * 1.6 + s.c.y * (0.55 + 0.45 * s.w) * spread * 1.15 + s.d.y * spread * 0.9,
+        s.c.z + s.d.z * 0.4 * hov * 1.6 + s.d.z * 0.6 * spread * 1.15 + s.d.z * spread * 0.9).applyMatrix4(logo.matrixWorld);
+      Object.assign(sparks[i], { x: sparkV.x, y: sparkV.y, z: sparkV.z, k });
+    });
+  }
 
-  // 문장 평면: 같은 장면에 있어야 유리 굴절에 비침. 배경은 투명(장면 배경색이 바뀜)
+  // 문장 평면 + 배경색 판: 따로 그려 bgRT에 담고, 본 장면은 그 텍스처를 배경으로 씀 (유리는 굴절해서 읽음)
+  const bgScene = new THREE.Scene();
   const textCanvas = document.createElement('canvas');
   const tTex = new THREE.CanvasTexture(textCanvas); tTex.colorSpace = THREE.SRGBColorSpace;
+  const bgPlane = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ color: BG[0].clone(), toneMapped: false, depthWrite: false }));
+  bgPlane.position.z = -2.6; bgScene.add(bgPlane);
   const plane = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: tTex, transparent: true, toneMapped: false, depthWrite: false }));
-  plane.position.z = -2.5; scene.add(plane);
+  plane.position.z = -2.5; bgScene.add(plane);
 
   /* --- CD 9장 (발매 기록) --- */
   const RELS = typeof RELEASES !== 'undefined' ? RELEASES : [];
@@ -220,6 +326,9 @@ export async function createSoundScene(opts) {
     baseY = a ? -(((a.top + a.bottom) / 2) / H - 0.5) * viewH : 0;
     const ph = 2 * TAN * (CAM_Z - plane.position.z);
     plane.scale.set(ph * aspect, ph, 1);
+    const ph2 = 2 * TAN * (CAM_Z - bgPlane.position.z); bgPlane.scale.set(ph2 * aspect * 1.02, ph2 * 1.02, 1);
+    bgRT.setSize(Math.round(W * dpr), Math.round(H * dpr));
+    U.uAspect.value = aspect;
     L3.drawStatementTexture(textCanvas, statement, Math.round(W * dpr), Math.round(H * dpr), null, css('--color-text-on-accent'), a && { top: a.top * dpr, bottom: a.bottom * dpr });
     tTex.needsUpdate = true;
     cracks.resize(W, H, viewW, viewH);
@@ -363,7 +472,7 @@ export async function createSoundScene(opts) {
 
     // 배경: 레드 → 다크 레드(20%) → 거의 검정(30%) → 완전한 검정(36%)
     const bg = p < 0.2 ? mixc(BG[0], BG[1], smooth(0.1, 0.2, p)) : p < 0.3 ? mixc(BG[1], BG[2], smooth(0.2, 0.3, p)) : mixc(BG[2], BG[3], smooth(0.3, 0.36, p));
-    scene.background.copy(bg);
+    bgColor.copy(bg);
 
     // 지구본 (회전·마우스 깨짐)
     U.uTime.value = t;
@@ -382,9 +491,8 @@ export async function createSoundScene(opts) {
     const brk = smooth(0.065, 0.13, p);
     if (brk > 0) { U.uHover.value.lerp(tmpV.set(0, 0, 0), brk); U.uHoverAmt.value = Math.max(U.uHoverAmt.value, brk); }
     U.uHoverR.value = 0.95 + brk * 2.6;
-    gMat.opacity = 1 - smooth(0.09, 0.15, p);
-    logo.visible = gMat.opacity > 0.002;
-    gMat.depthWrite = gMat.opacity > 0.98;
+    U.uOpacity.value = 1 - smooth(0.09, 0.15, p);
+    logo.visible = U.uOpacity.value > 0.002;
     plane.material.opacity = 1 - smooth(0.08, 0.2, p);
     plane.visible = plane.material.opacity > 0.001;
 
@@ -437,7 +545,8 @@ export async function createSoundScene(opts) {
         rim.push({ x: best.x, y: best.y, z: best.z, k: facing * 1.3 * smooth(0.56, 0.6, p), sz: (mobile ? 100 : 170) * cd.g.scale.x / R });
       });
     }
-    cracks.update({ p, t, globeC: U.uGlobeC.value, globeS: pivot.scale.x, cdM, slots: SLOTS, amp: mobile ? 0.42 : 1.3, rim });
+    if (p < 0.34) { logo.updateMatrixWorld(); updateSparks(); }
+    cracks.update({ p, t, cdM, slots: SLOTS, amp: mobile ? 0.42 : 1.3, rim, sparks });
     const cur = api.index;
     if (cur !== lastCur) { lastCur = cur; onSelect && onSelect(cur, RELS[cur], { first: Math.round(selF) <= 0, last: Math.round(selF) >= NC - 1 }); }
     onProgress && onProgress(p, bg);
@@ -446,7 +555,15 @@ export async function createSoundScene(opts) {
       onRing({ x: lastPX, y: lastPY, r: rpx, visible: hoverOn === 1 && p < 0.06 && finePointer && !reduceMotion });
     }
     canvas.style.cursor = interactive() ? (dragCd >= 0 ? 'grabbing' : hoverCd >= 0 ? 'grab' : '') : '';
-    if (!document.documentElement.classList.contains('is-intro')) renderer.render(scene, camera);
+    if (!document.documentElement.classList.contains('is-intro')) {
+      // 문장이 보이는 동안: 배경(색 + 문장)을 텍스처로 그리고, 본 장면 배경으로 씀
+      if (plane.visible) {
+        bgPlane.material.color.copy(bgColor);
+        renderer.setRenderTarget(bgRT); renderer.render(bgScene, camera); renderer.setRenderTarget(null);
+        scene.background = bgRT.texture;
+      } else scene.background = bgColor;
+      renderer.render(scene, camera);
+    }
     if (visible) raf = requestAnimationFrame(loop);
   }
 
