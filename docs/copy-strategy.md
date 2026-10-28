@@ -122,7 +122,7 @@
 | index.html | Home | `#now-playing` | **NOW PLAYING** / 지금 재생 | 트랙을 고르면 파형이 그 비트를 따라 움직인다. | 무음 상태 안내: 소리가 꺼져 있어요. `[ AUDIO ON ]`을 누르면 재생돼요. / 음원 표기: 데모 비트예요. 키비츠의 전체 곡은 스트리밍에서 들을 수 있어요. | `[ PLAY ]` `[ PAUSE ]` `[ LISTEN ]` | prd 7장: AOMG 음원 미사용, 데모 표기 필수. 사용자가 AOMG 곡으로 오해하지 않게 함 |
 | index.html | Home | `#now-playing` 트랙 | `DEMO BEAT 01` `DEMO BEAT 02` `DEMO BEAT 03` | 각 트랙 보조 정보: BPM (음원 확정 후 입력) `[needs-check]` | — | — | 실제 음원 파일이 정해지면 BPM만 채움. 곡명을 지어내지 않음 |
 | index.html | Home | `#artists` | **ARTISTS** / AOMG 아티스트 10팀 | 래퍼, 보컬, 크루, 방송인, 파이터까지. | 이름을 누르면 음악과 영상, 공연이 한 페이지에 모여 있어요. | 아티스트명 10개 (링크) | 공식 About: "스포츠 엔터테인먼트 산업에도 진출". 실제 로스터 구성 그대로. 메시지 3 |
-| index.html | Home | `#discography` | **RELEASES** / 연도별 발매 기록 | AOMG의 앨범을 연도별로 넘겨본다. | 연도별 목록 (아래 4-3 표) | `[ PREV ]` `[ NEXT ]` `[ LISTEN ]` | 각 아티스트 페이지에 적힌 발매 기록 (2019~2026). 2013~2018년은 공식 출처 확인 후 추가 `[needs-check]` |
+| index.html | Home | `#discography` | **RELEASES** / 연도별 발매 기록 | (없음 — 2026-10-28 피드백으로 삭제) | 연도별 목록 (아래 4-3 표) | `[ PREV ]` `[ NEXT ]` `[ LISTEN ]` | 각 아티스트 페이지에 적힌 발매 기록 (2019~2026). 2013~2018년은 공식 출처 확인 후 추가 `[needs-check]` |
 | index.html | Home | `#live` | **LIVE** / 공연 일정 | 날짜와 장소, 예매 링크를 한곳에서 확인한다. | 공연 목록 (아래 4-4) | `[ TICKETS ]` | 현재 사이트는 Schedule이 페이스북으로 나감 → 사이트 안에서 해결 (prd 1장) |
 | index.html | Home | `#news` | **NEWS** / AOMG 소식 | 발매, 수상, 새 얼굴 소식. | 카드 4개 (아래 4-5) | `[ READ ]` | 공식 홈 피드의 실제 게시물 |
 | index.html | Home | `#contact` (Footer) | **AOMG** | — | 4-6 Footer 참고 | `[ INSTAGRAM ]` `[ YOUTUBE ]` `[ FACEBOOK ]` `[ SOUNDCLOUD ]` | 공식 사이트 SNS 링크, 공식 문의 이메일 |
@@ -359,7 +359,7 @@
 | `artists.body` | 이름을 누르면 음악과 영상, 공연이 한 페이지에 모여 있어요. |
 | `discography.title` | RELEASES |
 | `discography.caption` | 연도별 발매 기록 |
-| `discography.subtitle` | AOMG의 앨범을 연도별로 넘겨본다. |
+| `discography.subtitle` | (삭제, 2026-10-28) |
 | `live.title` | LIVE |
 | `live.caption` | 공연 일정 |
 | `live.subtitle` | 날짜와 장소, 예매 링크를 한곳에서 확인한다. |
@@ -398,7 +398,6 @@
 | 데모 비트예요. 키비츠의 전체 곡은 스트리밍에서 들을 수 있어요. | `#now-playing` note | 데모 비트예요.<br>키비츠의 전체 곡은<br>스트리밍에서 들을 수 있어요. | 문장 단위 + 어절 |
 | 이름을 누르면 음악과 영상, 공연이 한 페이지에 모여 있어요. | `#artists` body | 이름을 누르면 음악과 영상,<br>공연이 한 페이지에 모여 있어요. | `<br class="m-only">` |
 | 아티스트명 10개 | `#artists` 목록 (display-0 60px) | 이름 단위로만 줄바꿈. `KOREAN ZOMBIE`는 2줄 허용 | 이름마다 `white-space: nowrap`, 양쪽 정렬은 768px 이상에서만 |
-| AOMG의 앨범을 연도별로 넘겨본다. | `#discography` subtitle | AOMG의 앨범을<br>연도별로 넘겨본다. | `<br class="m-only">` |
 | 지금 예정된 공연이 없어요. 새 일정은 공식 인스타그램에서 확인할 수 있어요. | 공연 빈 상태 | 지금 예정된 공연이 없어요.<br>새 일정은 공식 인스타그램에서<br>확인할 수 있어요. | 문장 단위 + 어절 |
 | 기안84, 제62회 백상예술대상 방송부문 남자 예능상 | 뉴스 카드 2 (2열 카드 폭 약 172px) | 3줄 허용 | `word-break: keep-all` |
 | [Point Of View: U], [HAN : Cooked] | Discography 텍스트 카드 | 단어 단위 | `word-break: keep-all`, `overflow-wrap: anywhere`는 쓰지 않음 |
