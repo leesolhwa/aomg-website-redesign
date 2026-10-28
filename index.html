@@ -25,7 +25,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400&family=Instrument+Serif&display=swap">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <link rel="preload" as="image" href="img/release-keyveatz-oxygen.webp">
-  <link rel="stylesheet" href="css/style.css?v=20261028-fb1">
+  <link rel="stylesheet" href="css/style.css?v=20261028-fb2">
   <script type="importmap">{ "imports": { "three": "./js/vendor/three.module.min.js" } }</script>
 </head>
 <body class="page-home">
@@ -50,7 +50,7 @@
 
   <!-- ===== GNB (공통) ===== -->
   <header class="gnb container" id="gnb" data-tone="on-accent">
-    <a class="gnb__logo" href="index.html" aria-label="AOMG 홈" data-copy="nav.home">AOMG</a>
+    <a class="gnb__logo" href="index.html" aria-label="AOMG 홈"><span class="gnb__logo-mark" aria-hidden="true"></span></a>
     <button class="gnb__toggle cta" type="button" aria-expanded="false" aria-controls="gnb-menu" aria-label="메뉴 열기">
       <span class="cta__label" data-copy="nav.menu">MENU</span>
     </button>
@@ -175,7 +175,6 @@
     <!-- ===== #news: Stories & News ===== -->
     <section class="news container surface-dark" id="news" data-tone="on-dark" aria-labelledby="news-title">
       <h2 class="section-title" id="news-title" data-reveal><span data-copy="news.title">NEWS</span></h2>
-      <p class="section-subtitle" data-copy="news.subtitle" data-reveal>발매, 수상, 새 얼굴 소식.</p>
       <ul class="card-grid" data-render="news"></ul>
     </section>
   </main>
@@ -203,25 +202,26 @@
   </footer>
 
   <!-- ===== Mini Player (공통) ===== -->
-  <div class="player container" id="player" role="region" aria-label="미니 플레이어">
+  <button class="player-pill" type="button" data-action="player-open" aria-controls="player" aria-expanded="false" aria-label="플레이어 열기"><span class="player-pill__eq" aria-hidden="true"><i></i><i></i><i></i></span><span>PLAYER</span></button>
+  <div class="player container is-collapsed" id="player" role="region" aria-label="미니 플레이어">
     <a class="player__logo" href="index.html" aria-label="AOMG 홈">AOMG</a>
     <div class="player__track">
       <button class="cta" type="button" data-action="play-toggle" aria-label="재생"><span class="cta__label">PLAY</span></button>
       <p class="player__title" aria-live="polite" data-render="player-title" data-copy="player.idle">재생 중인 곡 없음</p>
       <div class="player__progress" role="progressbar" aria-label="재생 위치" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></div>
     </div>
-    <button class="cta player__audio" type="button" data-action="audio-toggle" aria-pressed="false" aria-label="소리 켜기"><span class="cta__label" data-copy="audio.on">AUDIO ON</span></button>
+    <div class="player__end"><button class="cta player__audio" type="button" data-action="audio-toggle" aria-pressed="false" aria-label="소리 켜기"><span class="cta__label" data-copy="audio.on">AUDIO ON</span></button><button class="cta" type="button" data-action="player-close" aria-label="플레이어 접기"><span class="cta__label">CLOSE</span></button></div>
   </div>
 
   <img class="artist-preview" alt="" aria-hidden="true">
 
-  <script src="js/data.js?v=20261028-fb1"></script>
-  <script src="js/player.js?v=20261028-fb1"></script>
-  <script src="js/script.js?v=20261028-fb1"></script>
-  <script src="js/effects.js?v=20261028-fb1"></script>
+  <script src="js/data.js?v=20261028-fb2"></script>
+  <script src="js/player.js?v=20261028-fb2"></script>
+  <script src="js/script.js?v=20261028-fb2"></script>
+  <script src="js/effects.js?v=20261028-fb2"></script>
   <script type="module">
-    import { createSoundScene } from './js/sound3d.js?v=20261028-fb1';
-    import { createLogoScene } from './js/logo3d.js?v=20261028-fb1';
+    import { createSoundScene } from './js/sound3d.js?v=20261028-fb2';
+    import { createLogoScene } from './js/logo3d.js?v=20261028-fb2';
     const section = document.getElementById('sound');
     const heroEl = document.getElementById('hero');
     const np = document.getElementById('np');
