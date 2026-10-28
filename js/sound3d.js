@@ -1,8 +1,8 @@
 /* AOMG Concept Redesign — sound3d.js (ES module)
- * FROM IDENTITY TO SOUND: 히어로 지구본 → 윤곽이 선 조각으로 풀림 → 가운데서 사방으로 퍼짐 → 다시 모여 CD 5장 → 스크롤로 CD 넘기기
+ * FROM IDENTITY TO SOUND: 히어로 지구본 → 깨진 자리에서 유리 금이 퍼짐 → 금이 파형처럼 대각선을 가로지름 → CD 자리마다 원형 균열 → CD 5장 → 스크롤로 CD 넘기기
  * - 모든 형태는 스크롤 진행도 p(0~1)의 함수 → 위로 스크롤하면 그대로 되돌아감
  * - p는 섹션 고정(sticky) + 스크롤 위치로 계산하고 부드럽게 따라감 (Pinning + Scrub)
- * - 단계: 01 Hero 0–8% · 02 선으로 풀림 8–20% · 03 사방으로 퍼짐 20–34% · 04 모여서 CD 34–48% · 05 원판 48–58%
+ * - 단계: 01 Hero 0–8% · 02 깨지며 금이 퍼짐 8–18% · 03 대각선 금 파형 18–34% · 04 원형 균열 → CD 윤곽 34–48% · 05 원판 48–58%
  *         06 CD 5장 58–60% · 07 스크롤로 CD 넘기기 60–96% (내리면 CD 줄이 위로) · 08 다음 섹션
  */
 import * as THREE from 'three';
@@ -10,6 +10,7 @@ import { RoomEnvironment } from './vendor/RoomEnvironment.js';
 
 // logo3d.js는 푸터가 같은 버전(?v=)으로 불러오므로 같은 주소로 받아 한 번만 로드되게 함
 const L3 = await import(new URL('./logo3d.js' + new URL(import.meta.url).search, import.meta.url).href);
+const { createCracks } = await import(new URL('./cracks.js' + new URL(import.meta.url).search, import.meta.url).href);
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
@@ -80,89 +81,51 @@ function cdBodyGeometry(hole, thick) {
 
 const HUB_N = 0.3; // 투명 허브 바깥 반지름 (CD 반지름 1 기준)
 
-/* ---------- 지구본 윤곽 → 선 조각 ----------
- * 지구본 SVG의 윤곽(바깥 원·창)을 앞면·뒷면 두 겹으로 따서, 짧은 호·직선 조각(strand)으로 자름.
- * 조각 하나는 SUB개의 아주 짧은 직선으로 그려서 휘어진 모양을 유지. 좌표는 지구본 로컬 (폭 3.2, 가운데 0, y 위쪽) */
-const SUB = 4;
-function contourStrands({ shapes, scale, cx, cy }, geoBox, strandLen) {
-  const c = new THREE.Vector3(); geoBox.getCenter(c);
-  const zh = geoBox.max.z - c.z + 0.012; // 앞·뒷면 바로 바깥 (유리에 가려지지 않게)
-  const loops = [];
-  shapes.forEach((sh) => {
-    const { shape, holes } = sh.extractPoints(24);
-    [shape, ...holes].forEach((pts) => loops.push(pts.map((q) => new THREE.Vector2((q.x - cx) * scale - c.x, -(q.y - cy) * scale - c.y))));
-  });
-  const step = strandLen / SUB, strands = [];
-  [zh, -zh].forEach((z) => loops.forEach((pts) => {
-    const out = [pts[0].clone()]; let acc = 0;   // 같은 간격으로 다시 찍기
-    for (let i = 1; i <= pts.length; i++) {
-      const a = pts[i - 1], b = pts[i % pts.length]; const d = a.distanceTo(b); let t0 = 0;
-      while (acc + d * (1 - t0) >= step) { t0 += (step - acc) / d; acc = 0; out.push(a.clone().lerp(b, t0)); }
-      acc += d * (1 - t0);
-    }
-    // 조각은 곧은 바늘 모양 (휘어진 호 X): 첫 점과 마지막 점을 잇는 직선 위에 같은 간격으로
-    for (let i = 0; i + SUB < out.length; i += SUB) { const a0 = out[i], a1 = out[i + SUB]; strands.push({ pts: Array.from({ length: SUB + 1 }, (_, j) => a0.clone().lerp(a1, j / SUB)), z }); }
-  }));
-  return strands;
-}
-
-/* 선 조각 셰이더: 지구본 위 → 윤곽에서 떨어져 나옴 → 가운데서 사방으로 퍼짐 → CD 자리의 원을 따라 늘어섬 */
-const STRAND_VS = /* glsl */`
-  uniform float uP; uniform float uTime; uniform mat4 uGlobeM; uniform float uS; uniform vec3 uGlobeC;
-  uniform mat4 uCdM[5]; uniform float uCdR[5]; uniform float uHH; uniform float uAspect; uniform float uThick;
-  attribute vec4 aA; attribute vec3 aAd; attribute vec4 aS; attribute vec4 aB; attribute vec4 aC; attribute vec4 aT; attribute vec3 aAx;
-  varying float vShow; varying float vTone; varying float vGlint;
-  float sm(float a, float b, float x) { float t = clamp((x - a) / (b - a), 0.0, 1.0); return t * t * (3.0 - 2.0 * t); }
-  mat3 rotAxis(vec3 a, float r) { a = normalize(a); float s = sin(r), c = cos(r), o = 1.0 - c;
-    return mat3(o*a.x*a.x + c, o*a.x*a.y + a.z*s, o*a.z*a.x - a.y*s, o*a.x*a.y - a.z*s, o*a.y*a.y + c, o*a.y*a.z + a.x*s,
-                o*a.z*a.x + a.y*s, o*a.y*a.z - a.x*s, o*a.z*a.z + c); }
-  vec3 sp(float fx, float fy, float z) { float k = (${CAM_Z.toFixed(1)} - z) / ${CAM_Z.toFixed(1)}; return vec3(fx * uHH * k * uAspect, fy * uHH * k, z); }
-  void cdPick(int k, out mat4 M, out float R) {
-    if (k == 0) { M = uCdM[0]; R = uCdR[0]; } else if (k == 1) { M = uCdM[1]; R = uCdR[1]; }
-    else if (k == 2) { M = uCdM[2]; R = uCdR[2]; } else if (k == 3) { M = uCdM[3]; R = uCdR[3]; } else { M = uCdM[4]; R = uCdR[4]; }
-  }
+/* ---------- CD 뒷면 (실버) ----------
+ * 방사형으로 번지는 흰 빛줄기(트랙 결에 비친 빛) + 미세한 트랙 결 + 투명 테두리 + 허브 링.
+ * 빛줄기 방향은 빛·시선 방향을 원판 면에 투영해서 정함 → CD를 돌리면 빛줄기가 따라 돎 */
+const BACK_VS = /* glsl */`
+  varying vec2 vXY; varying vec3 vWP; varying vec3 vX; varying vec3 vY;
   void main() {
-    float p = uP;
-    mat3 G = mat3(uGlobeM) / uS;
-    // 조각의 원래 모양 (조각 중심 기준 오프셋)
-    vec3 off = aA.xyz - aS.xyz;
-    vec3 Cg = (uGlobeM * vec4(aS.xyz, 1.0)).xyz;
-    vec3 outv = normalize(Cg - uGlobeC + vec3(0.0, 0.0, 0.001));
-    float tP = sm(0.11 + aT.x * 0.07, 0.2 + aT.x * 0.07, p);             // 윤곽에서 하나씩 떨어져 나옴
-    float tB = sm(0.19 + aT.y * 0.05, 0.31 + aT.y * 0.04, p);            // 가운데서 사방으로 퍼짐
-    float tC = sm(0.34 + aT.z, 0.46 + aT.z, p);                          // CD 자리로 모임
-    mat3 Rf = rotAxis(aAx, (tP * 0.35 + tB * 1.1) * (aT.w * 2.0 - 1.0) * 2.0);
-    vec3 drift = vec3(0.0, 1.0, 0.0) * (p - 0.31) * 0.25 * (aT.y - 0.5) * tB * (1.0 - tC);
-    vec3 Ps = mix(Cg + outv * 0.32 * uS * tP, sp(aB.x, aB.y, aB.z), tB) + drift + Rf * (G * off) * uS;
-    vec3 Ds = Rf * (G * aAd);
-    float Ls = aA.w * uS;
-    // CD 원 위의 자리: 이 짧은 직선 하나가 원의 한 마디가 됨
-    mat4 M; float Rk; cdPick(int(aC.x + 0.5), M, Rk);
-    float th = aC.z;
-    vec3 Pc = (M * vec4(aC.y * cos(th), aC.y * sin(th), 0.03, 1.0)).xyz;
-    vec3 Dc = normalize(mat3(M) * vec3(-sin(th), cos(th), 0.0));
-    float Lc = aC.y * aC.w * Rk * 0.94;
-    if (dot(Dc, Ds) < 0.0) Dc = -Dc;
-    vec3 P = mix(Ps, Pc, tC) + vec3(0.0, 0.0, 0.5) * sin(3.14159 * tC);
-    vec3 D = normalize(mix(Ds, Dc, tC) + vec3(1e-5));
-    float L = mix(Ls, Lc, tC);
-    float show = sm(0.07, 0.12, p) * (1.0 - sm(0.53, 0.6, p)) * step(0.5, aT.w + 1.0);
-    vec3 up = abs(D.y) < 0.95 ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0);
-    vec3 Y = normalize(cross(up, D)), Z = cross(D, Y);
-    // 바늘처럼: 가운데가 가장 굵고 양 끝으로 갈수록 0에 가깝게
-    float u = (aS.w + position.x + 0.5) / ${SUB.toFixed(1)};
-    float taper = pow(max(sin(3.14159 * u), 0.0), 0.8);
-    float w = uThick * show * mix(0.25, 1.0, taper);
-    vec3 world = P + D * position.x * L * 1.02 + Y * position.y * w + Z * position.z * w;
-    vShow = show * mix(0.55, 1.0, taper);
-    vTone = sm(0.12, 0.3, p);
-    // 날아가며 빛을 받는 순간 반짝임 (조각마다 다른 박자)
-    vGlint = 0.7 + 0.6 * pow(abs(sin(aT.w * 31.0 + p * 18.0 * (0.5 + aT.y))), 3.0);
-    gl_Position = projectionMatrix * viewMatrix * vec4(world, 1.0);
+    vXY = position.xy;
+    vec4 wp = modelMatrix * vec4(position, 1.0); vWP = wp.xyz;
+    vX = normalize(mat3(modelMatrix) * vec3(1.0, 0.0, 0.0)); vY = normalize(mat3(modelMatrix) * vec3(0.0, 1.0, 0.0));
+    gl_Position = projectionMatrix * viewMatrix * wp;
   }`;
-const STRAND_FS = /* glsl */`
-  uniform vec3 uCol0; uniform vec3 uCol1; varying float vShow; varying float vTone; varying float vGlint;
-  void main() { if (vShow < 0.01) discard; gl_FragColor = vec4(mix(uCol0, uCol1, vTone) * vShow * vGlint, 1.0); }`;
+const BACK_FS = /* glsl */`
+  uniform float uForm; uniform vec3 uL;
+  varying vec2 vXY; varying vec3 vWP; varying vec3 vX; varying vec3 vY;
+  float h1(float n) { return fract(sin(n * 12.9898) * 43758.5453); }
+  float ad(float a, float b) { float d = mod(a - b + 3.14159265, 6.2831853) - 3.14159265; return d; }
+  void main() {
+    float r = length(vXY);
+    if (r < 1.0 - uForm * 1.04) discard;
+    float th = atan(vXY.y, vXY.x);
+    vec3 V = normalize(cameraPosition - vWP), H = normalize(normalize(uL) + V);
+    float a1 = atan(dot(H, vY), dot(H, vX));
+    float b = 0.0;
+    b = max(b, 1.0 * exp(-pow(ad(th, a1) / 0.30, 2.0)));
+    b = max(b, 0.95 * exp(-pow(ad(th, a1 + 3.14159) / 0.30, 2.0)));
+    b = max(b, 0.55 * exp(-pow(ad(th, a1 + 0.9) / 0.18, 2.0)));
+    b = max(b, 0.5 * exp(-pow(ad(th, a1 + 4.04) / 0.18, 2.0)));
+    b = max(b, 0.4 * exp(-pow(ad(th, a1 - 0.8) / 0.22, 2.0)));
+    b = max(b, 0.38 * exp(-pow(ad(th, a1 + 2.34) / 0.22, 2.0)));
+    float streak = 0.75 + 0.5 * h1(floor((th + 3.14159) / 6.2831853 * 720.0));
+    float tracks = 0.92 + 0.08 * sin(r * 380.0);
+    vec3 col = vec3(0.97, 0.98, 1.0) * (0.10 + 0.95 * b * streak) * tracks;
+    if (r < 0.36) col = vec3(0.02);                                    // 투명 허브
+    if (r > 0.965) col = vec3(0.12);                                   // 투명 테두리
+    float lit = 0.5 + 0.5 * abs(cos(th - a1 + 0.6));
+    col += vec3(exp(-pow((r - 0.993) / 0.006, 2.0)) * (0.6 + 0.4 * lit) + exp(-pow((r - 0.965) / 0.004, 2.0)) * 0.35);
+    float hub = exp(-pow((r - 0.36) / 0.006, 2.0)) * 0.35 + exp(-pow((r - 0.33) / 0.004, 2.0)) * 0.25 + exp(-pow((r - 0.26) / 0.005, 2.0)) * 0.8
+              + exp(-pow((r - 0.24) / 0.003, 2.0)) * 0.3 + exp(-pow((r - 0.17) / 0.006, 2.0)) * 0.9;
+    col += vec3(hub * (0.5 + 0.5 * abs(cos(th - a1 + 0.4))));
+    gl_FragColor = vec4(col, 1.0);
+  }`;
+const BACK_LIGHT = new THREE.Vector3(0.35, 0.85, 0.6).normalize();
+function backMaterial(uForm) {
+  return new THREE.ShaderMaterial({ uniforms: { uForm, uL: { value: BACK_LIGHT } }, vertexShader: BACK_VS, fragmentShader: BACK_FS });
+}
 
 /* ---------- 장면 ---------- */
 export async function createSoundScene(opts) {
@@ -192,11 +155,8 @@ export async function createSoundScene(opts) {
   const U = {
     uP: { value: 0 }, uTime: { value: 0 }, uBeat: { value: 0 }, uGlobeM: { value: new THREE.Matrix4() }, uS: { value: 1 }, uGlobeC: { value: new THREE.Vector3() },
     uHover: { value: new THREE.Vector3(99, 99, 0) }, uHoverAmt: { value: 0 }, uHoverR: { value: 0.95 },
-    uCdM: { value: Array.from({ length: 5 }, () => new THREE.Matrix4()) }, uCdR: { value: [1, 1, 1, 1, 1] },
-    uHH: { value: TAN * CAM_Z }, uAspect: { value: 1.6 }, uThick: { value: lite ? 0.0055 : 0.0034 },
-    uCol0: { value: new THREE.Color('#ffe2dc') }, uCol1: { value: new THREE.Color('#e9edf2') },
   };
-  const cdM = U.uCdM.value;
+  const cdM = Array.from({ length: 5 }, () => new THREE.Matrix4());   // 형성 단계 CD 자리 5칸 (왼쪽 아래 → 오른쪽 위)
   const gMat = L3.shatterMaterial({
     color: accent, metalness: 0.05, roughness: 0.08, clearcoat: 1, clearcoatRoughness: 0.05,
     transmission: lite ? 0 : 0.92, thickness: 0.9, ior: 1.45, attenuationColor: accent, attenuationDistance: 0.8,
@@ -209,58 +169,11 @@ export async function createSoundScene(opts) {
   const pivot = new THREE.Group(); pivot.add(logo); scene.add(pivot);
   const logoRef = logo;
 
-  /* --- 02~04 선 조각 --- */
+  /* --- 02~05 유리 금 --- */
   let seed = 7; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
-  const strands = contourStrands(svg, bbox, lite ? 0.8 : 0.5);
-  const NS = strands.length, NI = NS * SUB;
-  // CD 칸 나누기: 가운데 30%, 양옆 21%, 바깥 14% (모바일 3장: 30·40·30). 각 CD 안에서는 테두리 → 구멍 → 트랙 순서의 동심원
-  const SLOT_W = finePointer || window.innerWidth >= 768 ? [0.14, 0.21, 0.30, 0.21, 0.14] : [0, 0.3, 0.4, 0.3, 0];
-  const SLOT_DELAY = [0.04, 0.02, 0, 0.02, 0.04];
-  const RINGS = [{ r: 0.985, o: 0 }, { r: 0.13, o: 1 }, { r: 0.3, o: 1.5 }, { r: 0.45, o: 2 }, { r: 0.6, o: 2.4 }, { r: 0.75, o: 2.8 }, { r: 0.88, o: 3.2 }];
-  const ringSum = RINGS.reduce((t, r) => t + r.r, 0);
-  const order = strands.map((_, i) => i).sort((x, y) => strands[x].pts[0].x - strands[y].pts[0].x); // 왼쪽 조각은 왼쪽 아래 CD로
-  const counts = SLOT_W.map((w) => Math.round(w * NS)); counts[2] += NS - counts.reduce((x, y) => x + y, 0);
-  let at = 0;
-  // 화면 기준 CD 칸 순서 (o = -2 … 2 → 왼쪽 아래 … 오른쪽 위)
-  counts.forEach((n, k) => {
-    let used = 0;
-    RINGS.forEach((ring, ri) => {
-      const m = ri === RINGS.length - 1 ? n - used : Math.max(Math.min(7, Math.floor(n / RINGS.length)), Math.round((n * ring.r) / ringSum)); // 안쪽 원도 최소 7조각 (각지지 않게)
-      for (let j = 0; j < m && at < NS; j++, at++) strands[order[at]].ring = { k, r: ring.r, th: (j / Math.max(1, m)) * Math.PI * 2 + rnd() * 0.1, dth: (Math.PI * 2) / Math.max(1, m), delay: SLOT_DELAY[k] + ring.o * 0.008 };
-      used += m;
-    });
-  });
-  strands.forEach((st) => {
-    const cxs = st.pts.reduce((t, q) => t + q.x, 0) / st.pts.length, cys = st.pts.reduce((t, q) => t + q.y, 0) / st.pts.length;
-    st.c = [cxs, cys, st.z];
-    const ang = Math.atan2(cys, cxs) + (rnd() - 0.5) * 0.5, dist = 0.25 + rnd() * 0.85;   // 가운데서 사방으로
-    st.burst = [Math.cos(ang) * dist * 1.05, Math.sin(ang) * dist * 0.95, -2.5 + rnd() * 3.5];
-    st.t = [clamp01(Math.hypot(cxs, cys) / 1.7 * 0.5 + rnd() * 0.5), rnd(), 0, rnd()];
-    st.ax = [rnd() - 0.5, rnd() - 0.5, rnd() - 0.5];
-    if (!st.ring) st.ring = { k: 2, r: 0.985, th: rnd() * 6.28, dth: 0.2, delay: 0 };
-    st.t[2] = st.ring.delay + rnd() * 0.012;
-  });
-  const lineGeo = new THREE.InstancedBufferGeometry();
-  const box = new THREE.BoxGeometry(1, 1, 1);
-  lineGeo.index = box.index; lineGeo.setAttribute('position', box.attributes.position); lineGeo.instanceCount = NI;
-  const A = new Float32Array(NI * 4), Ad = new Float32Array(NI * 3), S4 = new Float32Array(NI * 4), B4 = new Float32Array(NI * 4), C4 = new Float32Array(NI * 4), T4 = new Float32Array(NI * 4), AX = new Float32Array(NI * 3);
-  strands.forEach((st, si) => {
-    const sub = st.ring.dth / SUB;
-    for (let j = 0; j < SUB; j++) {
-      const i = si * SUB + j, a0 = st.pts[j], a1 = st.pts[j + 1];
-      const dx = a1.x - a0.x, dy = a1.y - a0.y, len = Math.hypot(dx, dy) || 1e-4;
-      A.set([(a0.x + a1.x) / 2, (a0.y + a1.y) / 2, st.z, len], i * 4); Ad.set([dx / len, dy / len, 0], i * 3);
-      S4.set([...st.c, j], i * 4); B4.set([...st.burst, 0], i * 4);
-      C4.set([st.ring.k, st.ring.r, st.ring.th + (j + 0.5 - SUB / 2) * sub, sub], i * 4);
-      T4.set(st.t, i * 4); AX.set(st.ax, i * 3);
-    }
-  });
-  const ia = (arr, n) => new THREE.InstancedBufferAttribute(arr, n);
-  lineGeo.setAttribute('aA', ia(A, 4)); lineGeo.setAttribute('aAd', ia(Ad, 3)); lineGeo.setAttribute('aS', ia(S4, 4)); lineGeo.setAttribute('aB', ia(B4, 4));
-  lineGeo.setAttribute('aC', ia(C4, 4)); lineGeo.setAttribute('aT', ia(T4, 4)); lineGeo.setAttribute('aAx', ia(AX, 3));
-  // 더하기 합성: 얇은 선이 겹치는 곳은 은은하게 밝아짐 (흰 막대처럼 보이지 않게)
-  const lines = new THREE.Mesh(lineGeo, new THREE.ShaderMaterial({ uniforms: U, vertexShader: STRAND_VS, fragmentShader: STRAND_FS, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true }));
-  lines.frustumCulled = false; scene.add(lines);
+  const SLOTS = finePointer || window.innerWidth >= 768 ? [0, 1, 2, 3, 4] : [1, 2, 3];   // 모바일은 CD 3장
+  const cracks = createCracks({ lite, dpr });
+  scene.add(cracks.group);
 
   // 문장 평면: 같은 장면에 있어야 유리 굴절에 비침. 배경은 투명(장면 배경색이 바뀜)
   const textCanvas = document.createElement('canvas');
@@ -276,20 +189,20 @@ export async function createSoundScene(opts) {
   const bodyGeo = cdBodyGeometry(HOLE, THICK);
   const faceGeo = new THREE.RingGeometry(HUB_N, 0.985, 128, 1); faceGeo.translate(0, 0, THICK / 2 + 0.0015);
   const hubGeo = new THREE.RingGeometry(HOLE, HUB_N, 96, 1); hubGeo.translate(0, 0, THICK / 2 + 0.001);
-  // 뒷면 = 은색 데이터면 (돌렸을 때 보이는 면, 기울이면 무지개 빛)
-  const backGeo = new THREE.RingGeometry(HOLE + 0.02, 0.985, 128, 1); backGeo.rotateY(Math.PI); backGeo.translate(0, 0, -THICK / 2 - 0.0015);
+  // 뒷면 = 실버 데이터면 (돌렸을 때 보이는 면): 방사형 빛줄기 + 테두리 글린트
+  const backGeo = new THREE.RingGeometry(HOLE + 0.02, 0.999, 128, 1); backGeo.rotateY(Math.PI); backGeo.translate(0, 0, -THICK / 2 - 0.0015);
   const cds = await Promise.all(RELS.map(async (rel, i) => {
     const uForm = { value: 0 };
     const tex = await makeCdTexture(rel, ARTS.find((a) => a.id === rel.artistId));
     const face = new THREE.Mesh(faceGeo, revealMaterial(new THREE.MeshPhysicalMaterial({ map: tex, roughness: 0.38, metalness: 0, clearcoat: 0.6, clearcoatRoughness: 0.25, envMapIntensity: 0.9 }), uForm));
     const body = new THREE.Mesh(bodyGeo, revealMaterial(new THREE.MeshPhysicalMaterial({ color: 0xd9d9d9, metalness: 1, roughness: 0.22, iridescence: 0.7, iridescenceIOR: 1.6, envMapIntensity: 1.3 }), uForm));
     const hub = new THREE.Mesh(hubGeo, revealMaterial(new THREE.MeshPhysicalMaterial({ color: 0x6f757b, metalness: 0.5, roughness: 0.2, transparent: true, opacity: 0.6, envMapIntensity: 1.1 }), uForm));
-    const back = new THREE.Mesh(backGeo, revealMaterial(new THREE.MeshPhysicalMaterial({ color: 0xe3e7ec, metalness: 0.9, roughness: 0.3, iridescence: 0.22, iridescenceIOR: 1.5, iridescenceThicknessRange: [260, 420], envMapIntensity: 2.4 }), uForm));
+    const back = new THREE.Mesh(backGeo, backMaterial(uForm));
     back.userData.cd = i;
     const spin = new THREE.Group(); spin.add(body, face, hub, back);
     const g = new THREE.Group(); g.add(spin); scene.add(g);
     face.userData.cd = i; body.userData.cd = i; hub.userData.cd = i;
-    return { rel, g, spin, face, body, hub, uForm, hover: 0, user: new THREE.Quaternion(), vel: new THREE.Vector2(), tilt: [(rnd() - 0.5) * 0.16, (rnd() - 0.5) * 0.16, (rnd() - 0.5) * 0.12], phase: rnd() * 6.28 };
+    return { rel, g, spin, face, body, hub, back, uForm, hover: 0, user: new THREE.Quaternion(), vel: new THREE.Vector2(), tilt: [(rnd() - 0.5) * 0.16, (rnd() - 0.5) * 0.16, (rnd() - 0.5) * 0.12], phase: rnd() * 6.28 };
   }));
 
   /* --- 배치 --- */
@@ -309,7 +222,7 @@ export async function createSoundScene(opts) {
     plane.scale.set(ph * aspect, ph, 1);
     L3.drawStatementTexture(textCanvas, statement, Math.round(W * dpr), Math.round(H * dpr), null, css('--color-text-on-accent'), a && { top: a.top * dpr, bottom: a.bottom * dpr });
     tTex.needsUpdate = true;
-    U.uAspect.value = aspect;
+    cracks.resize(W, H, viewW, viewH);
   }
   // 왼쪽 아래 → 오른쪽 위 대각선. 가운데가 가장 크고 바깥으로 갈수록 작아지며, 5장 모두 화면 안
   function layout(o) {
@@ -441,6 +354,7 @@ export async function createSoundScene(opts) {
   const io = new IntersectionObserver(([en]) => { visible = en.isIntersecting; if (visible && !raf) raf = requestAnimationFrame(loop); });
   io.observe(stage);
   const tmpE = new THREE.Euler(), tmpQ = new THREE.Quaternion(), tmpV = new THREE.Vector3(), tmpS = new THREE.Vector3();
+  const bx = new THREE.Vector3(), by = new THREE.Vector3(), bz = new THREE.Vector3(), bp = new THREE.Vector3(), vv = new THREE.Vector3(), hh = new THREE.Vector3(), wp = new THREE.Vector3();
   function loop(now) {
     raf = 0;
     const dt = Math.min(0.1, (now - last) / 1000); last = now; t += dt;
@@ -461,14 +375,16 @@ export async function createSoundScene(opts) {
     pivot.rotation.set(rot.x, rot.y, Math.sin(t * 0.5) * 0.04);
     pivot.position.y = baseY + (reduceMotion ? 0 : Math.sin(t * 0.8) * 0.05);
     pivot.updateMatrixWorld(true);
-    U.uGlobeM.value.copy(logo.matrixWorld); U.uS.value = pivot.scale.x; U.uP.value = p;
+    U.uP.value = p;
     U.uGlobeC.value.setFromMatrixPosition(pivot.matrixWorld);
     const beat = parseFloat(css('--beat')) || 0; U.uBeat.value += (beat - U.uBeat.value) * 0.3;
-    // 02: 지구본 면이 서서히 투명해지며 사라지고 윤곽선만 남음
-    gMat.opacity = 1 - smooth(0.08, 0.16, p);
+    // 02: 스크롤하면 지구본 전체가 깨지며(마우스 깨짐과 같은 효과를 가운데서 크게) 사라짐
+    const brk = smooth(0.065, 0.13, p);
+    if (brk > 0) { U.uHover.value.lerp(tmpV.set(0, 0, 0), brk); U.uHoverAmt.value = Math.max(U.uHoverAmt.value, brk); }
+    U.uHoverR.value = 0.95 + brk * 2.6;
+    gMat.opacity = 1 - smooth(0.09, 0.15, p);
     logo.visible = gMat.opacity > 0.002;
     gMat.depthWrite = gMat.opacity > 0.98;
-    lines.visible = p > 0.06 && p < 0.61;
     plane.material.opacity = 1 - smooth(0.08, 0.2, p);
     plane.visible = plane.material.opacity > 0.001;
 
@@ -501,9 +417,27 @@ export async function createSoundScene(opts) {
         const L0 = layout(formSlot - 2);
         tmpE.set(L0.rx + cd.tilt[0], L0.ry + cd.tilt[1], L0.rz + cd.tilt[2]);
         cdM[formSlot].compose(tmpV.set(L0.x, L0.y, L0.z), tmpQ.setFromEuler(tmpE), tmpS.setScalar(R * L0.s));
-        U.uCdR.value[formSlot] = R * L0.s;
       }
     });
+    // CD 뒷면이 보이면 빛줄기가 테두리에 닿는 자리에 작은 글린트 (셰이더와 같은 계산)
+    const rim = [];
+    if (p > 0.56) {
+      cds.forEach((cd) => {
+        if (!cd.g.visible || rim.length >= 12) return;
+        const m = cd.back.matrixWorld.elements;
+        bx.set(m[0], m[1], m[2]).normalize(); by.set(m[4], m[5], m[6]).normalize(); bz.set(m[8], m[9], m[10]).normalize();
+        bp.setFromMatrixPosition(cd.back.matrixWorld);
+        vv.copy(camera.position).sub(bp).normalize();
+        const facing = smooth(0.12, 0.45, -vv.dot(bz));   // 뒷면 법선 = 원판 정면의 반대
+        if (facing <= 0) return;
+        hh.copy(BACK_LIGHT).add(vv).normalize();
+        const a1 = Math.atan2(hh.dot(by), hh.dot(bx));
+        let best = null;
+        [a1, a1 + Math.PI].forEach((a) => { wp.set(Math.cos(a) * 0.995, Math.sin(a) * 0.995, -THICK / 2 - 0.003).applyMatrix4(cd.back.matrixWorld); if (!best || wp.y > best.y) best = wp.clone(); });
+        rim.push({ x: best.x, y: best.y, z: best.z, k: facing * 1.3 * smooth(0.56, 0.6, p), sz: (mobile ? 100 : 170) * cd.g.scale.x / R });
+      });
+    }
+    cracks.update({ p, t, globeC: U.uGlobeC.value, globeS: pivot.scale.x, cdM, slots: SLOTS, amp: mobile ? 0.42 : 1.3, rim });
     const cur = api.index;
     if (cur !== lastCur) { lastCur = cur; onSelect && onSelect(cur, RELS[cur], { first: Math.round(selF) <= 0, last: Math.round(selF) >= NC - 1 }); }
     onProgress && onProgress(p, bg);
