@@ -228,3 +228,12 @@
 | 82 | 추가 | RELEASES와 LIVE 사이 REEL: 흰 배경에서 정사각형(화면 높이 56%) 영상이 스크롤하면 화면 100%로 커짐(고정 약 화면 3개), 큰 문구 SOUND YOU CAN SEE가 한 줄씩, 끝에 곡 정보 줄. 영상이 화면을 채우면 헤더 글자 흰색 | `index.html`, `css/style.css`, `js/script.js` |
 | 83 | 추가 | 키비츠 OXY_GEN 뮤비 0:52~1:17(25초) 소리 없이 반복 재생 (2.4MB, 보일 때만 재생), 포스터 이미지. 동작 줄이기 설정이면 고정·확대·자동 재생 없음 | `video/reel-keyveatz-oxygen.mp4`, `img/reel-keyveatz-oxygen.webp` |
 | 84 | 결정 | 문구 서체: 섹션 제목 세리프 + 외곽선으로 굵게 + 자간 -0.06em + 세로로 길쭉하게(2-B). WATCH FULL MV 버튼 → 유튜브 원본(새 창) | `css/style.css` |
+
+### 20차: 히어로 서체 + WHAT WE DO 섹션 (2026-10-29, WHAT WE DO 스토리보드 v6 · 히어로 서체 시안 v4)
+
+| # | 구분 | 내용 | 파일 |
+|---|---|---|---|
+| 85 | 변경 | 히어로 문장: 세리프 대문자 4줄 → *Above* / Ordinary / Music / *Group*. 강조 단어(Above·Group)는 세리프 이탤릭, 가운데는 고딕(첫 글자 대문자), 글자 가로 150%. 굴절 텍스처·HTML 대체 문장 모두 같은 규칙. 캔버스용 서체를 미리 불러옴 | `js/logo3d.js`, `js/sound3d.js`, `index.html`, `css/style.css` |
+| 86 | 추가 | NEWS 다음 WHAT WE DO: 검정 배경, where *Sound* *Becomes* Culture 문장이 좌우에서 날아와 고정(약 화면 3.6개), 유리 카드 4장(음반 제작·매니지먼트·공연·콘텐츠&브랜드)이 왼쪽·오른쪽 번갈아 아래→위로 지나감, 끝에 문장이 들어온 방향으로 빠짐. 카드 ↗ = 푸터 연락처. 1024px 미만·동작 줄이기면 고정 없이 카드 목록 | `index.html`, `css/style.css`, `js/script.js` |
+| 87 | 추가 | 카드 3D 오브제(사이트 모티프): 두꺼운 CD · 유리 지구본 · 반짝임 · 깎인 유리 덩어리. 은색 몸통 + 주황 조명만(흰 빛 없음), 천천히 회전. WebGL 컨텍스트 1개로 보이는 카드만 그림. 실패·모바일·동작 줄이기면 미리 렌더한 이미지 | `js/wwd3d.js`, `img/wwd-*.webp` |
+| 88 | 변경 | 서체 불러오기: Geist 400·600, Instrument Serif 일반·이탤릭 | `index.html`, `artist.html` |

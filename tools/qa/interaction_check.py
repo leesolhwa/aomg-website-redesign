@@ -98,7 +98,7 @@ async def main():
     check('favicon is logo_thin svg', await pg.evaluate("document.querySelector('link[rel=icon]').getAttribute('href')")=='img/favicon.svg')
     check('no side captions or hint texts', await pg.eval_on_selector_all('.section-caption, .hero__hint, .now-playing__muted','e=>e.length')==0)
     check('intro mark has 4 letter pieces from img/logo', await pg.evaluate("[...document.querySelectorAll('.intro__piece')].map(i=>i.getAttribute('src')).join(',')=='img/logo/a.svg,img/logo/o.svg,img/logo/m.svg,img/logo/g.svg'"))
-    check('hero statement is 4 lines', await pg.eval_on_selector_all('.hero__statement span','e=>e.map(x=>x.textContent).join(" ")')=='ABOVE ORDINARY MUSIC GROUP')
+    check('hero statement is 4 lines', await pg.eval_on_selector_all('.hero__statement span, .hero__statement em','e=>e.map(x=>x.textContent).join(" ")')=='Above Ordinary Music Group')
     check('assets are versioned', await pg.evaluate("[...document.querySelectorAll('link[rel=stylesheet][href^=css], script[src^=js]')].every(e=>/\\?v=/.test(e.getAttribute('href')||e.getAttribute('src')))"))
     await pg.click('[data-action=enter]')
     try: await pg.wait_for_function("!document.getElementById('intro')", timeout=10000)
