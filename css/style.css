@@ -615,6 +615,7 @@ html.js [data-reveal].is-in { opacity: 1; transform: none; }
 .reel__info { position: absolute; left: 5%; right: 5%; bottom: 96px; display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--space-card-text) 40px; color: var(--color-white); opacity: var(--info, 0); transform: translateY(calc((1 - var(--info, 0)) * 20px)); }
 .reel__meta { font-family: var(--font-sans-en); font-size: var(--fs-body-1); line-height: var(--lh-body-1); text-transform: uppercase; }
 .reel__sub { flex: 1; min-width: 12em; }
+.reel__cta { pointer-events: auto; }
 @media (max-width: 767px) { .reel { height: 260vh; } .reel__info { left: var(--gutter-x); right: var(--gutter-x); } }
 /* 동작 줄이기: 고정·확대 없이 화면 가득한 영상 + 문구 */
 @media (prefers-reduced-motion: reduce) {

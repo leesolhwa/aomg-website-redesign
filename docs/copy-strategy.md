@@ -413,3 +413,4 @@
 | `reel.title` | SOUND / YOU CAN / SEE |
 | `reel.meta` | KEYVEATZ — OXY_GEN · OFFICIAL MV |
 | `reel.sub` | 들리는 것을 넘어, 보이는 음악. |
+| `reel.cta` | `[ WATCH FULL MV ]` → https://youtu.be/OMh2z5WZHDY (새 창) |
