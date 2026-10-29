@@ -596,3 +596,7 @@ html.js [data-reveal].is-in { opacity: 1; transform: none; }
 .player-pill__eq i:nth-child(3) { height: 65%; animation-delay: -0.7s; }
 @keyframes pill-eq { 50% { transform: scaleY(0.4); } }
 @media (prefers-reduced-motion: reduce) { .player-pill__eq i { animation: none; } }
+
+/* 드래그(텍스트 선택) 색: 기본 파랑 → 히어로 주황. 히어로처럼 배경이 주황인 곳은 선택이 보이게 검정 */
+::selection { background: var(--color-accent); color: var(--color-white); }
+.surface-accent ::selection, [data-tone="on-accent"] ::selection { background: var(--color-black); color: var(--color-accent); }
