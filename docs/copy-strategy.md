@@ -337,7 +337,7 @@
 | 키 | 문구 |
 |---|---|
 | `hero.label` | KEYVEATZ — 1ST EP |
-| `hero.statement` | ABOVE / ORDINARY / MUSIC / GROUP (h1) |
+| `hero.statement` | *Above* / Ordinary / Music / *Group* (h1). 강조 단어 Above·Group = 세리프 이탤릭, 가운데 = 고딕, 가로 150% (20차) |
 | `hero.hint` | 드래그하면 돌아가고, 누르고 있으면 깨져요. |
 | `hero.title` | OXY_GEN |
 | `intro.enter` | ENTER |
@@ -414,3 +414,15 @@
 | `reel.meta` | KEYVEATZ — OXY_GEN · OFFICIAL MV |
 | `reel.sub` | 들리는 것을 넘어, 보이는 음악. |
 | `reel.cta` | `[ WATCH FULL MV ]` → https://youtu.be/OMh2z5WZHDY (새 창) |
+
+### WHAT WE DO (20차 추가, NEWS 다음)
+
+| key | 문구 |
+|---|---|
+| `wwd.eyebrow` | AOMG · WHAT WE DO |
+| `wwd.title` | where *Sound* / *Becomes* / Culture (고딕 + 세리프 이탤릭) |
+| `wwd.sub` | 음악에서 시작해, 문화가 되는 곳. |
+| `wwd.card1.title` · `desc` | Music Production · 기획부터 녹음, 믹싱, 발매까지. 레이블의 사운드를 만듭니다. (임시) |
+| `wwd.card2.title` · `desc` | Artist Management · 아티스트가 음악과 무대에만 집중할 수 있도록. (임시) |
+| `wwd.card3.title` · `desc` | Live & Events · 단독 공연부터 페스티벌까지, 무대 위의 AOMG. (임시) |
+| `wwd.card4.title` · `desc` | Contents & Brand · 영상 콘텐츠, 브랜드 협업, MD로 넓어지는 문화. (임시) |

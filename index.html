@@ -22,10 +22,10 @@
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400&family=Instrument+Serif&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600&family=Instrument+Serif:ital@0;1&display=swap">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <link rel="preload" as="image" href="img/release-keyveatz-oxygen.webp">
-  <link rel="stylesheet" href="css/style.css?v=20261029-reel2">
+  <link rel="stylesheet" href="css/style.css?v=20261029-wwd1">
   <script type="importmap">{ "imports": { "three": "./js/vendor/three.module.min.js" } }</script>
 </head>
 <body class="page-home">
@@ -72,7 +72,7 @@
     <div class="hero surface-accent" id="hero" aria-labelledby="hero-title">
       <canvas class="hero__canvas" id="hero-canvas" aria-hidden="true"></canvas>
       <div class="hero__ring" aria-hidden="true"><span>HOLD AND DRAG</span></div>
-      <h1 class="hero__statement" id="hero-title" data-copy="hero.statement"><span>ABOVE</span> <span>ORDINARY</span> <span>MUSIC</span> <span>GROUP</span></h1>
+      <h1 class="hero__statement" id="hero-title" data-copy="hero.statement"><em>Above</em> <span>Ordinary</span> <span>Music</span> <em>Group</em></h1>
       <div class="hero__release container" data-np-fade>
         <figure class="hero__cover">
           <img src="img/release-keyveatz-oxygen.webp" alt="OXY_GEN 앨범 커버" width="1200" height="1200" fetchpriority="high">
@@ -194,6 +194,55 @@
       <h2 class="section-title" id="news-title" data-reveal><span data-copy="news.title">NEWS</span></h2>
       <ul class="card-grid" data-render="news"></ul>
     </section>
+
+    <!-- ===== #what-we-do: 사업 영역 (20차) — 고정 문장 + 지그재그 유리 카드 ===== -->
+    <section class="wwd" id="what-we-do" data-tone="on-dark" aria-labelledby="wwd-title">
+      <div class="wwd__sticky">
+        <div class="wwd__lead">
+          <p class="wwd__eyebrow" data-copy="wwd.eyebrow">AOMG · WHAT WE DO</p>
+          <h2 class="wwd__title" id="wwd-title" data-copy="wwd.title"><span class="wwd__ln">where <em>Sound</em></span> <span class="wwd__ln"><em>Becomes</em></span> <span class="wwd__ln">Culture</span></h2>
+          <p class="wwd__sub" data-copy="wwd.sub">음악에서 시작해, 문화가 되는 곳.</p>
+        </div>
+        <ul class="wwd__cards">
+          <li class="wwd__card" data-obj="cd">
+            <div class="wwd__card-top">
+              <p class="wwd__cat">01 — Business</p>
+              <h3 class="wwd__name" data-copy="wwd.card1.title">Music<br>Production</h3>
+              <a class="wwd__arrow" href="#contact" aria-label="Music Production 문의, 연락처로 이동"><span aria-hidden="true">↗</span></a>
+              <p class="wwd__desc" data-copy="wwd.card1.desc">기획부터 녹음, 믹싱, 발매까지. 레이블의 사운드를 만듭니다.</p>
+            </div>
+            <div class="wwd__obj"><img src="img/wwd-cd.webp" alt="" width="840" height="520" loading="lazy"></div>
+          </li>
+          <li class="wwd__card" data-obj="globe">
+            <div class="wwd__card-top">
+              <p class="wwd__cat">02 — Business</p>
+              <h3 class="wwd__name" data-copy="wwd.card2.title">Artist<br>Management</h3>
+              <a class="wwd__arrow" href="#contact" aria-label="Artist Management 문의, 연락처로 이동"><span aria-hidden="true">↗</span></a>
+              <p class="wwd__desc" data-copy="wwd.card2.desc">아티스트가 음악과 무대에만 집중할 수 있도록.</p>
+            </div>
+            <div class="wwd__obj"><img src="img/wwd-globe.webp" alt="" width="840" height="520" loading="lazy"></div>
+          </li>
+          <li class="wwd__card" data-obj="spark">
+            <div class="wwd__card-top">
+              <p class="wwd__cat">03 — Business</p>
+              <h3 class="wwd__name" data-copy="wwd.card3.title">Live &amp;<br>Events</h3>
+              <a class="wwd__arrow" href="#contact" aria-label="Live & Events 문의, 연락처로 이동"><span aria-hidden="true">↗</span></a>
+              <p class="wwd__desc" data-copy="wwd.card3.desc">단독 공연부터 페스티벌까지, 무대 위의 AOMG.</p>
+            </div>
+            <div class="wwd__obj"><img src="img/wwd-spark.webp" alt="" width="840" height="520" loading="lazy"></div>
+          </li>
+          <li class="wwd__card" data-obj="crystal">
+            <div class="wwd__card-top">
+              <p class="wwd__cat">04 — Business</p>
+              <h3 class="wwd__name" data-copy="wwd.card4.title">Contents<br>&amp; Brand</h3>
+              <a class="wwd__arrow" href="#contact" aria-label="Contents & Brand 문의, 연락처로 이동"><span aria-hidden="true">↗</span></a>
+              <p class="wwd__desc" data-copy="wwd.card4.desc">영상 콘텐츠, 브랜드 협업, MD로 넓어지는 문화.</p>
+            </div>
+            <div class="wwd__obj"><img src="img/wwd-crystal.webp" alt="" width="840" height="520" loading="lazy"></div>
+          </li>
+        </ul>
+      </div>
+    </section>
   </main>
 
   <!-- ===== Footer (공통) ===== -->
@@ -232,13 +281,13 @@
 
   <img class="artist-preview" alt="" aria-hidden="true">
 
-  <script src="js/data.js?v=20261029-reel2"></script>
-  <script src="js/player.js?v=20261029-reel2"></script>
-  <script src="js/script.js?v=20261029-reel2"></script>
-  <script src="js/effects.js?v=20261029-reel2"></script>
+  <script src="js/data.js?v=20261029-wwd1"></script>
+  <script src="js/player.js?v=20261029-wwd1"></script>
+  <script src="js/script.js?v=20261029-wwd1"></script>
+  <script src="js/effects.js?v=20261029-wwd1"></script>
   <script type="module">
-    import { createSoundScene } from './js/sound3d.js?v=20261029-reel2';
-    import { createLogoScene } from './js/logo3d.js?v=20261029-reel2';
+    import { createSoundScene } from './js/sound3d.js?v=20261029-wwd1';
+    import { createLogoScene } from './js/logo3d.js?v=20261029-wwd1';
     const section = document.getElementById('sound');
     const heroEl = document.getElementById('hero');
     const np = document.getElementById('np');
@@ -281,7 +330,7 @@
     const anchor = document.getElementById('now-playing');
     const placeAnchor = () => { if (window.SoundScene) anchor.style.top = `${Math.round(SoundScene.pForIndex(0) * (section.offsetHeight - innerHeight))}px`; };
     addEventListener('resize', placeAnchor);
-    createSoundScene({ canvas: document.getElementById('hero-canvas'), section, stage: heroEl, statement: ['ABOVE', 'ORDINARY', 'MUSIC', 'GROUP'], textArea, onRing, onProgress, onSelect })
+    createSoundScene({ canvas: document.getElementById('hero-canvas'), section, stage: heroEl, statement: [{ t: 'Above', serif: true }, { t: 'Ordinary' }, { t: 'Music' }, { t: 'Group', serif: true }], textArea, onRing, onProgress, onSelect })
       .then((api) => {
         if (!api) return;
         heroEl.classList.add('is-3d'); document.documentElement.classList.add('has-sound3d');
@@ -289,6 +338,8 @@
       })
       .catch((e) => { console.warn(e); document.documentElement.classList.add('no-webgl'); });
     createLogoScene(document.getElementById('footer-canvas'), { mode: 'footer', interactive: false }).catch(() => {});
+    // WHAT WE DO 카드 3D 오브제: 실패하면 미리 렌더한 이미지가 그대로 보임
+    import('./js/wwd3d.js?v=20261029-wwd1').then((m) => m.initWwd3D(document.getElementById('what-we-do'))).catch(() => {});
   </script>
 </body>
 </html>

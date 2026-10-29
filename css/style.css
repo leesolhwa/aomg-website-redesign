@@ -323,8 +323,10 @@ html.is-intro { overflow: hidden; }
 .hero.is-hovering .hero__canvas { cursor: none; }
 .hero.is-hovering .hero__canvas:active { cursor: none; }
 /* 문장: WebGL이 같은 문장을 굴절용 평면에 그리면 HTML은 화면에서만 숨김 (스크린리더는 읽음) */
-.hero__statement { position: absolute; inset: var(--header-h) 0 auto 0; height: 62%; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; font-family: var(--type-display); font-weight: var(--fw-display); font-size: var(--fs-display-4); line-height: var(--lh-display-0); letter-spacing: -0.045em; text-transform: uppercase; text-align: center; white-space: nowrap; }
-.hero__statement span { display: block; }
+/* 20차: 강조 단어(Above·Group) = 세리프 이탤릭, 가운데 = 고딕. 가로 150% (WebGL 텍스처와 같은 규칙) */
+.hero__statement { position: absolute; inset: var(--header-h) 0 auto 0; height: 62%; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; font-family: var(--font-sans-en); font-weight: 400; font-size: min(var(--fs-display-4), 9.5vw); line-height: var(--lh-display-0); letter-spacing: -0.055em; text-align: center; white-space: nowrap; }
+.hero__statement span, .hero__statement em { display: block; transform: scaleX(1.5); }
+.hero__statement em { font-family: var(--font-display-en); font-style: italic; font-size: 1.12em; letter-spacing: -0.03em; }
 .hero.is-3d .hero__statement { opacity: 0; }
 .hero__release { position: relative; display: grid; grid-template-columns: calc(var(--hit-area) * 2) minmax(0, 1fr); column-gap: var(--grid-gap-x); align-items: end; padding-top: var(--space-card-text); padding-bottom: calc(var(--space-heading-body) + var(--player-h)); pointer-events: none; } /* KODE 히어로 하단처럼 작은 정보 줄 */
 .hero__release a, .hero__release button { pointer-events: auto; }
@@ -622,4 +624,46 @@ html.js [data-reveal].is-in { opacity: 1; transform: none; }
   .reel { height: auto; }
   .reel__sticky { position: relative; }
   .reel { --g: 1; --t1: 1; --t2: 1; --t3: 1; --info: 1; --zoom: 1; }
+}
+
+/* ==== WHAT WE DO (20차): NEWS 다음 · 검정 · 고정 문장 위로 유리 카드 4장이 좌우 번갈아 올라감 ==== */
+.wwd { position: relative; background: var(--color-black); color: var(--color-white); }
+.wwd__sticky { position: relative; overflow: hidden; }
+.wwd__sticky::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(60% 50% at 50% 55%, rgba(255, 255, 255, 0.07), transparent 70%), repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.025) 0 1px, transparent 1px 6px); }
+.wwd__lead { position: relative; text-align: center; }
+.wwd__eyebrow { font-family: var(--font-sans-en); font-size: 12px; line-height: 1.4; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.6; margin-bottom: 28px; }
+.wwd__title { font-family: var(--font-sans-en); font-weight: 400; font-size: min(8.6vw, 15vh); line-height: 0.9; letter-spacing: -0.05em; }
+.wwd__title em { font-family: var(--font-display-en); font-style: italic; font-size: 1.12em; letter-spacing: -0.03em; }
+.wwd__ln { display: block; }
+.wwd__sub { margin-top: 32px; opacity: 0.7; }
+.wwd__cards { position: relative; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: var(--grid-gap-x); width: 90%; margin: var(--section-pad-sm) auto 0; }
+.wwd__card { position: relative; background: linear-gradient(180deg, rgba(40, 40, 40, 0.38), rgba(14, 14, 14, 0.3)); -webkit-backdrop-filter: blur(22px) saturate(1.2); backdrop-filter: blur(22px) saturate(1.2); border: 1px solid rgba(255, 255, 255, 0.16); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 30px 80px rgba(0, 0, 0, 0.5); }
+.wwd__card-top { display: grid; grid-template-columns: 1fr auto; column-gap: 16px; row-gap: 14px; padding: 28px 28px 22px; }
+.wwd__cat { grid-column: 1 / -1; font-family: var(--font-sans-en); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-accent); }
+.wwd__name { font-family: var(--font-sans-en); font-weight: 600; font-size: 34px; line-height: 1.02; letter-spacing: -0.035em; }
+.wwd__arrow { width: var(--hit-area); height: var(--hit-area); border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.35); display: grid; place-items: center; font-size: 18px; align-self: start; background: rgba(255, 255, 255, 0.06); transition: var(--transition-cta); }
+.wwd__arrow:hover, .wwd__arrow:focus-visible { background: var(--color-accent); border-color: var(--color-accent); }
+.wwd__desc { grid-column: 1 / -1; font-size: 14px; line-height: 1.6; color: rgba(255, 255, 255, 0.72); }
+.wwd__obj { position: relative; height: 250px; background: radial-gradient(60% 70% at 50% 55%, rgba(255, 59, 31, 0.16), rgba(255, 59, 31, 0) 70%); }
+.wwd__obj img, .wwd__canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.wwd__obj img { transform: scale(1.08); }
+.wwd__obj.is-3d img { visibility: hidden; }
+/* 데스크톱 + 동작 허용: 화면 고정, 문장은 좌우에서 날아오고 카드는 아래에서 위로 지나감 (JS가 --k1~3, --out, --y 설정) */
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  html.js .wwd { height: 460vh; }
+  html.js .wwd__sticky { position: sticky; top: 0; height: 100vh; display: grid; place-items: center; }
+  html.js .wwd__eyebrow { opacity: calc(0.6 * var(--k1, 0) * (1 - var(--out, 0))); }
+  html.js .wwd__ln { opacity: calc(var(--k, 0) * (1 - var(--out, 0))); transform: translateX(calc((1 - var(--k, 0) + var(--out, 0)) * var(--dir) * 70vw)); }
+  html.js .wwd__ln:nth-child(1) { --k: var(--k1); --dir: -1; }
+  html.js .wwd__ln:nth-child(2) { --k: var(--k2); --dir: 1; }
+  html.js .wwd__ln:nth-child(3) { --k: var(--k3); --dir: -1; }
+  html.js .wwd__sub { opacity: calc(0.7 * var(--k3, 0) * (1 - var(--out, 0))); }
+  html.js .wwd__cards { position: absolute; inset: 0; display: block; width: auto; margin: 0; pointer-events: none; }
+  html.js .wwd__card { position: absolute; top: 0; width: 420px; transform: translateY(var(--y, 120vh)); pointer-events: auto; }
+  html.js .wwd__card:nth-child(odd) { left: 7%; }
+  html.js .wwd__card:nth-child(even) { right: 7%; }
+}
+@media (max-width: 1023px), (prefers-reduced-motion: reduce) {
+  .wwd { padding-block: var(--section-pad-md); }
+  .wwd__title { font-size: min(14vw, 96px); }
 }

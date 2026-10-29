@@ -570,6 +570,7 @@ export async function createSoundScene(opts) {
   const ro = new ResizeObserver(() => { fit(); readScroll(); if (!raf) raf = requestAnimationFrame(loop); });
   ro.observe(canvas);
   if (document.fonts) await document.fonts.ready;
+  await L3.loadStatementFonts();
   fit(); readScroll(); p = pTarget;
   raf = requestAnimationFrame(loop);
   canvas.classList.add('is-ready');

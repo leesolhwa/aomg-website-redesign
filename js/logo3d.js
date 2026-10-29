@@ -111,28 +111,44 @@ function shatterMaterial(params, uniforms) {
   return mat;
 }
 
-/* ---------- 문장 텍스트 평면 (히어로) ---------- */
+/* ---------- 문장 텍스트 평면 (히어로) ----------
+ * lines: 문자열 또는 { t, serif } 배열. serif = 세리프 이탤릭(강조 단어), 나머지 = 고딕.
+ * 히어로 문장은 가로로 150% 넓힘 (높이 그대로) — 20차 확정 */
+const STATEMENT_SX = 1.5;
 function drawStatementTexture(canvas, lines, w, h, bg, fg, area) {
   const ctx = canvas.getContext('2d');
   canvas.width = w; canvas.height = h;
   if (bg) { ctx.fillStyle = bg; ctx.fillRect(0, 0, w, h); } else ctx.clearRect(0, 0, w, h); // bg 없음 = 투명 (배경색이 바뀌는 장면용)
   ctx.fillStyle = fg; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
-  const TRACK = -0.045; // 자간 (em). KODE처럼 촘촘하게
-  const family = css('--font-display-en') || 'serif';
-  // KODE: 3줄이 화면 높이 대부분을 채움. 가장 긴 줄이 폭의 92%를 넘지 않게
+  const items = lines.map((l) => (typeof l === 'string' ? { t: l, serif: false } : l));
+  const mixed = items.some((it) => typeof lines[0] !== 'string' || it.serif);
+  const serif = css('--font-display-en') || 'serif', sans = css('--font-sans-en') || 'sans-serif';
+  const sx = mixed ? STATEMENT_SX : 1;
+  // 강조(세리프 이탤릭)는 고딕보다 1.12배 크게 — 이탤릭 세리프의 작은 x-height 보정
+  const fontOf = (it, sz) => (!mixed ? `400 ${sz}px ${serif}` : it.serif ? `italic 400 ${sz * 1.12}px ${serif}` : `400 ${sz}px ${sans}`);
+  const trackOf = (it) => (!mixed ? -0.045 : it.serif ? -0.03 : -0.055); // 자간 (em)
   const top0 = area ? area.top : 0, availH = area ? area.bottom - area.top : h;
-  let size = availH / (lines.length * 0.9);
-  ctx.font = `400 ${size}px ${family}`;
-  const lineWidth = (l, sz) => [...l].reduce((sum, ch) => sum + ctx.measureText(ch).width, 0) + TRACK * sz * (l.length - 1);
-  const widest = Math.max(...lines.map((l) => lineWidth(l, size)));
-  if (widest > w * 0.92) size *= (w * 0.92) / widest;
-  ctx.font = `400 ${size}px ${family}`;
+  let size = availH / (items.length * 0.9);
+  const lineWidth = (it, sz) => { ctx.font = fontOf(it, sz); return ([...it.t].reduce((sum, ch) => sum + ctx.measureText(ch).width, 0) + trackOf(it) * sz * (it.t.length - 1)) * sx; };
+  const widest = Math.max(...items.map((it) => lineWidth(it, size)));
+  if (widest > w * 0.92) size *= (w * 0.92) / widest; // 가장 긴 줄이 폭의 92%를 넘지 않게
   const lh = size * 0.9; // display-0 line-height 0.9
-  const top = top0 + availH / 2 - (lh * (lines.length - 1)) / 2;
-  lines.forEach((l, i) => {
-    let x = w / 2 - lineWidth(l, size) / 2;
-    [...l].forEach((ch) => { ctx.fillText(ch, x, top + i * lh); x += ctx.measureText(ch).width + TRACK * size; });
+  const top = top0 + availH / 2 - (lh * (items.length - 1)) / 2;
+  items.forEach((it, i) => {
+    let x = w / 2 - lineWidth(it, size) / 2;
+    ctx.font = fontOf(it, size);
+    [...it.t].forEach((ch) => {
+      ctx.save(); ctx.translate(x, top + i * lh); ctx.scale(sx, 1); ctx.fillText(ch, 0, 0); ctx.restore();
+      x += (ctx.measureText(ch).width + trackOf(it) * size) * sx;
+    });
   });
+}
+
+/* 캔버스에만 쓰는 서체(이탤릭 세리프·고딕)는 문서에 아직 안 쓰였으면 받지 않으므로 미리 불러옴 */
+async function loadStatementFonts() {
+  if (!document.fonts || !document.fonts.load) return;
+  const serif = css('--font-display-en'), sans = css('--font-sans-en');
+  try { await Promise.all([document.fonts.load(`italic 400 100px ${serif}`), document.fonts.load(`400 100px ${serif}`), document.fonts.load(`400 100px ${sans}`)]); } catch (e) { /* 서체 실패 시 대체 서체로 그림 */ }
 }
 
 /* ---------- 푸터: 투명 유리 + 실버 빛 (히어로 전환의 빛나는 선과 같은 결) ----------
@@ -347,6 +363,7 @@ export async function createLogoScene(canvas, opts = {}) {
   const ro = new ResizeObserver(() => { fit(); if (!raf) raf = requestAnimationFrame(loop); });
   ro.observe(canvas);
   if (document.fonts) await document.fonts.ready;
+  await loadStatementFonts();
   fit();
   raf = requestAnimationFrame(loop);
   canvas.classList.add('is-ready');
@@ -354,4 +371,4 @@ export async function createLogoScene(canvas, opts = {}) {
 }
 
 // 히어로→NOW PLAYING 장면(sound3d.js)이 같은 오브제·재질·문장 그리기를 재사용
-export { loadShapes, buildShardGeometry, shatterMaterial, drawStatementTexture };
+export { loadShapes, buildShardGeometry, shatterMaterial, drawStatementTexture, loadStatementFonts };
