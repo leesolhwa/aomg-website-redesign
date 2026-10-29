@@ -405,3 +405,11 @@
 
 - 한글이 들어가는 모든 텍스트 요소에 `word-break: keep-all` (어절 중간에서 끊기지 않게).
 - `<br class="m-only">`는 767px 이하에서만 보이고, 데스크톱에서는 `display: none`.
+
+### REEL (19차 추가, RELEASES와 LIVE 사이)
+
+| key | 문구 |
+|---|---|
+| `reel.title` | SOUND / YOU CAN / SEE |
+| `reel.meta` | KEYVEATZ — OXY_GEN · OFFICIAL MV |
+| `reel.sub` | 들리는 것을 넘어, 보이는 음악. |

@@ -600,3 +600,25 @@ html.js [data-reveal].is-in { opacity: 1; transform: none; }
 /* 드래그(텍스트 선택) 색: 기본 파랑 → 히어로 주황. 히어로처럼 배경이 주황인 곳은 선택이 보이게 검정 */
 ::selection { background: var(--color-accent); color: var(--color-white); }
 .surface-accent ::selection, [data-tone="on-accent"] ::selection { background: var(--color-black); color: var(--color-accent); }
+
+/* ==== REEL: RELEASES와 LIVE 사이. 흰 배경에서 정사각형 영상이 스크롤하면 화면 100%로 커지고, 큰 문구가 한 줄씩 지나감 ==== */
+.reel { height: 320vh; background: var(--color-white); color: var(--color-black); }
+.reel__sticky { position: sticky; top: 0; height: 100vh; overflow: hidden; display: grid; place-items: center; }
+.reel__frame { --s: 56vmin; position: absolute; left: 50%; top: 50%; width: calc(var(--s) + (100vw - var(--s)) * var(--g, 0)); height: calc(var(--s) + (100vh - var(--s)) * var(--g, 0)); transform: translate(-50%, -50%); overflow: hidden; background: var(--color-black); }
+.reel__video { display: block; width: 100%; height: 100%; object-fit: cover; transform: scale(var(--zoom, 1.12)); filter: brightness(calc(1 - 0.45 * var(--t1, 0))); }
+/* 문구: 섹션 제목과 같은 세리프, 굵게(외곽선) + 좁은 자간 + 세로로 길쭉하게 */
+.reel__title { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; font-family: var(--type-display); font-weight: var(--fw-display); font-size: min(18vw, 24vh); line-height: 0.8; letter-spacing: -0.06em; text-transform: uppercase; color: var(--color-white); -webkit-text-stroke: 0.025em currentColor; transform: scale(0.74, 1.08); opacity: calc(1 - var(--out, 0)); pointer-events: none; }
+.reel__title span { display: block; transform: translateY(calc((1 - var(--k, 0)) * 40vh)); opacity: var(--k, 0); }
+.reel__title span:nth-child(1) { --k: var(--t1, 0); }
+.reel__title span:nth-child(2) { --k: var(--t2, 0); }
+.reel__title span:nth-child(3) { --k: var(--t3, 0); }
+.reel__info { position: absolute; left: 5%; right: 5%; bottom: 96px; display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--space-card-text) 40px; color: var(--color-white); opacity: var(--info, 0); transform: translateY(calc((1 - var(--info, 0)) * 20px)); }
+.reel__meta { font-family: var(--font-sans-en); font-size: var(--fs-body-1); line-height: var(--lh-body-1); text-transform: uppercase; }
+.reel__sub { flex: 1; min-width: 12em; }
+@media (max-width: 767px) { .reel { height: 260vh; } .reel__info { left: var(--gutter-x); right: var(--gutter-x); } }
+/* 동작 줄이기: 고정·확대 없이 화면 가득한 영상 + 문구 */
+@media (prefers-reduced-motion: reduce) {
+  .reel { height: auto; }
+  .reel__sticky { position: relative; }
+  .reel { --g: 1; --t1: 1; --t2: 1; --t3: 1; --info: 1; --zoom: 1; }
+}

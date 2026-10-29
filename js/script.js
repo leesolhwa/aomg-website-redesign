@@ -402,10 +402,38 @@
     if (window.Player) window.Player.subscribe((st) => { if (st.playing) set(true); });   // 어디서든 재생이 시작되면 열림
   }
 
+  /* ---------- REEL: 스크롤에 따라 정사각형 영상 → 화면 100%, 문구가 한 줄씩. 보일 때만 재생 ---------- */
+  function initReel() {
+    const sec = $('#reel'); if (!sec) return;
+    const video = sec.querySelector('video');
+    const sm = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      if (reduceMotion) return;
+      const r = sec.getBoundingClientRect(), span = sec.offsetHeight - innerHeight;
+      const t = span > 0 ? Math.min(1, Math.max(0, -r.top / span)) : 0;
+      const g = sm(0, 0.45, t);
+      const set = (k, v) => sec.style.setProperty(k, v.toFixed(3));
+      set('--g', g); set('--t1', sm(0.25, 0.5, t)); set('--t2', sm(0.35, 0.6, t)); set('--t3', sm(0.45, 0.7, t));
+      set('--out', sm(0.72, 0.85, t)); set('--info', sm(0.8, 0.95, t)); set('--zoom', 1.12 - 0.12 * t);
+      const tone = g > 0.85 ? 'on-dark' : 'on-light';   // 영상이 화면을 채우면 헤더 글자 흰색
+      if (sec.dataset.tone !== tone) { sec.dataset.tone = tone; updateTone(); }
+    };
+    addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+    addEventListener('resize', update);
+    update();
+    if (!video) return;
+    if (reduceMotion) { video.removeAttribute('autoplay'); return; }   // 동작 줄이기: 자동 재생 안 함 (포스터만)
+    new IntersectionObserver(([en]) => {
+      if (en.isIntersecting) video.play().catch(() => {}); else video.pause();
+    }, { threshold: 0.05 }).observe(video);
+  }
+
   if (isArtistPage) renderArtist(); else renderHome();
   bindPlayer();
   initPlayerDock();
-  if (!isArtistPage) initNowPlaying();
+  if (!isArtistPage) { initNowPlaying(); initReel(); }
   initReveal();
   updateTone();
 })();
