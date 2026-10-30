@@ -630,7 +630,6 @@ html.js [data-reveal].is-in { opacity: 1; transform: none; }
 .wwd__sticky { position: relative; overflow: hidden; }
 .wwd__sticky::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(60% 50% at 50% 55%, rgba(255, 255, 255, 0.07), transparent 70%); }
 .wwd__lead { position: relative; text-align: center; }
-.wwd__eyebrow { font-family: var(--font-sans-en); font-size: 12px; line-height: 1.4; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.6; margin-bottom: 28px; }
 .wwd__title { font-family: var(--font-sans-en); font-weight: 400; font-size: min(8.6vw, 15vh); line-height: 0.9; letter-spacing: -0.05em; }
 .wwd__title em { font-family: var(--font-display-en); font-style: italic; font-size: 1.12em; letter-spacing: -0.03em; }
 .wwd__ln { display: block; }
@@ -650,8 +649,7 @@ html.js [data-reveal].is-in { opacity: 1; transform: none; }
 @media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
   html.js .wwd { height: 560vh; }
   html.js .wwd__sticky { position: sticky; top: 0; height: 100vh; display: grid; place-items: center; }
-  html.js .wwd__eyebrow { opacity: calc(0.6 * var(--k1, 0) * (1 - var(--out, 0))); }
-  html.js .wwd__ln { opacity: calc(var(--k, 0) * (1 - var(--out, 0))); transform: translateX(calc((1 - var(--k, 0) + var(--out, 0)) * var(--dir) * 70vw)); }
+  html.js   html.js .wwd__ln { opacity: calc(var(--k, 0) * (1 - var(--out, 0))); transform: translateX(calc((1 - var(--k, 0) + var(--out, 0)) * var(--dir) * 70vw)); }
   html.js .wwd__ln:nth-child(1) { --k: var(--k1); --dir: -1; }
   html.js .wwd__ln:nth-child(2) { --k: var(--k2); --dir: 1; }
   html.js .wwd__ln:nth-child(3) { --k: var(--k3); --dir: -1; }
