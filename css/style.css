@@ -638,17 +638,14 @@ html.js [data-reveal].is-in { opacity: 1; transform: none; }
 .wwd__sub { margin-top: 32px; opacity: 0.7; }
 .wwd__cards { position: relative; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: var(--grid-gap-x); width: 90%; margin: var(--section-pad-sm) auto 0; }
 .wwd__card { position: relative; background: linear-gradient(180deg, rgba(40, 40, 40, 0.38), rgba(14, 14, 14, 0.3)); -webkit-backdrop-filter: blur(22px) saturate(1.2); backdrop-filter: blur(22px) saturate(1.2); border: 1px solid rgba(255, 255, 255, 0.16); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 30px 80px rgba(0, 0, 0, 0.5); }
-.wwd__card-top { display: grid; grid-template-columns: 1fr auto; column-gap: 16px; row-gap: 14px; padding: 28px 28px 22px; }
+.wwd__card-top { display: grid; row-gap: 14px; padding: 28px 28px 22px; }
 .wwd__cat { grid-column: 1 / -1; font-family: var(--font-sans-en); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-accent); }
 .wwd__name { font-family: var(--font-sans-en); font-weight: 600; font-size: 34px; line-height: 1.02; letter-spacing: -0.035em; }
-.wwd__arrow { width: var(--hit-area); height: var(--hit-area); border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.35); display: grid; place-items: center; font-size: 18px; align-self: start; background: rgba(255, 255, 255, 0.06); transition: var(--transition-cta); }
-.wwd__arrow:hover, .wwd__arrow:focus-visible { background: var(--color-accent); border-color: var(--color-accent); }
 .wwd__desc { grid-column: 1 / -1; font-size: 14px; line-height: 1.6; color: rgba(255, 255, 255, 0.72); }
 .wwd__obj { position: relative; height: 250px; background: radial-gradient(60% 70% at 50% 55%, rgba(255, 59, 31, 0.16), rgba(255, 59, 31, 0) 70%); }
 .wwd__obj img, .wwd__canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
 .wwd__obj img { transform: none; } /* 멈춘 그림은 모양이 가장 잘 보이는 정면 각도로 따로 렌더 (22차) */
-/* 22차: 주황 네온 — 빛난 곳 둘레만 은은하게 번짐 (캔버스·이미지 모두 투명 배경) */
-.wwd__obj img, .wwd__canvas { filter: drop-shadow(0 0 8px rgba(255, 74, 31, 0.55)) drop-shadow(0 0 22px rgba(255, 59, 31, 0.25)); }
+
 .wwd__obj.is-3d img { visibility: hidden; }
 /* 데스크톱 + 동작 허용: 화면 고정, 문장은 좌우에서 날아오고 카드는 아래에서 위로 지나감 (JS가 --k1~3, --out, --y 설정) */
 @media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {

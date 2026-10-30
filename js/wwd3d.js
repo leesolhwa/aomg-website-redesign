@@ -1,15 +1,15 @@
 /* AOMG Concept Redesign — wwd3d.js (ES module)
  * WHAT WE DO 카드 안 3D 오브제 (20차, 22차 재질 변경).
  * 사이트 앞에서 나온 모티프 4개: 두꺼운 CD · 유리 지구본 · 반짝임(히어로 스파크) · 매끈한 유리 덩어리.
- * 재질: 매끈한 투명 유리. 몸통은 비치고(검정), 유리 안에 주황 네온관이 비치듯 가장자리 곡선을 따라 주황 빛이 흐름.
- *       무지개 분산 없음, 흰 빛 없음. 둘레의 은은한 번짐은 CSS drop-shadow (캔버스가 투명이라 빛난 곳만 번짐).
+ * 재질(23차, B4): 매끈한 투명 유리 + 프리즘. 조명 띠 12개 중 8개 주황 · 4개 가는 흰 빛(최소한).
+ *       파장별로 굴절률을 달리해 가장자리에 무지개 결이 생김. 둘레의 은은한 번짐은 흐린 사본을 더해서 (빛 색 그대로).
  * 렌더러 하나로 화면에 보이는 카드만 차례로 그려 각 카드의 2D 캔버스에 복사 (WebGL 컨텍스트 1개).
  * 실패하거나 동작 줄이기·1024px 미만이면 아무것도 하지 않음 → 카드의 미리 렌더한 이미지가 그대로 보임. */
 import * as THREE from 'three';
 
-const NEON = [0xFF5A1F, 0xFF6A2A, 0xFF7A35]; // #FF3B1F보다 살짝 노랗게: 어두운 유리 위에서 빨강이 아니라 주황으로 보이게
+const LIGHTS = [0xFF4A1F, 0xFF5A26, 0xFFFFFF]; // 주황 · 주황 · 흰 빛 순서로 반복
 
-/* 환경: 거의 검정 + 화면 둘레에 가지런히 놓인 주황 네온 띠 12개. 유리가 이 띠를 굴절·반사할 때만 빛남 */
+/* 환경: 거의 검정 + 화면 둘레에 가지런히 놓인 가는 빛 띠 12개(주황 8 · 흰 4). 유리가 이 띠를 굴절·반사할 때만 빛남 */
 function buildEnvCube(renderer) {
   const strip = (() => {
     const c = document.createElement('canvas'); c.width = 64; c.height = 8;
@@ -23,19 +23,22 @@ function buildEnvCube(renderer) {
   let seed = 7; const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
   for (let i = 0; i < 12; i++) {
     const th = i / 12 * Math.PI * 2 + rnd() * 0.2, ph = (rnd() - 0.5) * 0.5, d = 12;
-    const w = 0.25 + rnd() * 0.35, h = 6 + rnd() * 8;
-    const m = new THREE.Mesh(new THREE.PlaneGeometry(w * 3, h), new THREE.MeshBasicMaterial({ map: strip, color: new THREE.Color(NEON[i % 3]).multiplyScalar(1.6 + rnd() * 1.2), side: THREE.DoubleSide, transparent: true, blending: THREE.AdditiveBlending }));
+    const white = i % 3 === 2;
+    const w = white ? 0.15 + rnd() * 0.12 : 0.1 + rnd() * 0.12, h = 6 + rnd() * 8;
+    const k = white ? 4.8 : 2.8 + rnd() * 1.6;
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w * 3, h), new THREE.MeshBasicMaterial({ map: strip, color: new THREE.Color(LIGHTS[i % 3]).multiplyScalar(k), side: THREE.DoubleSide, transparent: true, blending: THREE.AdditiveBlending }));
     m.position.set(d * Math.cos(ph) * Math.cos(th), d * Math.sin(ph), d * Math.cos(ph) * Math.sin(th));
     m.lookAt(0, 0, 0); if (i % 3 === 0) m.rotateZ(Math.PI / 2);
     scene.add(m);
   }
-  scene.add(new THREE.Mesh(new THREE.SphereGeometry(30, 16, 8), new THREE.MeshBasicMaterial({ color: 0x0a0302, side: THREE.BackSide })));
+  scene.add(new THREE.Mesh(new THREE.SphereGeometry(30, 16, 8), new THREE.MeshBasicMaterial({ color: 0x060607, side: THREE.BackSide })));
   const rt = new THREE.WebGLCubeRenderTarget(256, { type: THREE.HalfFloatType });
   new THREE.CubeCamera(0.1, 100, rt).update(renderer, scene);
   return rt.texture;
 }
 
-/* 유리 셰이더: 굴절(몸통) + 프레넬 반사(가장자리). 출력 알파 = 밝기 → 어두운 몸통은 투명, 빛난 곳만 보임 */
+/* 프리즘 유리 셰이더: 파장 8개로 나눠 굴절률을 달리 샘플(분산) + 프레넬 반사(가장자리).
+ * 출력 알파 = 밝기 → 어두운 몸통은 투명, 빛난 곳만 보임 */
 const glassMat = (env) => new THREE.ShaderMaterial({
   uniforms: { env: { value: env } },
   transparent: true,
@@ -44,14 +47,22 @@ const glassMat = (env) => new THREE.ShaderMaterial({
     void main() { vec4 w = modelMatrix * vec4(position, 1.0); vW = w.xyz; vN = normalize(mat3(modelMatrix) * normal); gl_Position = projectionMatrix * viewMatrix * w; }`,
   fragmentShader: /* glsl */`
     uniform samplerCube env; varying vec3 vN; varying vec3 vW;
+    vec3 spec(float t) { return clamp(vec3(abs(t * 6.0 - 3.0) - 1.0, 2.0 - abs(t * 6.0 - 2.0), 2.0 - abs(t * 6.0 - 4.0)), 0.0, 1.0); }
     void main() {
       vec3 N = normalize(vN), V = normalize(vW - cameraPosition);
       if (dot(N, V) > 0.0) N = -N;
-      vec3 refr = textureCube(env, refract(V, N, 1.0 / 1.45)).rgb;
+      vec3 col = vec3(0.0), wsum = vec3(0.0);
+      for (int i = 0; i < 8; i++) {
+        float t = float(i) / 7.0;
+        float eta = 1.0 / (1.45 - 0.25 + 0.5 * t);           // 분산 폭 0.5
+        vec3 w = spec(t); col += textureCube(env, refract(V, N, eta)).rgb * w; wsum += w;
+      }
+      col /= wsum;
       float fr = pow(1.0 - max(dot(-V, N), 0.0), 3.0);
       vec3 refl = textureCube(env, reflect(V, N)).rgb;
-      vec3 o = clamp((refr * 0.85 + refl * 0.9 * fr) * 1.3, 0.0, 1.0);
-      gl_FragColor = vec4(o, max(o.r, max(o.g, o.b)));
+      gl_FragColor = vec4(clamp((col * 0.85 + refl * 0.9 * fr) * 0.9, 0.0, 1.0), 1.0);
+      #include <colorspace_fragment>
+      gl_FragColor.a = max(gl_FragColor.r, max(gl_FragColor.g, gl_FragColor.b));
     }`,
 });
 
@@ -113,6 +124,7 @@ export function initWwd3D(section) {
     return { card, box, canvas, ctx: canvas.getContext('2d'), scene, obj, ready: false };
   });
   let W = 0, H = 0;
+  const GLOW = 'filter' in CanvasRenderingContext2D.prototype; // 캔버스 필터가 없는 브라우저는 번짐 없이
   const fit = () => {
     const r = items[0].box.getBoundingClientRect(), dpr = Math.min(2, devicePixelRatio || 1);
     W = Math.max(1, Math.round(r.width * dpr)); H = Math.max(1, Math.round(r.height * dpr));
@@ -132,6 +144,10 @@ export function initWwd3D(section) {
       it.obj.rotation.set(0.35 + Math.sin(t * 0.7 + i) * 0.25, t * 0.7 + i * 1.3, 0.15);
       renderer.render(it.scene, camera);
       it.ctx.clearRect(0, 0, W, H); it.ctx.drawImage(renderer.domElement, 0, 0);
+      if (GLOW) {                                                   // 은은한 번짐: 같은 그림을 흐리게 한 장 더 더함 (빛의 색 그대로 번짐)
+        it.ctx.save(); it.ctx.globalCompositeOperation = 'lighter'; it.ctx.filter = `blur(${Math.round(W / 60)}px)`;
+        it.ctx.drawImage(renderer.domElement, 0, 0); it.ctx.restore();
+      }
       if (!it.ready) { it.ready = true; it.box.classList.add('is-3d'); }
     });
     raf = requestAnimationFrame(loop);
