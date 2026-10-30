@@ -419,7 +419,7 @@
 
 | key | 문구 |
 |---|---|
-| `wwd.eyebrow` | AOMG · WHAT WE DO |
+| `wwd.eyebrow` | ~~AOMG · WHAT WE DO~~ (26차 삭제) |
 | `news.more` | *More* / News (뉴스 5번째 칸, 인스타그램 새 창) |
 | `wwd.title` | where *Sound* / *Becomes* / Culture (고딕 + 세리프 이탤릭) |
 | `wwd.sub` | 음악에서 시작해, 문화가 되는 곳. |
