@@ -36,9 +36,8 @@
     const initials = chars.filter((c) => c.classList.contains('is-initial'));
 
     const showActions = () => {
-      actions.hidden = false;
-      requestAnimationFrame(() => intro.classList.add('is-ready'));
-      $('button', actions).focus();
+      // 버튼 자리는 처음부터 비워 둠(로고가 밀리지 않게). 로고가 다 맞춰진 뒤 아래에서 올라오며 나타남 (24차)
+      requestAnimationFrame(() => { intro.classList.add('is-ready'); $('button', actions).focus({ preventScroll: true }); });
     };
     const center = (r) => ({ x: r.left + r.width / 2, y: r.top + r.height / 2 });
     const wait = (a) => a.finished.catch(() => {});
@@ -94,7 +93,7 @@
       });
       await Promise.all(moves.map(wait));
       typed.hidden = true;
-      setTimeout(showActions, 150);
+      setTimeout(showActions, 300);
     }
 
     if (reduceMotion) { counter.textContent = '100'; intro.classList.add('is-static'); typed.hidden = true; showActions(); }

@@ -24,7 +24,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600&family=Instrument+Serif:ital@0;1&display=swap">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <link rel="preload" as="image" href="img/artist-keyveatz.webp">
-  <link rel="stylesheet" href="css/style.css?v=20261030-prism1">
+  <link rel="stylesheet" href="css/style.css?v=20261030-ft1">
   <script type="importmap">{ "imports": { "three": "./js/vendor/three.module.min.js" } }</script>
 </head>
 <body class="page-artist">
@@ -115,23 +115,12 @@
   <!-- ===== Footer (공통) ===== -->
   <footer class="footer container grid" id="contact" data-tone="on-dark">
     <canvas class="footer__canvas" id="footer-canvas" aria-hidden="true"></canvas>
-    <div class="footer__info">
-      <p class="footer__logo">AOMG</p>
-      <p data-copy="footer.about.ko">AOMG는 2013년 설립된 힙합·R&amp;B 레이블이자 아티스트 매니지먼트 회사다. 레이블 투어와 월드 투어, 방송, 스포츠까지 활동 영역을 넓혀 왔다.</p>
-      <p class="t-paragraph-en" lang="en" data-copy="footer.about.en">AOMG is a hip-hop and R&amp;B label and artist management company founded in 2013.</p>
-      <p class="footer__label" data-copy="footer.inquiryLabel">BUSINESS INQUIRY</p>
-      <a class="footer__email" href="mailto:info@aomgofficial.com" data-copy="footer.email">info@aomgofficial.com</a>
-    </div>
     <ul class="footer__social">
       <li><a href="https://www.instagram.com/aomgofficial" target="_blank" rel="noopener" aria-label="인스타그램, 새 창">INSTAGRAM</a></li>
       <li><a href="https://www.youtube.com/channel/UCW5gbSGTGIukUDsPt2sdhGw" target="_blank" rel="noopener" aria-label="유튜브, 새 창">YOUTUBE</a></li>
       <li><a href="https://www.facebook.com/AOMGOFFICIAL" target="_blank" rel="noopener" aria-label="페이스북, 새 창">FACEBOOK</a></li>
       <li><a href="https://soundcloud.com/aomgofficial" target="_blank" rel="noopener" aria-label="사운드클라우드, 새 창">SOUNDCLOUD</a></li>
     </ul>
-    <div class="footer__legal">
-      <p data-copy="footer.disclaimer">비공식 컨셉 리디자인 · 비상업적 포트폴리오.<br class="m-only"> 모든 아티스트명·이미지·음원의 권리는<br class="m-only"> AOMG와 각 권리자에게 있습니다.</p>
-      <p class="footer__credit" data-copy="footer.credit">CONCEPT REDESIGN 2026</p>
-    </div>
   </footer>
 
   <!-- ===== Mini Player (공통) ===== -->
@@ -146,12 +135,12 @@
     <div class="player__end"><button class="cta player__audio" type="button" data-action="audio-toggle" aria-pressed="false" aria-label="소리 켜기"><span class="cta__label" data-copy="audio.on">AUDIO ON</span></button><button class="cta" type="button" data-action="player-close" aria-label="플레이어 접기"><span class="cta__label">CLOSE</span></button></div>
   </div>
 
-  <script src="js/data.js?v=20261030-prism1"></script>
-  <script src="js/player.js?v=20261030-prism1"></script>
-  <script src="js/script.js?v=20261030-prism1"></script>
-  <script src="js/effects.js?v=20261030-prism1"></script>
+  <script src="js/data.js?v=20261030-ft1"></script>
+  <script src="js/player.js?v=20261030-ft1"></script>
+  <script src="js/script.js?v=20261030-ft1"></script>
+  <script src="js/effects.js?v=20261030-ft1"></script>
   <script type="module">
-    import { createLogoScene } from './js/logo3d.js?v=20261030-prism1';
+    import { createLogoScene } from './js/logo3d.js?v=20261030-ft1';
     createLogoScene(document.getElementById('footer-canvas'), { mode: 'footer', interactive: false }).catch(() => {});
   </script>
 </body>
