@@ -629,7 +629,7 @@ html.js [data-reveal].is-in { opacity: 1; transform: none; }
 /* ==== WHAT WE DO (20차): NEWS 다음 · 검정 · 고정 문장 위로 유리 카드 4장이 좌우 번갈아 올라감 ==== */
 .wwd { position: relative; background: var(--color-black); color: var(--color-white); }
 .wwd__sticky { position: relative; overflow: hidden; }
-.wwd__sticky::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(60% 50% at 50% 55%, rgba(255, 255, 255, 0.07), transparent 70%), repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.025) 0 1px, transparent 1px 6px); }
+.wwd__sticky::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(60% 50% at 50% 55%, rgba(255, 255, 255, 0.07), transparent 70%); }
 .wwd__lead { position: relative; text-align: center; }
 .wwd__eyebrow { font-family: var(--font-sans-en); font-size: 12px; line-height: 1.4; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.6; margin-bottom: 28px; }
 .wwd__title { font-family: var(--font-sans-en); font-weight: 400; font-size: min(8.6vw, 15vh); line-height: 0.9; letter-spacing: -0.05em; }
