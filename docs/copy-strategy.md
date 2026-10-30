@@ -325,12 +325,12 @@
 | `player.demo` | DEMO |
 | `player.resume` | 이어서 들으려면 [ PLAY ]를 눌러 주세요. |
 | `audio.on` / `audio.off` | [ AUDIO ON ] / [ AUDIO OFF ] |
-| `footer.about.ko` | AOMG는 2013년 설립된 힙합·R&B 레이블이자 아티스트 매니지먼트 회사다. 레이블 투어와 월드 투어, 방송, 스포츠까지 활동 영역을 넓혀 왔다. |
-| `footer.about.en` | AOMG is a hip-hop and R&B label and artist management company founded in 2013. |
-| `footer.inquiryLabel` | BUSINESS INQUIRY |
-| `footer.email` | info@aomgofficial.com |
-| `footer.disclaimer` | 비공식 컨셉 리디자인 · 비상업적 포트폴리오. 모든 아티스트명·이미지·음원의 권리는 AOMG와 각 권리자에게 있습니다. |
-| `footer.credit` | CONCEPT REDESIGN 2026 |
+| `footer.about.ko` | ~~AOMG는 2013년 설립된 힙합·R&B 레이블이자 아티스트 매니지먼트 회사다. 레이블 투어와 월드 투어, 방송, 스포츠까지 활동 영역을 넓혀 왔다.~~ (24차 삭제) |
+| `footer.about.en` | ~~AOMG is a hip-hop and R&B label and artist management company founded in 2013.~~ (24차 삭제) |
+| `footer.inquiryLabel` | ~~BUSINESS INQUIRY~~ (24차 삭제) |
+| `footer.email` | ~~info@aomgofficial.com~~ (24차 삭제) |
+| `footer.disclaimer` | ~~비공식 컨셉 리디자인 · 비상업적 포트폴리오. 모든 아티스트명·이미지·음원의 권리는 AOMG와 각 권리자에게 있습니다.~~ (24차 삭제) |
+| `footer.credit` | ~~CONCEPT REDESIGN 2026~~ (24차 삭제) |
 
 ### index.html
 

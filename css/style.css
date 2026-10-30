@@ -308,8 +308,8 @@ html.is-intro { overflow: hidden; }
 .intro__mark { position: relative; width: min(22.5rem, 64vw); aspect-ratio: 1004 / 348; }
 .intro__piece { position: absolute; left: var(--x); top: var(--y); width: var(--w); height: var(--h); opacity: 0; transform-origin: 50% 50%; will-change: transform, opacity; }
 .intro.is-static .intro__piece { opacity: 1; }
-.intro__actions { opacity: 0; transition: opacity var(--dur-lg) var(--ease-out); }
-.intro.is-ready .intro__actions { opacity: 1; }
+.intro__actions { opacity: 0; visibility: hidden; transform: translateY(24px); transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out), visibility 0s 0.7s; }
+.intro.is-ready .intro__actions { opacity: 1; visibility: visible; transform: none; transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out); }
 .intro__actions { display: flex; justify-content: center; }
 
 /* ==== Hero (Kode 히어로: 100vh accent, 3줄 초대형 문장 + 앞의 3D 오브제) ==== */
@@ -491,22 +491,14 @@ html.js:not(.no-webgl) #now-playing-fallback { display: none; } /* WebGL·JS가 
 .news { padding-top: var(--section-space); padding-bottom: var(--section-pad-end); }
 
 /* ==== Footer (Kode footer: 100vh 검정) ==== */
-.footer { position: relative; overflow: hidden; min-height: var(--section-screen); padding-block: var(--section-pad-md); row-gap: var(--section-pad-sm); align-content: space-between; background: var(--color-bg); color: var(--color-text-on-dark); }
+.footer { position: relative; overflow: hidden; min-height: var(--section-screen); padding-top: var(--section-pad-md); padding-bottom: calc(var(--hit-area) + 40px); align-content: end; background: var(--color-bg); color: var(--color-text-on-dark); }
 .footer__canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .footer > *:not(.footer__canvas) { position: relative; }
-.footer__info { grid-column: 1 / -1; display: flex; flex-direction: column; row-gap: var(--space-card-text); max-width: var(--readable-max); }
-.footer__logo { font-family: var(--type-display); font-size: var(--fs-display-1); line-height: var(--lh-display-1); letter-spacing: var(--ls-display-1); }
-.footer__label { margin-top: var(--space-heading-body); font-family: var(--font-sans-en); font-size: var(--fs-body-2); line-height: var(--lh-paragraph-en); }
-.footer__email { display: inline-flex; align-items: center; min-height: var(--hit-area); align-self: flex-start; font-family: var(--font-sans-en); font-size: var(--fs-body-6); line-height: var(--lh-paragraph-en); text-transform: uppercase; }
-.footer__social { grid-column: 1 / -1; display: flex; flex-direction: column; row-gap: var(--grid-gap-x); }
-.footer__social a { font-family: var(--font-sans-en); font-size: var(--fs-display-2); line-height: var(--lh-paragraph-en); text-transform: uppercase; display: inline-flex; min-height: var(--hit-area); align-items: center; }
-.footer__social a:hover, .footer__social a:focus-visible { color: var(--color-accent); }
-.footer__legal { grid-column: 1 / -1; display: flex; flex-wrap: wrap; justify-content: space-between; row-gap: var(--space-card-text); column-gap: var(--section-pad-sm); font-size: var(--fs-ko-caption); line-height: var(--lh-ko-caption); }
-.footer__credit { font-family: var(--font-sans-en); text-transform: uppercase; }
-@media (min-width: 768px) {
-  .footer__info { grid-column: 1 / span 2; }
-  .footer__social { grid-column: 3 / span 3; }
-}
+/* 24차: 소개·이메일·안내 문구 삭제, SNS만 굵고 크게 2줄 양쪽 정렬로 화면 맨 아래 (오른쪽 아래 PLAYER 버튼과 안 겹치게 그만큼 띄움) */
+.footer__social { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; column-gap: var(--grid-gap-x); row-gap: 2vh; }
+.footer__social li:nth-child(even) { justify-self: end; }
+.footer__social a { display: inline-flex; align-items: center; min-height: var(--hit-area); font-family: var(--font-sans-en); font-weight: 600; font-size: min(7.4vw, 13vh); line-height: 0.95; letter-spacing: -0.045em; text-transform: uppercase; }
+.footer__social a:hover, .footer__social a:focus-visible { color: var(--color-bg-accent); } /* 히어로 배경색과 같은 주황 */
 
 /* ==== Mini Player (Kode 하단 바: 60px, 3열) ==== */
 .player { position: fixed; inset: auto 0 0 0; z-index: var(--z-player); height: var(--player-h); display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; column-gap: var(--grid-gap-x); background: var(--color-black); color: var(--color-white); }

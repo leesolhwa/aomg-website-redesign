@@ -130,7 +130,7 @@ async def main():
     await pg2.click('.gnb__menu a[href="index.html#live"]'); await pg2.wait_for_load_state('load'); await pg2.wait_for_timeout(800)
     check('artist page menu -> index.html#live', pg2.url.endswith('index.html#live'), pg2.url)
     # footer links on mobile
-    hrefs=await pg.eval_on_selector_all('footer a', 'els=>els.map(e=>e.href)'); check('footer links present', len(hrefs)>=5, str(len(hrefs)))
+    hrefs=await pg.eval_on_selector_all('footer a', 'els=>els.map(e=>e.href)'); check('footer links present (SNS 4)', len(hrefs)==4, str(len(hrefs)))
     # 6 reduced motion
     pg,errs=await newpage(b, 1440, 900, reduced_motion='reduce'); await pg.goto(BASE+'index.html'); await pg.wait_for_timeout(300)
     n=await pg.eval_on_selector_all('.discography__year','e=>e.length'); hid=await pg.evaluate("document.querySelector('.discography__controls').hidden")
