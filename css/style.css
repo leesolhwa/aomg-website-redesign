@@ -480,6 +480,7 @@ html.js:not(.no-webgl) #now-playing-fallback { display: none; } /* WebGL·JS가 
 .event-list { margin-top: var(--space-heading-body); }
 .event { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--grid-gap-x); row-gap: var(--space-card-text); padding-block: var(--space-card-text); font-family: var(--font-sans-en); font-size: var(--fs-body-6); line-height: var(--lh-paragraph-en); text-transform: uppercase; }
 .empty-state { margin-top: var(--space-heading-body); max-width: var(--readable-max); }
+.empty-state p { font-size: 14px; line-height: 1.6; } /* 25차: 일정 없음 문구 17 → 14px */
 .empty-state .cta { margin-top: var(--space-card-text); }
 @media (min-width: 768px) {
   .live__poster { grid-column: 1 / span 2; }
@@ -489,6 +490,12 @@ html.js:not(.no-webgl) #now-playing-fallback { display: none; } /* WebGL·JS가 
 
 /* ==== News (Kode justified-text-02: 112 / 256 패딩) ==== */
 .news { padding-top: var(--section-space); padding-bottom: var(--section-pad-end); }
+/* 25차: 뉴스 5번째 칸 — 카드 사진과 같은 비율의 얇은 선 칸 안에 이탤릭 More + 넓은 고딕 News. 마우스 올리면 글자만 주황 */
+.news-more a { container-type: inline-size; display: grid; place-items: center; aspect-ratio: var(--ratio-news-poster); border: 1px solid rgba(255, 255, 255, 0.35); color: var(--color-white); transition: color var(--dur-md) var(--ease-out); }
+.news-more a:hover, .news-more a:focus-visible { color: var(--color-bg-accent); }
+.news-more__text { display: flex; flex-direction: column; align-items: center; line-height: 0.9; }
+.news-more__text em { font-family: var(--font-display-en); font-style: italic; font-size: 24cqi; } /* 칸 폭에 맞춰 (1440px에서 약 58px) */
+.news-more__text span { font-family: var(--font-sans-en); font-weight: 600; font-size: 19cqi; letter-spacing: -0.04em; transform: scaleX(1.5); }
 
 /* ==== Footer (Kode footer: 100vh 검정) ==== */
 .footer { position: relative; overflow: hidden; min-height: var(--section-screen); padding-top: var(--section-pad-md); padding-bottom: calc(var(--hit-area) + 40px); align-content: end; background: var(--color-bg); color: var(--color-text-on-dark); }

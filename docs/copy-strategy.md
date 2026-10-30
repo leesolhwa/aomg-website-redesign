@@ -362,7 +362,7 @@
 | `discography.subtitle` | (삭제, 2026-10-28) |
 | `live.title` | LIVE |
 | `live.caption` | 공연 일정 |
-| `live.subtitle` | 날짜와 장소, 예매 링크를 한곳에서 확인한다. |
+| `live.subtitle` | ~~날짜와 장소, 예매 링크를 한곳에서 확인한다.~~ (25차 삭제) |
 | `live.empty` | 지금 예정된 공연이 없어요. 새 일정은 공식 인스타그램에서 확인할 수 있어요. |
 | `news.title` | NEWS |
 | `news.caption` | AOMG 소식 |
@@ -420,6 +420,7 @@
 | key | 문구 |
 |---|---|
 | `wwd.eyebrow` | AOMG · WHAT WE DO |
+| `news.more` | *More* / News (뉴스 5번째 칸, 인스타그램 새 창) |
 | `wwd.title` | where *Sound* / *Becomes* / Culture (고딕 + 세리프 이탤릭) |
 | `wwd.sub` | 음악에서 시작해, 문화가 되는 곳. |
 | `wwd.card1.title` · `desc` | Music Production · 기획부터 녹음, 믹싱, 발매까지. 레이블의 사운드를 만듭니다. (임시) |

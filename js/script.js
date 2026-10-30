@@ -208,7 +208,9 @@
     bindArtistPreview(names);
     initDiscography();
     renderEvents(EVENTS, 'events');
-    $('[data-render="news"]').innerHTML = NEWS.map(newsCard).join('');
+    // 25차: 카드 4개 뒤 5번째 칸 = 뉴스 더 보기 (이탤릭 More + 넓은 고딕 News, 얇은 선 테두리). 누르면 인스타그램
+    $('[data-render="news"]').innerHTML = NEWS.map(newsCard).join('') +
+      `<li class="news-more"><a href="${AOMG.social.instagram}" target="_blank" rel="noopener" aria-label="뉴스 더 보기, 인스타그램 새 창"><span class="news-more__text" aria-hidden="true"><em>More</em><span>News</span></span></a></li>`;
   }
 
   /* ---------- artist.html 렌더링 ---------- */
