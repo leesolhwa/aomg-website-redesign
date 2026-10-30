@@ -25,7 +25,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600&family=Instrument+Serif:ital@0;1&display=swap">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <link rel="preload" as="image" href="img/release-keyveatz-oxygen.webp">
-  <link rel="stylesheet" href="css/style.css?v=20261030-neon1">
+  <link rel="stylesheet" href="css/style.css?v=20261030-neon2">
   <script type="importmap">{ "imports": { "three": "./js/vendor/three.module.min.js" } }</script>
 </head>
 <body class="page-home">
@@ -281,13 +281,13 @@
 
   <img class="artist-preview" alt="" aria-hidden="true">
 
-  <script src="js/data.js?v=20261030-neon1"></script>
-  <script src="js/player.js?v=20261030-neon1"></script>
-  <script src="js/script.js?v=20261030-neon1"></script>
-  <script src="js/effects.js?v=20261030-neon1"></script>
+  <script src="js/data.js?v=20261030-neon2"></script>
+  <script src="js/player.js?v=20261030-neon2"></script>
+  <script src="js/script.js?v=20261030-neon2"></script>
+  <script src="js/effects.js?v=20261030-neon2"></script>
   <script type="module">
-    import { createSoundScene } from './js/sound3d.js?v=20261030-neon1';
-    import { createLogoScene } from './js/logo3d.js?v=20261030-neon1';
+    import { createSoundScene } from './js/sound3d.js?v=20261030-neon2';
+    import { createLogoScene } from './js/logo3d.js?v=20261030-neon2';
     const section = document.getElementById('sound');
     const heroEl = document.getElementById('hero');
     const np = document.getElementById('np');
@@ -339,7 +339,7 @@
       .catch((e) => { console.warn(e); document.documentElement.classList.add('no-webgl'); });
     createLogoScene(document.getElementById('footer-canvas'), { mode: 'footer', interactive: false }).catch(() => {});
     // WHAT WE DO 카드 3D 오브제: 실패하면 미리 렌더한 이미지가 그대로 보임
-    import('./js/wwd3d.js?v=20261030-neon1').then((m) => m.initWwd3D(document.getElementById('what-we-do'))).catch(() => {});
+    import('./js/wwd3d.js?v=20261030-neon2').then((m) => m.initWwd3D(document.getElementById('what-we-do'))).catch(() => {});
   </script>
 </body>
 </html>

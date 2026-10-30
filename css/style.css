@@ -646,7 +646,7 @@ html.js [data-reveal].is-in { opacity: 1; transform: none; }
 .wwd__desc { grid-column: 1 / -1; font-size: 14px; line-height: 1.6; color: rgba(255, 255, 255, 0.72); }
 .wwd__obj { position: relative; height: 250px; background: radial-gradient(60% 70% at 50% 55%, rgba(255, 59, 31, 0.16), rgba(255, 59, 31, 0) 70%); }
 .wwd__obj img, .wwd__canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
-.wwd__obj img { transform: scale(1.08); }
+.wwd__obj img { transform: none; } /* 멈춘 그림은 모양이 가장 잘 보이는 정면 각도로 따로 렌더 (22차) */
 /* 22차: 주황 네온 — 빛난 곳 둘레만 은은하게 번짐 (캔버스·이미지 모두 투명 배경) */
 .wwd__obj img, .wwd__canvas { filter: drop-shadow(0 0 8px rgba(255, 74, 31, 0.55)) drop-shadow(0 0 22px rgba(255, 59, 31, 0.25)); }
 .wwd__obj.is-3d img { visibility: hidden; }
