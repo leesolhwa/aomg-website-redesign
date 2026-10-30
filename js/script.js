@@ -430,30 +430,46 @@
     }, { threshold: 0.05 }).observe(video);
   }
 
-  /* WHAT WE DO (20차): 문장 줄이 좌우에서 날아와 고정 → 유리 카드 4장이 아래→위로 지나감 → 문장이 들어온 방향으로 빠짐.
+  /* WHAT WE DO (20차, 21차 속도 조정): 문장 줄이 좌우에서 날아와 고정 → 유리 카드 4장이 아래→위로 지나감 → 문장이 들어온 방향으로 빠짐.
+   * 위치는 스크롤(화면 단위)로 정하고, 문장은 시간으로 한 번 더 부드럽게 따라가게 해서 빠르게 스크롤해도 천천히 들어오고 빠짐.
    * 데스크톱 + 동작 허용일 때만 (그 외에는 CSS가 일반 목록으로 보여줌) */
   function initWhatWeDo() {
     const sec = $('#what-we-do'); if (!sec) return;
     const mq = matchMedia('(min-width: 1024px)');
     const cards = [...sec.querySelectorAll('.wwd__card')];
-    const cl = (v) => Math.min(1, Math.max(0, v)), ease = (t) => 1 - Math.pow(1 - t, 3);
-    let ticking = false;
-    const update = () => {
-      ticking = false;
-      if (reduceMotion || !mq.matches) { cards.forEach((c) => { c.style.removeProperty('--y'); c.style.removeProperty('visibility'); }); return; }
-      const r = sec.getBoundingClientRect(), span = sec.offsetHeight - innerHeight;
-      const p = span > 0 ? cl(-r.top / span) : 0;
-      const enter = cl((innerHeight - r.top) / innerHeight);              // 섹션이 화면에 들어오는 정도 0→1
-      const k = (i) => ease(cl((enter - 0.35 - i * 0.12) / 0.5));
-      const set = (n, v) => sec.style.setProperty(n, v.toFixed(3));
-      set('--k1', k(0)); set('--k2', k(1)); set('--k3', k(2)); set('--out', ease(cl((p - 0.9) / 0.09)));
+    const cl = (v) => Math.min(1, Math.max(0, v)), ease = (t) => t * t * (3 - 2 * t);
+    // 단위 = 화면 높이. 0 = 섹션 윗변이 화면 아래에 닿은 순간
+    const LINE_IN = (i) => [0.3 + i * 0.3, 1.1];   // 줄마다 [시작, 길이]: 약 화면 1.7개에 걸쳐 차례로 들어옴
+    const CARD = (i) => [1.6 + i * 0.75, 1.5];     // 카드마다 화면 아래 → 위로 지나가는 구간
+    const OUT_LEN = 1.2;                           // 끝나기 전 화면 1.2개에 걸쳐 빠짐
+    const TAU = 0.45;                              // 문장이 스크롤을 따라가는 시간 상수(초) — 클수록 느리고 부드러움
+    const cur = { k1: 0, k2: 0, k3: 0, out: 0 }, tgt = { ...cur };
+    let raf = 0, last = 0;
+    const read = () => {
+      const r = sec.getBoundingClientRect(), vh = innerHeight;
+      const s = (vh - r.top) / vh, end = sec.offsetHeight / vh;   // 지금 위치, 끝 위치 (화면 단위)
+      [0, 1, 2].forEach((i) => { const [a, l] = LINE_IN(i); tgt['k' + (i + 1)] = ease(cl((s - a) / l)); });
+      tgt.out = ease(cl((s - (end - OUT_LEN)) / OUT_LEN));
       cards.forEach((c, i) => {
-        const t = cl((p - (0.05 + i * 0.2)) / 0.36);                      // 카드마다 화면 아래 → 위로 지나가는 구간
-        c.style.setProperty('--y', `${Math.round(innerHeight * 1.05 - t * (innerHeight * 1.05 + c.offsetHeight + 40))}px`);
-        c.style.visibility = t > 0 && t < 1 ? '' : 'hidden';             // 지나가기 전·후 카드는 숨김 (겹침·포커스 방지)
+        const [a, l] = CARD(i), t = cl((s - a) / l);
+        c.style.setProperty('--y', `${Math.round(vh * 1.05 - t * (vh * 1.05 + c.offsetHeight + 40))}px`);
+        c.style.visibility = t > 0 && t < 1 ? '' : 'hidden';           // 지나가기 전·후 카드는 숨김 (겹침·포커스 방지)
       });
     };
-    addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+    const tick = (now) => {
+      raf = 0;
+      const dt = last ? Math.min(0.1, (now - last) / 1000) : 0.016; last = now;
+      const a = 1 - Math.exp(-dt / TAU);
+      let moving = false;
+      for (const n in cur) { cur[n] += (tgt[n] - cur[n]) * a; if (Math.abs(tgt[n] - cur[n]) > 0.001) moving = true; else cur[n] = tgt[n]; sec.style.setProperty('--' + n, cur[n].toFixed(3)); }
+      if (moving) raf = requestAnimationFrame(tick); else last = 0;
+    };
+    const update = () => {
+      if (reduceMotion || !mq.matches) { cards.forEach((c) => { c.style.removeProperty('--y'); c.style.removeProperty('visibility'); }); return; }
+      read();
+      if (!raf) raf = requestAnimationFrame(tick);
+    };
+    addEventListener('scroll', update, { passive: true });
     addEventListener('resize', update);
     update();
   }
