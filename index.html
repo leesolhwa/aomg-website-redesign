@@ -25,7 +25,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600&family=Instrument+Serif:ital@0;1&display=swap">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <link rel="preload" as="image" href="img/release-keyveatz-oxygen.webp">
-  <link rel="stylesheet" href="css/style.css?v=20261030-lno2">
+  <link rel="stylesheet" href="css/style.css?v=20261030-lno3">
   <script type="importmap">{ "imports": { "three": "./js/vendor/three.module.min.js" } }</script>
 </head>
 <body class="page-home">
@@ -204,7 +204,6 @@
         <ul class="wwd__cards">
           <li class="wwd__card" data-obj="cd">
             <div class="wwd__card-top">
-              <p class="wwd__cat">01 — Business</p>
               <h3 class="wwd__name" data-copy="wwd.card1.title">Music<br>Production</h3>
               <p class="wwd__desc" data-copy="wwd.card1.desc">기획부터 녹음, 믹싱, 발매까지. 레이블의 사운드를 만듭니다.</p>
             </div>
@@ -212,7 +211,6 @@
           </li>
           <li class="wwd__card" data-obj="globe">
             <div class="wwd__card-top">
-              <p class="wwd__cat">02 — Business</p>
               <h3 class="wwd__name" data-copy="wwd.card2.title">Artist<br>Management</h3>
               <p class="wwd__desc" data-copy="wwd.card2.desc">아티스트가 음악과 무대에만 집중할 수 있도록.</p>
             </div>
@@ -220,7 +218,6 @@
           </li>
           <li class="wwd__card" data-obj="spark">
             <div class="wwd__card-top">
-              <p class="wwd__cat">03 — Business</p>
               <h3 class="wwd__name" data-copy="wwd.card3.title">Live &amp;<br>Events</h3>
               <p class="wwd__desc" data-copy="wwd.card3.desc">단독 공연부터 페스티벌까지, 무대 위의 AOMG.</p>
             </div>
@@ -228,7 +225,6 @@
           </li>
           <li class="wwd__card" data-obj="crystal">
             <div class="wwd__card-top">
-              <p class="wwd__cat">04 — Business</p>
               <h3 class="wwd__name" data-copy="wwd.card4.title">Contents<br>&amp; Brand</h3>
               <p class="wwd__desc" data-copy="wwd.card4.desc">영상 콘텐츠, 브랜드 협업, MD로 넓어지는 문화.</p>
             </div>
@@ -264,13 +260,13 @@
 
   <img class="artist-preview" alt="" aria-hidden="true">
 
-  <script src="js/data.js?v=20261030-lno2"></script>
-  <script src="js/player.js?v=20261030-lno2"></script>
-  <script src="js/script.js?v=20261030-lno2"></script>
-  <script src="js/effects.js?v=20261030-lno2"></script>
+  <script src="js/data.js?v=20261030-lno3"></script>
+  <script src="js/player.js?v=20261030-lno3"></script>
+  <script src="js/script.js?v=20261030-lno3"></script>
+  <script src="js/effects.js?v=20261030-lno3"></script>
   <script type="module">
-    import { createSoundScene } from './js/sound3d.js?v=20261030-lno2';
-    import { createLogoScene } from './js/logo3d.js?v=20261030-lno2';
+    import { createSoundScene } from './js/sound3d.js?v=20261030-lno3';
+    import { createLogoScene } from './js/logo3d.js?v=20261030-lno3';
     const section = document.getElementById('sound');
     const heroEl = document.getElementById('hero');
     const np = document.getElementById('np');
@@ -322,7 +318,7 @@
       .catch((e) => { console.warn(e); document.documentElement.classList.add('no-webgl'); });
     createLogoScene(document.getElementById('footer-canvas'), { mode: 'footer', interactive: false }).catch(() => {});
     // WHAT WE DO 카드 3D 오브제: 실패하면 미리 렌더한 이미지가 그대로 보임
-    import('./js/wwd3d.js?v=20261030-lno2').then((m) => m.initWwd3D(document.getElementById('what-we-do'))).catch(() => {});
+    import('./js/wwd3d.js?v=20261030-lno3').then((m) => m.initWwd3D(document.getElementById('what-we-do'))).catch(() => {});
   </script>
 </body>
 </html>
