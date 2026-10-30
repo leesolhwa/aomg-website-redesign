@@ -421,7 +421,7 @@
 |---|---|
 | `wwd.eyebrow` | ~~AOMG · WHAT WE DO~~ (26차 삭제) |
 | `news.more` | *More* / News (뉴스 5번째 칸, 인스타그램 새 창) |
-| `wwd.title` | ~~where *Sound* / *Becomes* / Culture~~ (27차 삭제, 화면에 안 보이는 제목 'AOMG 사업 영역'만) |
+| `wwd.title` | where *Sound* / *Becomes* / Culture (고딕 + 세리프 이탤릭) |
 | `wwd.sub` | 음악에서 시작해, 문화가 되는 곳. |
 | `wwd.card1.title` · `desc` | Music Production · 기획부터 녹음, 믹싱, 발매까지. 레이블의 사운드를 만듭니다. (임시) |
 | `wwd.card2.title` · `desc` | Artist Management · 아티스트가 음악과 무대에만 집중할 수 있도록. (임시) |
