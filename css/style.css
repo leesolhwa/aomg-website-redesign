@@ -650,7 +650,7 @@ html.js [data-reveal].is-in { opacity: 1; transform: none; }
 .wwd__obj.is-3d img { visibility: hidden; }
 /* 데스크톱 + 동작 허용: 화면 고정, 문장은 좌우에서 날아오고 카드는 아래에서 위로 지나감 (JS가 --k1~3, --out, --y 설정) */
 @media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
-  html.js .wwd { height: 460vh; }
+  html.js .wwd { height: 560vh; }
   html.js .wwd__sticky { position: sticky; top: 0; height: 100vh; display: grid; place-items: center; }
   html.js .wwd__eyebrow { opacity: calc(0.6 * var(--k1, 0) * (1 - var(--out, 0))); }
   html.js .wwd__ln { opacity: calc(var(--k, 0) * (1 - var(--out, 0))); transform: translateX(calc((1 - var(--k, 0) + var(--out, 0)) * var(--dir) * 70vw)); }
