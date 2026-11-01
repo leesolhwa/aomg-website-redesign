@@ -508,8 +508,8 @@ export async function createSoundScene(opts) {
       cd.uForm.value = formSlot >= 0 ? smooth(0.46 + dk, 0.57 + dk * 0.5, p) : smooth(0.56, 0.6, p);
       const bob = reduceMotion ? 0 : Math.sin(t * 0.7 + cd.phase) * 0.04;
       const hv = cd.hover += ((hoverCd === i && interactive() ? 1 : 0) - cd.hover) * ease(0.12);
-      // 27차: 놓는 즉시 기다림 없이 앞면(앨범 커버)으로 빠르게 돌아옴 (약 0.3초)
-      if (dragCd !== i) cd.user.slerp(IDQ, 1 - Math.pow(1 - 0.25, dt * 60));
+      // 28차: 놓는 즉시 기다림 없이 앞면(앨범 커버)으로 돌아옴 — 너무 빠르지 않게 약 0.7초
+      if (dragCd !== i) cd.user.slerp(IDQ, 1 - Math.pow(1 - 0.07, dt * 60));
       tmpE.set(L.rx + cd.tilt[0] + hv * ptr.y * 0.1, L.ry + cd.tilt[1] + hv * ptr.x * 0.12, L.rz + cd.tilt[2]);
       tmpQ.setFromEuler(tmpE).premultiply(cd.user);
       const Rs = R * L.s;
