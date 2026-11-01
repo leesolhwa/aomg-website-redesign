@@ -308,7 +308,7 @@ export async function createSoundScene(opts) {
     const spin = new THREE.Group(); spin.add(body, face, hub, back);
     const g = new THREE.Group(); g.add(spin); scene.add(g);
     face.userData.cd = i; body.userData.cd = i; hub.userData.cd = i;
-    return { rel, g, spin, face, body, hub, back, uForm, hover: 0, user: new THREE.Quaternion(), vel: new THREE.Vector2(), idle: 0, tilt: [(rnd() - 0.5) * 0.16, (rnd() - 0.5) * 0.16, (rnd() - 0.5) * 0.12], phase: rnd() * 6.28 };
+    return { rel, g, spin, face, body, hub, back, uForm, hover: 0, user: new THREE.Quaternion(), vel: new THREE.Vector2(), tilt: [(rnd() - 0.5) * 0.16, (rnd() - 0.5) * 0.16, (rnd() - 0.5) * 0.12], phase: rnd() * 6.28 };
   }));
 
   /* --- 배치 --- */
@@ -508,11 +508,8 @@ export async function createSoundScene(opts) {
       cd.uForm.value = formSlot >= 0 ? smooth(0.46 + dk, 0.57 + dk * 0.5, p) : smooth(0.56, 0.6, p);
       const bob = reduceMotion ? 0 : Math.sin(t * 0.7 + cd.phase) * 0.04;
       const hv = cd.hover += ((hoverCd === i && interactive() ? 1 : 0) - cd.hover) * ease(0.12);
-      // 드래그 관성 (놓은 뒤 조금 더 돌다가 그 각도에 멈춤)
-      if (dragCd !== i && cd.vel.lengthSq() > 0.01) { rotateCd(cd, cd.vel.x, cd.vel.y); cd.vel.multiplyScalar(Math.pow(0.9, dt * 60)); }
-      // 26차: 놓고 관성이 잦아들면 0.3초 뒤 천천히(약 1초) 앞면(앨범 커버)으로 돌아옴
-      if (dragCd === i) cd.idle = 0;
-      else if (cd.vel.lengthSq() < 4) { cd.idle += dt; if (cd.idle > 0.3) cd.user.slerp(IDQ, 1 - Math.pow(1 - 0.07, dt * 60)); }
+      // 27차: 놓는 즉시 기다림 없이 앞면(앨범 커버)으로 빠르게 돌아옴 (약 0.3초)
+      if (dragCd !== i) cd.user.slerp(IDQ, 1 - Math.pow(1 - 0.25, dt * 60));
       tmpE.set(L.rx + cd.tilt[0] + hv * ptr.y * 0.1, L.ry + cd.tilt[1] + hv * ptr.x * 0.12, L.rz + cd.tilt[2]);
       tmpQ.setFromEuler(tmpE).premultiply(cd.user);
       const Rs = R * L.s;
