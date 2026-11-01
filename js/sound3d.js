@@ -308,7 +308,7 @@ export async function createSoundScene(opts) {
     const spin = new THREE.Group(); spin.add(body, face, hub, back);
     const g = new THREE.Group(); g.add(spin); scene.add(g);
     face.userData.cd = i; body.userData.cd = i; hub.userData.cd = i;
-    return { rel, g, spin, face, body, hub, back, uForm, hover: 0, user: new THREE.Quaternion(), vel: new THREE.Vector2(), tilt: [(rnd() - 0.5) * 0.16, (rnd() - 0.5) * 0.16, (rnd() - 0.5) * 0.12], phase: rnd() * 6.28 };
+    return { rel, g, spin, face, body, hub, back, uForm, hover: 0, user: new THREE.Quaternion(), vel: new THREE.Vector2(), idle: 0, tilt: [(rnd() - 0.5) * 0.16, (rnd() - 0.5) * 0.16, (rnd() - 0.5) * 0.12], phase: rnd() * 6.28 };
   }));
 
   /* --- 배치 --- */
@@ -365,7 +365,7 @@ export async function createSoundScene(opts) {
     window.scrollTo({ top, behavior: reduceMotion ? 'auto' : 'smooth' });
   }
 
-  /* --- 상호작용: CD 드래그 = 제자리 회전(놓은 각도 유지), 클릭 = 그 CD로 스크롤 --- */
+  /* --- 상호작용: CD 드래그 = 제자리 회전(놓으면 앞면으로 복귀), 클릭 = 그 CD로 스크롤 --- */
   const interactive = () => p > 0.56;
   const raycaster = new THREE.Raycaster(), ndc = new THREE.Vector2();
   let hoverCd = -1, dragCd = -1, moved = false, lx = 0, ly = 0, downX = 0, downY = 0;
@@ -377,7 +377,7 @@ export async function createSoundScene(opts) {
     const hit = raycaster.intersectObjects(cds.filter((c) => c.g.visible).flatMap((c) => [c.face, c.body, c.hub]), false)[0];
     return hit ? hit.object.userData.cd : -1;
   }
-  const qa = new THREE.Quaternion(), ax = new THREE.Vector3();
+  const qa = new THREE.Quaternion(), ax = new THREE.Vector3(), IDQ = new THREE.Quaternion(); // IDQ = 앞면
   function rotateCd(cd, dx, dy) {
     qa.setFromAxisAngle(ax.set(0, 1, 0), dx * 0.012); cd.user.premultiply(qa);
     qa.setFromAxisAngle(ax.set(1, 0, 0), dy * 0.012); cd.user.premultiply(qa);
@@ -510,6 +510,9 @@ export async function createSoundScene(opts) {
       const hv = cd.hover += ((hoverCd === i && interactive() ? 1 : 0) - cd.hover) * ease(0.12);
       // 드래그 관성 (놓은 뒤 조금 더 돌다가 그 각도에 멈춤)
       if (dragCd !== i && cd.vel.lengthSq() > 0.01) { rotateCd(cd, cd.vel.x, cd.vel.y); cd.vel.multiplyScalar(Math.pow(0.9, dt * 60)); }
+      // 26차: 놓고 관성이 잦아들면 0.3초 뒤 천천히(약 1초) 앞면(앨범 커버)으로 돌아옴
+      if (dragCd === i) cd.idle = 0;
+      else if (cd.vel.lengthSq() < 4) { cd.idle += dt; if (cd.idle > 0.3) cd.user.slerp(IDQ, 1 - Math.pow(1 - 0.07, dt * 60)); }
       tmpE.set(L.rx + cd.tilt[0] + hv * ptr.y * 0.1, L.ry + cd.tilt[1] + hv * ptr.x * 0.12, L.rz + cd.tilt[2]);
       tmpQ.setFromEuler(tmpE).premultiply(cd.user);
       const Rs = R * L.s;
