@@ -203,6 +203,7 @@ export async function createLogoScene(canvas, opts = {}) {
     interactive = true,
     textArea = null,          // () => ({ top, bottom }) 캔버스 기준 px. 문장·로고를 이 영역 안에 배치
     onRing = null,            // ({ x, y, r, visible }) 커서 영역 표시용 (KODE 'HOLD AND DRAG' 원)
+    follow = null,            // 푸터: 이 요소 위 마우스를 엠블럼이 따라 바라봄 (가운데 고정, 떼면 제자리 회전)
   } = opts;
 
   let renderer;
@@ -326,6 +327,23 @@ export async function createLogoScene(canvas, opts = {}) {
     canvas.addEventListener('contextmenu', (e) => e.preventDefault()); // 길게 누르기 메뉴 방지
   }
 
+  /* ---------- 푸터: 엠블럼이 마우스를 따라 바라보기 (54차) ----------
+   * 가운데에 있으면서 마우스 쪽을 바라보듯 기울고(좌우 35°·상하 25°) 그 방향으로 살짝 끌려옴(가로 6%·세로 5%).
+   * 마우스가 없으면 가운데로 돌아와 제자리에서 천천히 회전(한 바퀴 10초). 떠다니는 움직임 없음. */
+  const fol = { on: false, mx: 0, my: 0, px: 0, py: 0 };
+  const followMode = mode === 'footer' && follow && !reduceMotion;
+  if (followMode && finePointer) {
+    follow.addEventListener('pointermove', (e) => {
+      if (e.pointerType !== 'mouse') return;
+      const r = follow.getBoundingClientRect();
+      fol.mx = Math.max(-1, Math.min(1, ((e.clientX - r.left) / r.width - 0.5) * 2));
+      fol.my = Math.max(-1, Math.min(1, ((e.clientY - r.top) / r.height - 0.5) * 2));
+      fol.on = true;
+    });
+    follow.addEventListener('pointerleave', () => { fol.on = false; });
+  }
+  const LOOK_Y = THREE.MathUtils.degToRad(35), LOOK_X = THREE.MathUtils.degToRad(25), SPIN = Math.PI * 2 / 10;
+
   /* ---------- 루프 ---------- */
   let visible = true, raf = 0, last = performance.now();
   const io = new IntersectionObserver(([en]) => { visible = en.isIntersecting; if (visible && !raf) raf = requestAnimationFrame(loop); }, { threshold: 0 });
@@ -341,14 +359,31 @@ export async function createLogoScene(canvas, opts = {}) {
     const beat = parseFloat(css('--beat')) || 0;
     uniforms.uBeat.value += (beat - uniforms.uBeat.value) * 0.3;
 
-    if (!dragging) {
+    if (followMode) {
+      if (fol.on) {
+        const look = fol.mx * LOOK_Y, turn = Math.PI * 2;
+        const base = Math.round((rot.y - look) / turn) * turn;      // 돌던 각도에서 가장 가까운 쪽으로 돌아봄
+        rot.y += (base + look - rot.y) * 0.08;
+        rot.x += (fol.my * LOOK_X - rot.x) * 0.08;
+        fol.px += (fol.mx - fol.px) * 0.08; fol.py += (fol.my - fol.py) * 0.08;
+      } else {
+        rot.y += dt * SPIN;
+        rot.x += (0 - rot.x) * 0.05;
+        fol.px += (0 - fol.px) * 0.05; fol.py += (0 - fol.py) * 0.05;
+      }
+      const viewH = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.position.z;
+      pivot.rotation.set(rot.x, rot.y, 0);
+      pivot.position.set(fol.px * viewH * camera.aspect * 0.06, baseY - fol.py * viewH * 0.05, 0);
+    } else if (!dragging) {
       rot.vx *= 0.94; rot.vy *= 0.94;
       rot.x += rot.vx; rot.y += rot.vy;
       if (!reduceMotion) rot.y += dt * (mode === 'hero' ? 0.12 : 0.25); // 천천히 자동 회전
       rot.x += ((pointer.y * 0.25 + 0.1) - rot.x) * 0.02;              // 포인터 방향으로 살짝 기울기
     }
-    pivot.rotation.set(rot.x, rot.y, Math.sin(uniforms.uTime.value * 0.5) * 0.04);
-    pivot.position.y = baseY + (reduceMotion ? 0 : Math.sin(uniforms.uTime.value * 0.8) * 0.05);
+    if (!followMode) {
+      pivot.rotation.set(rot.x, rot.y, Math.sin(uniforms.uTime.value * 0.5) * 0.04);
+      pivot.position.y = baseY + (reduceMotion ? 0 : Math.sin(uniforms.uTime.value * 0.8) * 0.05);
+    }
     if (onRing) {
       // 깨지는 반경(uHoverR, 오브제 로컬 단위) → 화면 px
       const viewH = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.position.z;
