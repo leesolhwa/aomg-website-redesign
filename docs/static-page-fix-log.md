@@ -328,3 +328,8 @@
 - 요청: "I자 텍스트 커서좀 없애줘 그냥 전부 화살표로"
 - `body { cursor: default; }` — 글자 위에서도 화살표. 링크·버튼 손가락, 히어로 링, CD 잡기 손, 포스터 십자, 꼬리선은 그대로
 - 캐시 버전 20261102-cu1.
+
+## #114 [Point Of View: U] 커버 이미지 추가 (2026-11-02)
+- 요청: RELEASES 2021의 빈 검정 카드에 사용자가 준 사진 넣기
+- `img/release-yugyeom-pov.webp`(500×500) 추가, `js/data.js` pov `cover` 지정 → RELEASES 카드와 NOW PLAYING CD 모두 이 커버로
+- 캐시 버전 20261102-pv1.

@@ -168,7 +168,7 @@
 | 2024 | [TRUST ME] | YUGYEOM | 1ST ALBUM | 2024 `[needs-check: 월일]` | 텍스트 카드 |
 | 2024 | [HAN : Cooked] | SIKKOO | SPECIAL ALBUM | 2024.08 | 텍스트 카드 |
 | 2022 | [Go Back] | JVCKI WAI | SINGLE | 2022.10 | 텍스트 카드 |
-| 2021 | [Point Of View: U] | YUGYEOM | EP | 2021.06 | 텍스트 카드 |
+| 2021 | [Point Of View: U] | YUGYEOM | EP | 2021.06 | release-yugyeom-pov.webp (2026-11-02 추가) |
 | 2019 | [낙서] | PUNCHNELLO | SINGLE | 2019 `[needs-check: 월일]` | 텍스트 카드 |
 | 2019 | [Men In Black] | UGLY DUCK & DeVita | COLLABORATION ALBUM | 2019 `[needs-check: 월일]` | 텍스트 카드 |
 
