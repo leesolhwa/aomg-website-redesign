@@ -96,7 +96,7 @@ const RELEASES = [
   { id: 'trustme', title: 'TRUST ME', artistId: 'yugyeom', artist: 'YUGYEOM', type: '1ST ALBUM', year: 2024, date: '2024', cover: 'img/release-yugyeom-trustme.webp', listen: null }, // date [needs-check]
   { id: 'hancooked', title: 'HAN : Cooked', artistId: 'sikkoo', artist: 'SIKKOO', type: 'SPECIAL ALBUM', year: 2024, date: '2024.08', cover: 'img/release-sikkoo-hancooked.webp', listen: null },
   { id: 'goback', title: 'Go Back', artistId: 'jvckiwai', artist: 'JVCKI WAI', type: 'SINGLE', year: 2022, date: '2022.10', cover: 'img/release-jvckiwai-goback.webp', listen: null },
-  { id: 'pov', title: 'Point Of View: U', artistId: 'yugyeom', artist: 'YUGYEOM', type: 'EP', year: 2021, date: '2021.06', cover: null, listen: null },
+  { id: 'pov', title: 'Point Of View: U', artistId: 'yugyeom', artist: 'YUGYEOM', type: 'EP', year: 2021, date: '2021.06', cover: 'img/release-yugyeom-pov.webp', listen: null },
   { id: 'doodle', title: '낙서', artistId: 'punchnello', artist: 'PUNCHNELLO', type: 'SINGLE', year: 2019, date: '2019', cover: 'img/release-punchnello-doodle.webp', listen: null }, // date [needs-check]
   { id: 'mib', title: 'Men In Black', artistId: 'uglyduck', artist: 'UGLY DUCK & DeVita', type: 'COLLABORATION ALBUM', year: 2019, date: '2019', cover: 'img/release-uglyduck-mib.webp', listen: null }, // date [needs-check]
 ];
