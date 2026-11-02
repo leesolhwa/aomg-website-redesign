@@ -264,6 +264,7 @@ ul, ol { list-style: none; }
 .section-caption { font-family: var(--type-ko); font-size: var(--fs-ko-caption); line-height: var(--lh-ko-caption); letter-spacing: normal; text-transform: none; }
 .section-subtitle { margin-top: var(--space-card-text); font-family: var(--type-ko); font-size: var(--fs-ko-lead); line-height: var(--lh-ko-lead); letter-spacing: var(--ls-ko-lead); max-width: var(--readable-max); }
 .section-text { margin-top: var(--space-card-text); max-width: var(--readable-max); }
+.artists__gap { visibility: hidden; } /* ARTISTS 한글 설명 삭제 후 그 높이만큼 여백 유지 */
 
 /* ==== Theme surfaces ==== */
 .surface-accent { background: var(--color-bg-accent); color: var(--color-text-on-accent); }

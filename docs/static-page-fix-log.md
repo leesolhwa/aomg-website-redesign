@@ -296,3 +296,9 @@
 - 원인: `.reel__info`가 상자 바닥 기준(flex-end) 정렬인데 세 문구의 줄간격·버튼 높이가 달라 글자 높이가 계단처럼 어긋남
 - `.reel__sub`(들리는 것을 넘어, 보이는 음악.) 삭제, `.reel__info` align-items: baseline, `.reel__cta` margin-left: auto(오른쪽 자리 유지)
 - 캐시 버전 20261102-rt2.
+
+## #109 ARTISTS 한글 두 줄 삭제 (2026-11-02)
+- 요청: "아티스트 섹션에 밑에 한글 두줄도 없애줘"
+- `artists.subtitle`(래퍼, 보컬, 크루, 방송인, 파이터까지.)·`artists.body`(이름을 누르면…) 삭제.
+- 추가 요청 "지운 자리 그대로 여백은 남겨두고": 두 줄을 `.artists__gap`(visibility: hidden, aria-hidden)으로 감싸 글자만 안 보이고 높이는 그대로 유지 → 아티스트 이름 목록 위치 변함 없음.
+- 캐시 버전 20261102-rt4.
