@@ -221,7 +221,7 @@
       if (params.get('id')) {
         const msg = document.createElement('p');
         msg.className = 't-ko-caption detail-hero__notice'; msg.setAttribute('role', 'status');
-        msg.textContent = '찾는 아티스트가 없어요. 키비츠 페이지를 대신 보여드려요.';
+        msg.textContent = '찾는 아티스트가 없어요. KEYVEATZ 페이지를 대신 보여드려요.';
         $('.detail-hero__body').prepend(msg); // 고정 GNB에 가리지 않도록 히어로 본문 안에
       }
       a = artistById('keyveatz');
@@ -298,7 +298,7 @@
       $$('[data-action="audio-toggle"]').forEach((b) => {
         b.setAttribute('aria-pressed', String(s.playing));
         b.setAttribute('aria-label', s.playing ? '소리 끄기' : '소리 켜기');
-        $('.cta__label', b).textContent = s.playing ? 'AUDIO OFF' : 'AUDIO ON';
+        $('.cta__label', b).textContent = s.playing ? 'SOUND OFF' : 'SOUND ON';
       });
       const pt = $('[data-action="play-toggle"]');
       pt.setAttribute('aria-label', `${s.title} ${s.playing ? '정지' : '재생'}`);
@@ -320,7 +320,7 @@
 
   /* ---------- NOW PLAYING (CD 컬렉션) 정보 패널 ----------
    * sound3d.js가 선택된 CD가 바뀔 때 show(i, release)를 부름. 트랙·재생은 기존 Player 사용.
-   * 데모 트랙이 없는 앨범은 아무것도 재생하지 않고 '데모 트랙 없음' + 스트리밍 링크만 보여 줌 */
+   * 데모 트랙이 없는 앨범은 아무것도 재생하지 않고 안내 문구 없이 비워 두고, 스트리밍 링크가 있으면 LISTEN만 보여 줌 */
   function initNowPlaying() {
     const np = $('#np');
     if (!np || !window.Player) return;
@@ -345,7 +345,8 @@
           <button class="cta" type="button" data-action="play-track" data-track="${esc(t.id)}" aria-label="${esc(t.title)} 재생"><span class="cta__label">PLAY</span></button>
         </li>`;
       } else {
-        list.innerHTML = `<li class="np__track is-empty"><span class="np__no">—</span><span class="np__name">데모 트랙 없음</span>${r.listen ? cta('LISTEN', ext(r.listen, `${r.title} 스트리밍에서 듣기`)) : ''}</li>`;
+        // 데모가 없는 앨범: 안내 문구 없이 비워 둠 (스트리밍 링크가 있으면 LISTEN만)
+        list.innerHTML = r.listen ? `<li class="np__track is-empty">${cta('LISTEN', ext(r.listen, `${r.title} 스트리밍에서 듣기`))}</li>` : '';
       }
       np.classList.toggle('has-track', !!t);
       paint(Player.state);

@@ -121,8 +121,8 @@ const EVENTS = [];
 
 // copy-strategy.md 4-5
 const NEWS = [
-  { id: 'n1', category: 'RELEASE', title: '키비츠 첫 EP [OXY_GEN] 발매', date: '2026.06', image: 'img/news-keyveatz-messygirls.webp', artistIds: ['keyveatz'], url: AOMG.social.instagram },
-  { id: 'n2', category: 'AWARD', title: '기안84, 제62회 백상예술대상 방송부문 남자 예능상', date: '2026.05', image: 'img/news-kian84-baeksang.webp', artistIds: ['kian84'], url: AOMG.social.instagram },
-  { id: 'n3', category: 'CREW', title: '키비츠 크루 소개 — KANG YESEUL', date: '2026.04', image: 'img/news-keyveatz-kangyeseul.webp', artistIds: ['keyveatz'], url: AOMG.social.instagram },
-  { id: 'n4', category: 'CREW', title: '키비츠 크루 소개 — UM JIONE', date: '2026.04', image: 'img/news-keyveatz-umjione.webp', artistIds: ['keyveatz'], url: AOMG.social.instagram },
+  { id: 'n1', category: 'RELEASE', title: 'KEYVEATZ 첫 EP [OXY_GEN] 발매', date: '2026.06', image: 'img/news-keyveatz-messygirls.webp', artistIds: ['keyveatz'], url: AOMG.social.instagram },
+  { id: 'n2', category: 'AWARD', title: 'KIAN84, 제62회 백상예술대상 방송부문 남자 예능상', date: '2026.05', image: 'img/news-kian84-baeksang.webp', artistIds: ['kian84'], url: AOMG.social.instagram },
+  { id: 'n3', category: 'CREW', title: 'KEYVEATZ 크루 소개 — KANG YESEUL', date: '2026.04', image: 'img/news-keyveatz-kangyeseul.webp', artistIds: ['keyveatz'], url: AOMG.social.instagram },
+  { id: 'n4', category: 'CREW', title: 'KEYVEATZ 크루 소개 — UM JIONE', date: '2026.04', image: 'img/news-keyveatz-umjione.webp', artistIds: ['keyveatz'], url: AOMG.social.instagram },
 ];
