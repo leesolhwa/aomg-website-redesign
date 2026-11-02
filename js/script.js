@@ -320,7 +320,7 @@
 
   /* ---------- NOW PLAYING (CD 컬렉션) 정보 패널 ----------
    * sound3d.js가 선택된 CD가 바뀔 때 show(i, release)를 부름. 트랙·재생은 기존 Player 사용.
-   * 데모 트랙이 없는 앨범은 아무것도 재생하지 않고 '들을 수 있는 트랙이 없어요' + 스트리밍 링크만 보여 줌 */
+   * 데모 트랙이 없는 앨범은 아무것도 재생하지 않고 안내 문구 없이 비워 두고, 스트리밍 링크가 있으면 LISTEN만 보여 줌 */
   function initNowPlaying() {
     const np = $('#np');
     if (!np || !window.Player) return;
@@ -345,7 +345,8 @@
           <button class="cta" type="button" data-action="play-track" data-track="${esc(t.id)}" aria-label="${esc(t.title)} 재생"><span class="cta__label">PLAY</span></button>
         </li>`;
       } else {
-        list.innerHTML = `<li class="np__track is-empty"><span class="np__no">—</span><span class="np__name">들을 수 있는 트랙이 없어요</span>${r.listen ? cta('LISTEN', ext(r.listen, `${r.title} 스트리밍에서 듣기`)) : ''}</li>`;
+        // 데모가 없는 앨범: 안내 문구 없이 비워 둠 (스트리밍 링크가 있으면 LISTEN만)
+        list.innerHTML = r.listen ? `<li class="np__track is-empty">${cta('LISTEN', ext(r.listen, `${r.title} 스트리밍에서 듣기`))}</li>` : '';
       }
       np.classList.toggle('has-track', !!t);
       paint(Player.state);

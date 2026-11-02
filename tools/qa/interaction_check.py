@@ -52,7 +52,7 @@ async def main():
     check('NEXT -> KEY BEATS + DEMO 02', 'DEMO BEAT 02' in await pg.inner_text('[data-render=np-tracks]'))
     await pg.locator('[data-action=cd-next]').dispatch_event('click')
     await pg.wait_for_function("document.querySelector('[data-render=np-title]').textContent==='CHECK OUT'", timeout=30000)
-    check('album without demo: no play button, message', await pg.evaluate("!document.querySelector('#np [data-action=play-track]') && document.querySelector('[data-render=np-tracks]').textContent.includes('들을 수 있는 트랙이 없어요')"))
+    check('album without demo: no play button, message', await pg.evaluate("!document.querySelector('#np [data-action=play-track]') && document.querySelector('[data-render=np-tracks]').textContent.trim()===''"))
     await pg.locator('[data-action=cd-prev]').dispatch_event('click'); await pg.locator('[data-action=cd-prev]').dispatch_event('click')
     await pg.wait_for_function("document.querySelector('[data-render=np-title]').textContent==='OXY_GEN'", timeout=60000)
     check('PREV x2 -> OXY_GEN', True)

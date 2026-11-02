@@ -343,13 +343,13 @@
 | `intro.enter` | ENTER |
 | `live.scratchHint` / `live.reveal` | 긁어서 포스터를 확인해 보세요. / REVEAL |
 | `hero.date` | 2026.06.30 |
-| `hero.subtitle` | AOMG의 새 걸크루, KEYVEATZ의 첫 EP. |
+| ~~`hero.subtitle`~~ | ~~AOMG의 새 걸크루, KEYVEATZ의 첫 EP.~~ (삭제 2026-11-02) |
 | `hero.body` | 소리를 켜면 화면이 비트에 반응해요. |
 | `hero.cta.audio` | [ SOUND ON ] |
 | `hero.cta.listen` | [ LISTEN ] |
 | `nowPlaying.title` | NOW PLAYING |
 | `nowPlaying.caption` | 지금 재생 |
-| `nowPlaying.subtitle` | 트랙을 고르면 파형이 그 비트를 따라 움직인다. |
+| `nowPlaying.subtitle` | 트랙을 고르면 파형이 비트를 따라 움직여요. |
 | `nowPlaying.muted` | 소리가 꺼져 있어요. [ SOUND ON ]을 누르면 재생돼요. |
 | `nowPlaying.demoNote` | 데모 비트예요. KEYVEATZ의 전체 곡은 스트리밍에서 들을 수 있어요. |
 | `nowPlaying.track1~3` | DEMO BEAT 01 / DEMO BEAT 02 / DEMO BEAT 03 |
@@ -423,7 +423,7 @@
 | `news.more` | *More* / News (뉴스 5번째 칸, 인스타그램 새 창) |
 | `wwd.title` | where *Sound* / *Becomes* / Culture (고딕 + 세리프 이탤릭) |
 | `wwd.sub` | 음악에서 시작해, 문화가 되는 곳. |
-| `wwd.card1.title` · `desc` | Music Production · 기획부터 녹음, 믹싱, 발매까지. 레이블의 사운드. (임시) |
-| `wwd.card2.title` · `desc` | Artist Management · 아티스트는 음악과 무대에만. (임시) |
+| `wwd.card1.title` · `desc` | Music Production · 첫 데모부터 마스터까지, AOMG의 소리. (임시) |
+| `wwd.card2.title` · `desc` | Artist Management · 데뷔부터 다음 무대까지, 아티스트 곁에서. (임시) |
 | `wwd.card3.title` · `desc` | Live & Events · 단독 공연부터 페스티벌까지, 무대 위의 AOMG. (임시) |
 | `wwd.card4.title` · `desc` | Contents & Brand · 영상 콘텐츠, 브랜드 협업, MD로 넓어지는 문화. (임시) |
