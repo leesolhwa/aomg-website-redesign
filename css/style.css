@@ -264,6 +264,8 @@ ul, ol { list-style: none; }
 .section-caption { font-family: var(--type-ko); font-size: var(--fs-ko-caption); line-height: var(--lh-ko-caption); letter-spacing: normal; text-transform: none; }
 .section-subtitle { margin-top: var(--space-card-text); font-family: var(--type-ko); font-size: var(--fs-ko-lead); line-height: var(--lh-ko-lead); letter-spacing: var(--ls-ko-lead); max-width: var(--readable-max); }
 .section-text { margin-top: var(--space-card-text); max-width: var(--readable-max); }
+/* ARTISTS 타이틀만 다른 섹션 타이틀(로고 선, 화면 폭 5%)에 맞춤 — 아티스트 이름 목록 위치는 그대로 */
+@media (min-width: 768px) { #artists-title { padding-left: calc((100% + var(--gutter-x) * 2) * 0.05 - var(--gutter-x)); } }
 .artists__gap { visibility: hidden; } /* ARTISTS 한글 설명 삭제 후 그 높이만큼 여백 유지 */
 
 /* ==== Theme surfaces ==== */
@@ -614,6 +616,11 @@ html.js [data-reveal].is-in { opacity: 1; transform: none; }
 .reel__title span:nth-child(1) { --k: var(--t1, 0); }
 .reel__title span:nth-child(2) { --k: var(--t2, 0); }
 .reel__title span:nth-child(3) { --k: var(--t3, 0); }
+/* 히어로처럼 고딕(가로 150%) + 명조 이탤릭 섞기: SOUND·SEE 고딕 90%, YOU CAN 명조 이탤릭. 행간 0.82(줄 높이는 각 줄 글자 크기 기준) */
+.reel__title { line-height: 0.82; }
+.reel__title span:has(.reel__g) { font-size: 0.9em; }
+.reel__g { display: inline-block; font-family: var(--font-sans-en); font-weight: 400; letter-spacing: -0.055em; transform: scaleX(1.5); }
+.reel__s { display: inline-block; font-family: var(--font-display-en); font-style: italic; font-size: 1.12em; letter-spacing: -0.03em; }
 .reel__info { position: absolute; left: 5%; right: 5%; bottom: 96px; display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-card-text) 40px; color: var(--color-white); opacity: var(--info, 0); transform: translateY(calc((1 - var(--info, 0)) * 20px)); }
 .reel__meta { font-family: var(--font-sans-en); font-size: var(--fs-body-1); line-height: var(--lh-body-1); text-transform: uppercase; }
 .reel__cta { margin-left: auto; pointer-events: auto; } /* 한글 문구 삭제 후에도 오른쪽 자리 유지 */
