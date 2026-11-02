@@ -50,7 +50,7 @@
 | 캡션 | **15자 이내**, 마침표 없음 | "AOMG 아티스트 10팀" |
 | 주어 | 첫 문장에만. 다음 문장은 생략 | |
 | 수식어 | 형용사는 문장당 1개까지. 사실(연도·수상·숫자)로 대신한다 | ✗ "독보적인 래퍼" → ○ "2015년 믹스테이프로 데뷔한 래퍼" |
-| 아티스트 표기 | 영문 대문자 / 한글: `KEYVEATZ / 키비츠`. 본문에서는 한글명 | |
+| 아티스트 표기 | 영문 대문자 / 한글: `KEYVEATZ / 키비츠`. 화면에 보이는 문구는 영문명으로 통일(2026-11-02). 아티스트 상세 한글명·소개 본문·대체 텍스트는 한글명 | |
 | 앨범 표기 | 대괄호 `[OXY_GEN]` — 공식 사이트 표기와 동일 | |
 | 날짜 | `2026.06.30` (월만 알면 `2026.06`) | |
 | 숫자 | 아라비아 숫자, 단위 붙여 씀 | "10팀", "3곡" |
@@ -118,8 +118,8 @@
 
 | 파일명 | 페이지명 | 섹션 ID | 영문/한글 제목 | 서브타이틀 | 본문 카피 | CTA 문구 | 카피 근거 |
 |---|---|---|---|---|---|---|---|
-| index.html | Home | `#hero` | 라벨: `KEYVEATZ — 1ST EP` / 제목: **OXY_GEN** / 날짜: `2026.06.30` | AOMG의 새 걸크루, 키비츠의 첫 EP. | 소리를 켜면 화면이 비트에 반응해요. | `[ AUDIO ON ]` `[ LISTEN ]` | 공식 홈 공지: 키비츠 데뷔 EP [OXY_GEN] 2026.06.30 발매. 메시지 1·2. 제목은 영문 고유명사만(3-1) |
-| index.html | Home | `#now-playing` | **NOW PLAYING** / 지금 재생 | 트랙을 고르면 파형이 그 비트를 따라 움직인다. | 무음 상태 안내: 소리가 꺼져 있어요. `[ AUDIO ON ]`을 누르면 재생돼요. / 음원 표기: 데모 비트예요. 키비츠의 전체 곡은 스트리밍에서 들을 수 있어요. | `[ PLAY ]` `[ PAUSE ]` `[ LISTEN ]` | prd 7장: AOMG 음원 미사용, 데모 표기 필수. 사용자가 AOMG 곡으로 오해하지 않게 함 |
+| index.html | Home | `#hero` | 라벨: `KEYVEATZ — 1ST EP` / 제목: **OXY_GEN** / 날짜: `2026.06.30` | AOMG의 새 걸크루, KEYVEATZ의 첫 EP. | 소리를 켜면 화면이 비트에 반응해요. | `[ SOUND ON ]` `[ LISTEN ]` | 공식 홈 공지: 키비츠 데뷔 EP [OXY_GEN] 2026.06.30 발매. 메시지 1·2. 제목은 영문 고유명사만(3-1) |
+| index.html | Home | `#now-playing` | **NOW PLAYING** / 지금 재생 | 트랙을 고르면 파형이 그 비트를 따라 움직인다. | 무음 상태 안내: 소리가 꺼져 있어요. `[ SOUND ON ]`을 누르면 재생돼요. / 음원 표기: 데모 비트예요. KEYVEATZ의 전체 곡은 스트리밍에서 들을 수 있어요. | `[ PLAY ]` `[ PAUSE ]` `[ LISTEN ]` | prd 7장: AOMG 음원 미사용, 데모 표기 필수. 사용자가 AOMG 곡으로 오해하지 않게 함 |
 | index.html | Home | `#now-playing` 트랙 | `DEMO BEAT 01` `DEMO BEAT 02` `DEMO BEAT 03` | 각 트랙 보조 정보: BPM (음원 확정 후 입력) `[needs-check]` | — | — | 실제 음원 파일이 정해지면 BPM만 채움. 곡명을 지어내지 않음 |
 | index.html | Home | `#artists` | **ARTISTS** / AOMG 아티스트 10팀 | 래퍼, 보컬, 크루, 방송인, 파이터까지. | 이름을 누르면 음악과 영상, 공연이 한 페이지에 모여 있어요. | 아티스트명 10개 (링크) | 공식 About: "스포츠 엔터테인먼트 산업에도 진출". 실제 로스터 구성 그대로. 메시지 3 |
 | index.html | Home | `#discography` | **RELEASES** / 연도별 발매 기록 | (없음 — 2026-10-28 피드백으로 삭제) | 연도별 목록 (아래 4-3 표) | `[ PREV ]` `[ NEXT ]` `[ LISTEN ]` | 각 아티스트 페이지에 적힌 발매 기록 (2019~2026). 2013~2018년은 공식 출처 확인 후 추가 `[needs-check]` |
@@ -191,10 +191,10 @@
 
 | # | 분류 라벨 | 제목 (body-4) | 날짜 | 이미지 | 링크 |
 |---|---|---|---|---|---|
-| 1 | `RELEASE` | 키비츠 첫 EP [OXY_GEN] 발매 | 2026.06 | news-keyveatz-messygirls.webp | AOMG 인스타그램 원문 |
-| 2 | `AWARD` | 기안84, 제62회 백상예술대상 방송부문 남자 예능상 | 2026.05 | news-kian84-baeksang.webp | AOMG 인스타그램 원문 |
-| 3 | `CREW` | 키비츠 크루 소개 — KANG YESEUL | 2026.04 | news-keyveatz-kangyeseul.webp | AOMG 인스타그램 원문 |
-| 4 | `CREW` | 키비츠 크루 소개 — UM JIONE | 2026.04 | news-keyveatz-umjione.webp | AOMG 인스타그램 원문 |
+| 1 | `RELEASE` | KEYVEATZ 첫 EP [OXY_GEN] 발매 | 2026.06 | news-keyveatz-messygirls.webp | AOMG 인스타그램 원문 |
+| 2 | `AWARD` | KIAN84, 제62회 백상예술대상 방송부문 남자 예능상 | 2026.05 | news-kian84-baeksang.webp | AOMG 인스타그램 원문 |
+| 3 | `CREW` | KEYVEATZ 크루 소개 — KANG YESEUL | 2026.04 | news-keyveatz-kangyeseul.webp | AOMG 인스타그램 원문 |
+| 4 | `CREW` | KEYVEATZ 크루 소개 — UM JIONE | 2026.04 | news-keyveatz-umjione.webp | AOMG 인스타그램 원문 |
 
 - 날짜는 공식 사이트 게시 시점 기준 월 단위. 멤버 한글 이름은 공식 표기를 확인하지 못해 영문 그대로 쓴다.
 - 계약 종료 공지(후디)는 브랜드 랜딩에 맞지 않아 제외.
@@ -236,8 +236,8 @@
 
 | 버튼 | 문구 | 동작 | 접근성 라벨 |
 |---|---|---|---|
-| 사운드 켜기 | `[ AUDIO ON ]` | AudioContext 시작 | 소리 켜기 |
-| 사운드 끄기 | `[ AUDIO OFF ]` | 음소거 | 소리 끄기 |
+| 사운드 켜기 | `[ SOUND ON ]` | AudioContext 시작 | 소리 켜기 |
+| 사운드 끄기 | `[ SOUND OFF ]` | 음소거 | 소리 끄기 |
 | 재생 / 정지 | `[ PLAY ]` / `[ PAUSE ]` | 트랙 재생·정지 | {트랙명} 재생 / 정지 |
 | 이전 / 다음 트랙 | `[ PREV ]` / `[ NEXT ]` | 미니 플레이어 | 이전 곡 / 다음 곡 |
 | 스트리밍 | `[ LISTEN ]` | 외부(Spotify) 새 탭 | {릴리즈명} 스트리밍에서 듣기, 새 창 |
@@ -268,9 +268,9 @@
 | 아티스트 소식 없음 | 아직 등록된 소식이 없어요. (섹션 숨김이 기본, 숨기지 못할 때만) |
 | 음원 파일 불러오기 실패 | 음원을 불러오지 못했어요. 데모 비트로 대신 재생해요. |
 | 브라우저가 Web Audio 미지원 | 이 브라우저에서는 소리에 반응하는 화면을 볼 수 없어요. 발매 정보는 그대로 볼 수 있어요. |
-| 소리 꺼짐 상태 | 소리가 꺼져 있어요. `[ AUDIO ON ]`을 누르면 재생돼요. |
+| 소리 꺼짐 상태 | 소리가 꺼져 있어요. `[ SOUND ON ]`을 누르면 재생돼요. |
 | 동작 줄이기 설정 감지 | (문구 없음 — 정적 파형으로 조용히 전환) |
-| 없는 아티스트 id | 찾는 아티스트가 없어요. 키비츠 페이지를 대신 보여드려요. |
+| 없는 아티스트 id | 찾는 아티스트가 없어요. KEYVEATZ 페이지를 대신 보여드려요. |
 | 이미지 로드 실패 | (문구 없음 — 아티스트명 텍스트만 표시. alt는 항상 작성) |
 
 ### 이미지 alt 규칙
@@ -283,7 +283,7 @@
 
 | 파일 | title | meta description |
 |---|---|---|
-| index.html | AOMG — Interact with the Beat | 키비츠의 첫 EP [OXY_GEN]부터 AOMG 아티스트 10팀의 음악과 공연, 소식까지. (비공식 컨셉 리디자인) |
+| index.html | AOMG — Interact with the Beat | KEYVEATZ의 첫 EP [OXY_GEN]부터 AOMG 아티스트 10팀의 음악과 공연, 소식까지. (비공식 컨셉 리디자인) |
 | artist.html | {영문명} / {한글명} — AOMG | {히어로 한 줄}. 음악, 영상, 공연, 공식 채널을 한 페이지에서. (비공식 컨셉 리디자인) |
 
 ---
@@ -324,7 +324,7 @@
 | `player.idle` | 재생 중인 곡 없음 |
 | `player.demo` | DEMO |
 | `player.resume` | 이어서 들으려면 [ PLAY ]를 눌러 주세요. |
-| `audio.on` / `audio.off` | [ AUDIO ON ] / [ AUDIO OFF ] |
+| `audio.on` / `audio.off` | [ SOUND ON ] / [ SOUND OFF ] |
 | `footer.about.ko` | ~~AOMG는 2013년 설립된 힙합·R&B 레이블이자 아티스트 매니지먼트 회사다. 레이블 투어와 월드 투어, 방송, 스포츠까지 활동 영역을 넓혀 왔다.~~ (24차 삭제) |
 | `footer.about.en` | ~~AOMG is a hip-hop and R&B label and artist management company founded in 2013.~~ (24차 삭제) |
 | `footer.inquiryLabel` | ~~BUSINESS INQUIRY~~ (24차 삭제) |
@@ -343,15 +343,15 @@
 | `intro.enter` | ENTER |
 | `live.scratchHint` / `live.reveal` | 긁어서 포스터를 확인해 보세요. / REVEAL |
 | `hero.date` | 2026.06.30 |
-| `hero.subtitle` | AOMG의 새 걸크루, 키비츠의 첫 EP. |
+| `hero.subtitle` | AOMG의 새 걸크루, KEYVEATZ의 첫 EP. |
 | `hero.body` | 소리를 켜면 화면이 비트에 반응해요. |
-| `hero.cta.audio` | [ AUDIO ON ] |
+| `hero.cta.audio` | [ SOUND ON ] |
 | `hero.cta.listen` | [ LISTEN ] |
 | `nowPlaying.title` | NOW PLAYING |
 | `nowPlaying.caption` | 지금 재생 |
 | `nowPlaying.subtitle` | 트랙을 고르면 파형이 그 비트를 따라 움직인다. |
-| `nowPlaying.muted` | 소리가 꺼져 있어요. [ AUDIO ON ]을 누르면 재생돼요. |
-| `nowPlaying.demoNote` | 데모 비트예요. 키비츠의 전체 곡은 스트리밍에서 들을 수 있어요. |
+| `nowPlaying.muted` | 소리가 꺼져 있어요. [ SOUND ON ]을 누르면 재생돼요. |
+| `nowPlaying.demoNote` | 데모 비트예요. KEYVEATZ의 전체 곡은 스트리밍에서 들을 수 있어요. |
 | `nowPlaying.track1~3` | DEMO BEAT 01 / DEMO BEAT 02 / DEMO BEAT 03 |
 | `artists.title` | ARTISTS |
 | `artists.caption` | AOMG 아티스트 10팀 |
@@ -381,7 +381,7 @@
 | `detail.news.title` / `.caption` | NEWS / 소식 |
 | `detail.related.title` / `.caption` | MORE FROM AOMG / 다른 아티스트 |
 | `detail.links.title` / `.caption` | FOLLOW / 공식 채널 |
-| `detail.notFound` | 찾는 아티스트가 없어요. 키비츠 페이지를 대신 보여드려요. |
+| `detail.notFound` | 찾는 아티스트가 없어요. KEYVEATZ 페이지를 대신 보여드려요. |
 | 아티스트별 `name`, `nameKo`, `tagline`, `bio` | 4-2, 4-2-1 표 |
 
 ---
@@ -390,16 +390,16 @@
 
 | 문장 | 위치 | 모바일 줄바꿈 | 방법 |
 |---|---|---|---|
-| AOMG의 새 걸크루, 키비츠의 첫 EP. | `#hero` subtitle (ko-lead 20px) | AOMG의 새 걸크루,<br>키비츠의 첫 EP. | `<br class="m-only">` |
+| AOMG의 새 걸크루, KEYVEATZ의 첫 EP. | `#hero` subtitle (ko-lead 20px) | AOMG의 새 걸크루,<br>KEYVEATZ의 첫 EP. | `<br class="m-only">` |
 | 소리를 켜면 화면이 비트에 반응해요. | `#hero` body | 소리를 켜면<br>화면이 비트에 반응해요. | `<br class="m-only">` |
 | OXY_GEN | `#hero` title (display-0 60px) | 줄바꿈 없음 (7자) | `white-space: nowrap` |
 | KEYVEATZ — 1ST EP | `#hero` label | KEYVEATZ<br>1ST EP | 모바일에서 대시 숨기고 2줄 |
 | 트랙을 고르면 파형이 그 비트를 따라 움직인다. | `#now-playing` subtitle | 트랙을 고르면 파형이<br>그 비트를 따라 움직인다. | `<br class="m-only">` |
-| 데모 비트예요. 키비츠의 전체 곡은 스트리밍에서 들을 수 있어요. | `#now-playing` note | 데모 비트예요.<br>키비츠의 전체 곡은<br>스트리밍에서 들을 수 있어요. | 문장 단위 + 어절 |
+| 데모 비트예요. KEYVEATZ의 전체 곡은 스트리밍에서 들을 수 있어요. | `#now-playing` note | 데모 비트예요.<br>KEYVEATZ의 전체 곡은<br>스트리밍에서 들을 수 있어요. | 문장 단위 + 어절 |
 | 이름을 누르면 음악과 영상, 공연이 한 페이지에 모여 있어요. | `#artists` body | 이름을 누르면 음악과 영상,<br>공연이 한 페이지에 모여 있어요. | `<br class="m-only">` |
 | 아티스트명 10개 | `#artists` 목록 (display-0 60px) | 이름 단위로만 줄바꿈. `KOREAN ZOMBIE`는 2줄 허용 | 이름마다 `white-space: nowrap`, 양쪽 정렬은 768px 이상에서만 |
 | 지금 예정된 공연이 없어요. 새 일정은 공식 인스타그램에서 확인할 수 있어요. | 공연 빈 상태 | 지금 예정된 공연이 없어요.<br>새 일정은 공식 인스타그램에서<br>확인할 수 있어요. | 문장 단위 + 어절 |
-| 기안84, 제62회 백상예술대상 방송부문 남자 예능상 | 뉴스 카드 2 (2열 카드 폭 약 172px) | 3줄 허용 | `word-break: keep-all` |
+| KIAN84, 제62회 백상예술대상 방송부문 남자 예능상 | 뉴스 카드 2 (2열 카드 폭 약 172px) | 3줄 허용 | `word-break: keep-all` |
 | [Point Of View: U], [HAN : Cooked] | Discography 텍스트 카드 | 단어 단위 | `word-break: keep-all`, `overflow-wrap: anywhere`는 쓰지 않음 |
 | 비공식 컨셉 리디자인 · 비상업적 포트폴리오. 모든 아티스트명·이미지·음원의 권리는 … | Footer 면책 | 비공식 컨셉 리디자인 · 비상업적 포트폴리오.<br>모든 아티스트명·이미지·음원의 권리는<br>AOMG와 각 권리자에게 있습니다. | 문장 단위 |
 
@@ -423,7 +423,7 @@
 | `news.more` | *More* / News (뉴스 5번째 칸, 인스타그램 새 창) |
 | `wwd.title` | where *Sound* / *Becomes* / Culture (고딕 + 세리프 이탤릭) |
 | `wwd.sub` | 음악에서 시작해, 문화가 되는 곳. |
-| `wwd.card1.title` · `desc` | Music Production · 기획부터 녹음, 믹싱, 발매까지. 레이블의 사운드를 만듭니다. (임시) |
-| `wwd.card2.title` · `desc` | Artist Management · 아티스트가 음악과 무대에만 집중할 수 있도록. (임시) |
+| `wwd.card1.title` · `desc` | Music Production · 기획부터 녹음, 믹싱, 발매까지. 레이블의 사운드. (임시) |
+| `wwd.card2.title` · `desc` | Artist Management · 아티스트는 음악과 무대에만. (임시) |
 | `wwd.card3.title` · `desc` | Live & Events · 단독 공연부터 페스티벌까지, 무대 위의 AOMG. (임시) |
 | `wwd.card4.title` · `desc` | Contents & Brand · 영상 콘텐츠, 브랜드 협업, MD로 넓어지는 문화. (임시) |

@@ -8,7 +8,7 @@
   <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
   <style>@view-transition { navigation: auto; }</style><!-- 전환 설정은 첫 화면 전에 적용되도록 인라인 -->
   <title>AOMG — Interact with the Beat</title>
-  <meta name="description" content="키비츠의 첫 EP [OXY_GEN]부터 AOMG 아티스트 10팀의 음악과 공연, 소식까지. (비공식 컨셉 리디자인)">
+  <meta name="description" content="KEYVEATZ의 첫 EP [OXY_GEN]부터 AOMG 아티스트 10팀의 음악과 공연, 소식까지. (비공식 컨셉 리디자인)">
   <script>
     document.documentElement.classList.add('js');
     try { if (sessionStorage.getItem('aomg-entered') === '1') document.documentElement.classList.add('intro-seen'); } catch (e) {}
@@ -25,7 +25,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600&family=Instrument+Serif:ital@0;1&display=swap">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <link rel="preload" as="image" href="img/release-keyveatz-oxygen.webp">
-  <link rel="stylesheet" href="css/style.css?v=20261102-rt4">
+  <link rel="stylesheet" href="css/style.css?v=20261102-cp1">
   <script type="importmap">{ "imports": { "three": "./js/vendor/three.module.min.js" } }</script>
 </head>
 <body class="page-home">
@@ -80,9 +80,9 @@
         <div class="hero__body">
           <p class="hero__label" data-copy="hero.label">KEYVEATZ <span aria-hidden="true">—</span> 1ST EP · <time datetime="2026-06-30" data-copy="hero.date">2026.06.30</time></p>
           <p class="hero__title" data-copy="hero.title">OXY_GEN</p>
-          <p class="hero__subtitle" data-copy="hero.subtitle">AOMG의 새 걸크루,<br class="m-only"> 키비츠의 첫 EP.</p>
+          <p class="hero__subtitle" data-copy="hero.subtitle">AOMG의 새 걸크루,<br class="m-only"> KEYVEATZ의 첫 EP.</p>
           <div class="hero__cta cta-row">
-            <button class="cta" type="button" data-action="audio-toggle" aria-pressed="false" aria-label="소리 켜기"><span class="cta__label" data-copy="hero.cta.audio">AUDIO ON</span></button>
+            <button class="cta" type="button" data-action="audio-toggle" aria-pressed="false" aria-label="소리 켜기"><span class="cta__label" data-copy="hero.cta.audio">SOUND ON</span></button>
             <a class="cta" href="https://open.spotify.com/artist/6f8BfBKDA1P0yLj6uAmLLF" target="_blank" rel="noopener" aria-label="OXY_GEN 스트리밍에서 듣기, 새 창"><span class="cta__label" data-copy="hero.cta.listen">LISTEN</span></a>
           </div>
         </div>
@@ -122,7 +122,7 @@
           <img src="img/release-keyveatz-oxygen.webp" alt="OXY_GEN 앨범 커버" loading="lazy" width="1200" height="1200">
         </figure>
         <ol class="track-list" data-render="tracks"></ol>
-        <p class="now-playing__note" data-copy="nowPlaying.demoNote">데모 비트예요.<br class="m-only"> 키비츠의 전체 곡은<br class="m-only"> 스트리밍에서 들을 수 있어요.</p>
+        <p class="now-playing__note" data-copy="nowPlaying.demoNote">데모 비트예요.<br class="m-only"> KEYVEATZ의 전체 곡은<br class="m-only"> 스트리밍에서 들을 수 있어요.</p>
       </div>
       <div class="now-playing__stage" data-reveal>
         <canvas class="visualizer" id="visualizer" width="1200" height="675" aria-hidden="true"></canvas>
@@ -204,14 +204,14 @@
           <li class="wwd__card" data-obj="cd">
             <div class="wwd__card-top">
               <h3 class="wwd__name" data-copy="wwd.card1.title">Music<br>Production</h3>
-              <p class="wwd__desc" data-copy="wwd.card1.desc">기획부터 녹음, 믹싱, 발매까지. 레이블의 사운드를 만듭니다.</p>
+              <p class="wwd__desc" data-copy="wwd.card1.desc">기획부터 녹음, 믹싱, 발매까지. 레이블의 사운드.</p>
             </div>
             <div class="wwd__obj"><img src="img/wwd-cd.webp" alt="" width="840" height="520" loading="lazy"></div>
           </li>
           <li class="wwd__card" data-obj="globe">
             <div class="wwd__card-top">
               <h3 class="wwd__name" data-copy="wwd.card2.title">Artist<br>Management</h3>
-              <p class="wwd__desc" data-copy="wwd.card2.desc">아티스트가 음악과 무대에만 집중할 수 있도록.</p>
+              <p class="wwd__desc" data-copy="wwd.card2.desc">아티스트는 음악과 무대에만.</p>
             </div>
             <div class="wwd__obj"><img src="img/wwd-globe.webp" alt="" width="840" height="520" loading="lazy"></div>
           </li>
@@ -254,18 +254,18 @@
       <p class="player__title" aria-live="polite" data-render="player-title" data-copy="player.idle">재생 중인 곡 없음</p>
       <div class="player__progress" role="progressbar" aria-label="재생 위치" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></div>
     </div>
-    <div class="player__end"><button class="cta player__audio" type="button" data-action="audio-toggle" aria-pressed="false" aria-label="소리 켜기"><span class="cta__label" data-copy="audio.on">AUDIO ON</span></button><button class="cta" type="button" data-action="player-close" aria-label="플레이어 접기"><span class="cta__label">CLOSE</span></button></div>
+    <div class="player__end"><button class="cta player__audio" type="button" data-action="audio-toggle" aria-pressed="false" aria-label="소리 켜기"><span class="cta__label" data-copy="audio.on">SOUND ON</span></button><button class="cta" type="button" data-action="player-close" aria-label="플레이어 접기"><span class="cta__label">CLOSE</span></button></div>
   </div>
 
   <img class="artist-preview" alt="" aria-hidden="true">
 
-  <script src="js/data.js?v=20261102-rt4"></script>
-  <script src="js/player.js?v=20261102-rt4"></script>
-  <script src="js/script.js?v=20261102-rt4"></script>
-  <script src="js/effects.js?v=20261102-rt4"></script>
+  <script src="js/data.js?v=20261102-cp1"></script>
+  <script src="js/player.js?v=20261102-cp1"></script>
+  <script src="js/script.js?v=20261102-cp1"></script>
+  <script src="js/effects.js?v=20261102-cp1"></script>
   <script type="module">
-    import { createSoundScene } from './js/sound3d.js?v=20261102-rt4';
-    import { createLogoScene } from './js/logo3d.js?v=20261102-rt4';
+    import { createSoundScene } from './js/sound3d.js?v=20261102-cp1';
+    import { createLogoScene } from './js/logo3d.js?v=20261102-cp1';
     const section = document.getElementById('sound');
     const heroEl = document.getElementById('hero');
     const np = document.getElementById('np');
@@ -317,7 +317,7 @@
       .catch((e) => { console.warn(e); document.documentElement.classList.add('no-webgl'); });
     createLogoScene(document.getElementById('footer-canvas'), { mode: 'footer', interactive: false }).catch(() => {});
     // WHAT WE DO 카드 3D 오브제: 실패하면 미리 렌더한 이미지가 그대로 보임
-    import('./js/wwd3d.js?v=20261102-rt4').then((m) => m.initWwd3D(document.getElementById('what-we-do'))).catch(() => {});
+    import('./js/wwd3d.js?v=20261102-cp1').then((m) => m.initWwd3D(document.getElementById('what-we-do'))).catch(() => {});
   </script>
 </body>
 </html>

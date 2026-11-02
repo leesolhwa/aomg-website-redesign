@@ -1,6 +1,6 @@
 /* AOMG Concept Redesign — player.js
  * 오디오 엔진 · 미니 플레이어 · 비주얼라이저 (docs/prd.md 8장)
- * - 무음 기본값. [ AUDIO ON ] / [ PLAY ] 클릭(사용자 동작) 후에만 AudioContext 생성
+ * - 무음 기본값. [ SOUND ON ] / [ PLAY ] 클릭(사용자 동작) 후에만 AudioContext 생성
  * - audio/track-0N.mp3가 없으면 Web Audio로 합성한 데모 비트 재생
  * - 비트 반응은 --beat(0~1)로 크기만 변경. 밝기·색 깜빡임 없음 (WCAG 2.3.1)
  * - 페이지 이동 시 sessionStorage에 트랙·재생 위치 저장 → 다음 페이지에서 일시정지 상태로 복원

@@ -24,7 +24,7 @@ async def main():
     pg,errs=await newpage(b); await pg.goto(BASE+'index.html')
     await pg.click('.hero [data-action=audio-toggle]'); await pg.wait_for_timeout(1500)
     s=await pg.evaluate('Player.state'); check('audio on plays demo-01', s['playing'] and s['trackId']=='demo-01', str(s))
-    lab=await pg.inner_text('.player [data-action=audio-toggle]'); check('player label AUDIO OFF', 'AUDIO OFF' in lab, lab)
+    lab=await pg.inner_text('.player [data-action=audio-toggle]'); check('player label SOUND OFF', 'SOUND OFF' in lab, lab)
     await pg.click('.player [data-action=play-toggle]'); await pg.wait_for_timeout(300)
     check('player pause', not (await pg.evaluate('Player.state.playing')))
     # 1b 히어로 → NOW PLAYING (로고 → 선 → CD). 진행도는 스크롤로만 바뀜
@@ -52,7 +52,7 @@ async def main():
     check('NEXT -> KEY BEATS + DEMO 02', 'DEMO BEAT 02' in await pg.inner_text('[data-render=np-tracks]'))
     await pg.locator('[data-action=cd-next]').dispatch_event('click')
     await pg.wait_for_function("document.querySelector('[data-render=np-title]').textContent==='CHECK OUT'", timeout=30000)
-    check('album without demo: no play button, message', await pg.evaluate("!document.querySelector('#np [data-action=play-track]') && document.querySelector('[data-render=np-tracks]').textContent.includes('데모 트랙 없음')"))
+    check('album without demo: no play button, message', await pg.evaluate("!document.querySelector('#np [data-action=play-track]') && document.querySelector('[data-render=np-tracks]').textContent.includes('들을 수 있는 트랙이 없어요')"))
     await pg.locator('[data-action=cd-prev]').dispatch_event('click'); await pg.locator('[data-action=cd-prev]').dispatch_event('click')
     await pg.wait_for_function("document.querySelector('[data-render=np-title]').textContent==='OXY_GEN'", timeout=60000)
     check('PREV x2 -> OXY_GEN', True)
