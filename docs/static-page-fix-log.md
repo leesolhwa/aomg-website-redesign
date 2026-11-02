@@ -290,3 +290,9 @@
 - 요청: "저 폰트로 sound you can see 이거 해달라고" (섹션 타이틀 RELEASES와 같은 서체, 크기만 크게)
 - `.reel__title`: 외곽선(-webkit-text-stroke)·세로 늘림(scale 0.74×1.08) 삭제, 자간·줄간격을 섹션 타이틀 값(`--ls-display-1` -0.08em, `--lh-display-1` 0.9)으로. 크기는 기존 min(18vw, 24vh) 유지.
 - 캐시 버전 20261102-rt1.
+
+## #108 REEL 하단 한글 문구 삭제 + 높이 맞춤 (2026-11-02)
+- 요청: 하단 세 문구 높이가 어긋남 → "한글은 삭제" → 시안 B(한글 삭제 + 높이 맞춤) 선택
+- 원인: `.reel__info`가 상자 바닥 기준(flex-end) 정렬인데 세 문구의 줄간격·버튼 높이가 달라 글자 높이가 계단처럼 어긋남
+- `.reel__sub`(들리는 것을 넘어, 보이는 음악.) 삭제, `.reel__info` align-items: baseline, `.reel__cta` margin-left: auto(오른쪽 자리 유지)
+- 캐시 버전 20261102-rt2.
