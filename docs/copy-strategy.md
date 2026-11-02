@@ -355,8 +355,8 @@
 | `nowPlaying.track1~3` | DEMO BEAT 01 / DEMO BEAT 02 / DEMO BEAT 03 |
 | `artists.title` | ARTISTS |
 | `artists.caption` | AOMG 아티스트 10팀 |
-| `artists.subtitle` | 래퍼, 보컬, 크루, 방송인, 파이터까지. |
-| `artists.body` | 이름을 누르면 음악과 영상, 공연이 한 페이지에 모여 있어요. |
+| ~~`artists.subtitle`~~ | ~~래퍼, 보컬, 크루, 방송인, 파이터까지.~~ (삭제 2026-11-02) |
+| ~~`artists.body`~~ | ~~이름을 누르면 음악과 영상, 공연이 한 페이지에 모여 있어요.~~ (삭제 2026-11-02) |
 | `discography.title` | RELEASES |
 | `discography.caption` | 연도별 발매 기록 |
 | `discography.subtitle` | (삭제, 2026-10-28) |
