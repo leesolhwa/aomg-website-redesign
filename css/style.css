@@ -420,6 +420,10 @@ html.js:not(.no-webgl) #now-playing-fallback { display: none; } /* WebGL·JS가 
   .artist-names a { display: inline; }
   .artist-names a > span:first-of-type { white-space: nowrap; display: inline-block; } /* 한 덩어리로 묶어 이름 안 띄어쓰기는 벌어지지 않게 */
   .artist-names__thumb { display: none; }
+  /* 홈 ARTISTS: 3·3·4개 3줄 고정. 글자 크기를 섹션 폭의 6.2%로(3번째 줄이 꽉 차는 크기, 예전 큰 화면 3줄 모양) 브라우저 확대·축소에도 같은 모양 */
+  .artists { container-type: inline-size; }
+  .artists .artist-names { font-size: calc(100cqi * 0.062); }
+  .artists .artist-names li:nth-child(3)::after, .artists .artist-names li:nth-child(6)::after { content: "\A"; white-space: pre; }
 }
 .artist-preview { position: fixed; top: 0; left: 0; z-index: var(--z-preview); width: calc((100vw - var(--gutter-x) * 2) / 5); aspect-ratio: var(--ratio-artist-profile); object-fit: cover; pointer-events: none; opacity: 0; transition: opacity var(--dur-sm) var(--ease-out); }
 .artist-preview.is-visible { opacity: 1; }
