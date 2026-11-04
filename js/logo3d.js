@@ -115,6 +115,7 @@ function shatterMaterial(params, uniforms) {
  * lines: 문자열 또는 { t, serif } 배열. serif = 세리프 이탤릭(강조 단어), 나머지 = 고딕.
  * 히어로 문장은 가로로 150% 넓힘 (높이 그대로) — 20차 확정 */
 const STATEMENT_SX = 1.5;
+const STATEMENT_SCALE = 0.9;   // 11/04: 히어로 문장 크기 90% (1440×900 기준 고딕 159 → 143px, 명조 178 → 160px)
 function drawStatementTexture(canvas, lines, w, h, bg, fg, area) {
   const ctx = canvas.getContext('2d');
   canvas.width = w; canvas.height = h;
@@ -128,7 +129,7 @@ function drawStatementTexture(canvas, lines, w, h, bg, fg, area) {
   const fontOf = (it, sz) => (!mixed ? `400 ${sz}px ${serif}` : it.serif ? `italic 400 ${sz * 1.12}px ${serif}` : `400 ${sz}px ${sans}`);
   const trackOf = (it) => (!mixed ? -0.045 : it.serif ? -0.03 : -0.055); // 자간 (em)
   const top0 = area ? area.top : 0, availH = area ? area.bottom - area.top : h;
-  let size = availH / (items.length * 0.9);
+  let size = availH / (items.length * 0.9) * STATEMENT_SCALE;   // 11/04: 글자 크기 90%
   const lineWidth = (it, sz) => { ctx.font = fontOf(it, sz); return ([...it.t].reduce((sum, ch) => sum + ctx.measureText(ch).width, 0) + trackOf(it) * sz * (it.t.length - 1)) * sx; };
   const widest = Math.max(...items.map((it) => lineWidth(it, size)));
   if (widest > w * 0.92) size *= (w * 0.92) / widest; // 가장 긴 줄이 폭의 92%를 넘지 않게

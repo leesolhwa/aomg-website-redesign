@@ -328,7 +328,7 @@ html.is-intro { overflow: hidden; }
 .hero.is-hovering .hero__canvas:active { cursor: none; }
 /* 문장: WebGL이 같은 문장을 굴절용 평면에 그리면 HTML은 화면에서만 숨김 (스크린리더는 읽음) */
 /* 20차: 강조 단어(Above·Group) = 세리프 이탤릭, 가운데 = 고딕. 가로 150% (WebGL 텍스처와 같은 규칙) */
-.hero__statement { position: absolute; inset: var(--header-h) 0 auto 0; height: 62%; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; font-family: var(--font-sans-en); font-weight: 400; font-size: min(var(--fs-display-4), 9.5vw); line-height: var(--lh-display-0); letter-spacing: -0.055em; text-align: center; white-space: nowrap; }
+.hero__statement { position: absolute; inset: var(--header-h) 0 auto 0; height: 62%; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; font-family: var(--font-sans-en); font-weight: 400; font-size: calc(min(var(--fs-display-4), 9.5vw) * 0.9); line-height: var(--lh-display-0); letter-spacing: -0.055em; text-align: center; white-space: nowrap; }
 .hero__statement span, .hero__statement em { display: block; transform: scaleX(1.5); }
 .hero__statement em { font-family: var(--font-display-en); font-style: italic; font-size: 1.12em; letter-spacing: -0.03em; }
 .hero.is-3d .hero__statement { opacity: 0; }
