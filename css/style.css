@@ -381,8 +381,9 @@ html.js:not(.no-webgl) #now-playing-fallback { display: none; } /* WebGL·JS가 
 .np__nav { position: absolute; right: var(--gutter-x); bottom: calc(var(--player-h) + var(--space-heading-body)); display: flex; align-items: center; column-gap: var(--space-card-text); }
 /* 11/04: NOW PLAYING 왼쪽 위 앨범 정보 · 오른쪽 아래 플레이어를 크기는 그대로, 다른 섹션처럼 화면 폭 90% 안쪽(양옆 5%, 로고 선)으로 */
 @media (min-width: 768px) {
-  .np__head { left: 5%; }
-  .np__player, .np__nav { right: 5%; }
+  .np__head { left: 5%; top: calc(var(--header-h) + var(--space-card-text) + 20px); }   /* 헤더와 20px 더 띄움 */
+  .np__player { right: 5%; bottom: calc(var(--player-h) + var(--hit-area) + var(--space-heading-body) + 20px); }   /* 화면 아래와 20px 더 띄움 */
+  .np__nav { right: 5%; bottom: calc(var(--player-h) + var(--space-heading-body) + 20px); }
 }
 .np__count { font-family: var(--font-sans-en); font-size: var(--fs-body-1); line-height: var(--lh-body-1); font-variant-numeric: tabular-nums; }
 @media (max-width: 767px) {

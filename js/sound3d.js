@@ -9,6 +9,11 @@ import * as THREE from 'three';
 import { RoomEnvironment } from './vendor/RoomEnvironment.js';
 
 // logo3d.js는 푸터가 같은 버전(?v=)으로 불러오므로 같은 주소로 받아 한 번만 로드되게 함
+/* 11/04: CD마다 다른 방향 — 위아래·좌우로 최대 약 13°씩 다르게 (이전: 모두 거의 같은 방향, ±5°).
+ * 순서대로 정해 둔 기울기를 0.6배로. 무작위 값 3개는 다른 무작위(흔들림 박자 등)가 바뀌지 않게 그대로 소비 */
+const CD_TILTS = [[0.18, -0.32, 0.10], [-0.24, 0.30, -0.14], [0.30, 0.12, 0.18], [-0.12, -0.36, -0.08], [0.22, 0.34, -0.16], [-0.30, -0.14, 0.12], [0.10, 0.38, 0.06], [-0.20, -0.28, -0.18], [0.26, -0.10, 0.14], [-0.16, 0.24, -0.10]];
+const cdTilt = (i) => CD_TILTS[i % CD_TILTS.length].map((v) => v * 0.6);
+
 const L3 = await import(new URL('./logo3d.js' + new URL(import.meta.url).search, import.meta.url).href);
 const { createCracks } = await import(new URL('./cracks.js' + new URL(import.meta.url).search, import.meta.url).href);
 
@@ -308,7 +313,7 @@ export async function createSoundScene(opts) {
     const spin = new THREE.Group(); spin.add(body, face, hub, back);
     const g = new THREE.Group(); g.add(spin); scene.add(g);
     face.userData.cd = i; body.userData.cd = i; hub.userData.cd = i;
-    return { rel, g, spin, face, body, hub, back, uForm, hover: 0, user: new THREE.Quaternion(), vel: new THREE.Vector2(), tilt: [(rnd() - 0.5) * 0.16, (rnd() - 0.5) * 0.16, (rnd() - 0.5) * 0.12], phase: rnd() * 6.28 };
+    return { rel, g, spin, face, body, hub, back, uForm, hover: 0, user: new THREE.Quaternion(), vel: new THREE.Vector2(), tilt: cdTilt(i, rnd(), rnd(), rnd()), phase: rnd() * 6.28 };
   }));
 
   /* --- 배치 --- */
