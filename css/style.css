@@ -379,10 +379,10 @@ html.js:not(.no-webgl) #now-playing-fallback { display: none; } /* WebGL·JS가 
 .np__time { margin-top: 8px; display: flex; justify-content: space-between; font-family: var(--font-sans-en); font-size: var(--fs-body-1); line-height: var(--lh-body-1); font-variant-numeric: tabular-nums; }
 .np__time span[aria-hidden] { display: none; }
 .np__nav { position: absolute; right: var(--gutter-x); bottom: calc(var(--player-h) + var(--space-heading-body)); display: flex; align-items: center; column-gap: var(--space-card-text); }
-/* 11/04: NOW PLAYING 왼쪽 위 앨범 정보 · 오른쪽 아래 플레이어를 90% 크기로 (붙어 있는 가장자리 기준) */
+/* 11/04: NOW PLAYING 왼쪽 위 앨범 정보 · 오른쪽 아래 플레이어를 크기는 그대로, 다른 섹션처럼 화면 폭 90% 안쪽(양옆 5%, 로고 선)으로 */
 @media (min-width: 768px) {
-  .np__head { transform: scale(0.9); transform-origin: left top; }
-  .np__player, .np__nav { transform: scale(0.9); transform-origin: right bottom; }
+  .np__head { left: 5%; }
+  .np__player, .np__nav { right: 5%; }
 }
 .np__count { font-family: var(--font-sans-en); font-size: var(--fs-body-1); line-height: var(--lh-body-1); font-variant-numeric: tabular-nums; }
 @media (max-width: 767px) {
