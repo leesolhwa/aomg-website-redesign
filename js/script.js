@@ -70,10 +70,7 @@
         : `<div class="card__text-cover" aria-hidden="true">${esc(r.title)}</div>`}</div>
       <p class="card__title t-body-4">[${esc(r.title)}]</p>
       <p class="card__meta">${esc(r.artist)} · ${esc(r.type)} · ${esc(r.date)}</p>
-      ${(withPlay && r.trackId) || r.listen ? `<div class="card__actions">
-        ${withPlay && r.trackId ? `<button class="cta" type="button" data-action="play-track" data-track="${esc(r.trackId)}" aria-label="${esc(r.title)} 데모 재생"><span class="cta__label">PLAY</span></button>` : ''}
-        ${r.listen ? cta('LISTEN', ext(r.listen, `${r.title} 스트리밍에서 듣기`)) : ''}
-      </div>` : ''}
+      <div class="card__actions">${withPlay && r.trackId ? `<button class="cta" type="button" data-action="play-track" data-track="${esc(r.trackId)}" aria-label="${esc(r.title)} 데모 재생"><span class="cta__label">PLAY</span></button>` : ''}${r.listen ? cta('LISTEN', ext(r.listen, `${r.title} 스트리밍에서 듣기`)) : ''}</div>
     </li>`;
   const newsCard = (n) => `
     <li class="card" data-reveal>

@@ -337,7 +337,7 @@ html.is-intro { overflow: hidden; }
 .hero__cover img { width: 100%; aspect-ratio: var(--ratio-release-cover); object-fit: cover; }
 .hero__body { display: flex; flex-direction: column; align-items: flex-start; }
 .hero__label { font-family: var(--font-sans-en); font-size: var(--fs-body-2); line-height: var(--lh-paragraph-en); text-transform: uppercase; }
-.hero__title { margin-top: var(--space-card-text); font-family: var(--type-display); font-weight: var(--fw-display); font-size: var(--fs-display-3); line-height: var(--lh-display-3); letter-spacing: normal; text-transform: uppercase; white-space: nowrap; transform: scale(calc(1 + var(--beat, 0) * 0.03)); transform-origin: left bottom; }
+.hero__title { margin-top: var(--space-card-text); font-family: var(--type-display); font-weight: var(--fw-display); font-size: var(--fs-display-3); line-height: var(--lh-display-3); letter-spacing: normal; text-transform: uppercase; white-space: nowrap; } /* 11/04: 음악 비트에 커졌다 작아지던 효과 삭제 */
 .hero__subtitle { margin-top: var(--space-card-text); font-family: var(--type-ko); font-size: var(--fs-ko-caption); line-height: var(--lh-ko-caption); }
 .hero__cta { margin-top: var(--space-card-text); }
 @media (min-width: 768px) {
@@ -379,6 +379,11 @@ html.js:not(.no-webgl) #now-playing-fallback { display: none; } /* WebGL·JS가 
 .np__time { margin-top: 8px; display: flex; justify-content: space-between; font-family: var(--font-sans-en); font-size: var(--fs-body-1); line-height: var(--lh-body-1); font-variant-numeric: tabular-nums; }
 .np__time span[aria-hidden] { display: none; }
 .np__nav { position: absolute; right: var(--gutter-x); bottom: calc(var(--player-h) + var(--space-heading-body)); display: flex; align-items: center; column-gap: var(--space-card-text); }
+/* 11/04: NOW PLAYING 왼쪽 위 앨범 정보 · 오른쪽 아래 플레이어를 90% 크기로 (붙어 있는 가장자리 기준) */
+@media (min-width: 768px) {
+  .np__head { transform: scale(0.9); transform-origin: left top; }
+  .np__player, .np__nav { transform: scale(0.9); transform-origin: right bottom; }
+}
 .np__count { font-family: var(--font-sans-en); font-size: var(--fs-body-1); line-height: var(--lh-body-1); font-variant-numeric: tabular-nums; }
 @media (max-width: 767px) {
   .np__player { left: var(--gutter-x); right: var(--gutter-x); width: auto; bottom: calc(var(--player-h) + var(--hit-area) + var(--space-card-text) * 2); }
@@ -467,6 +472,10 @@ html.js:not(.no-webgl) #now-playing-fallback { display: none; } /* WebGL·JS가 
 .card__meta { font-family: var(--font-sans-en); font-size: var(--fs-body-2); line-height: var(--lh-paragraph-en); text-transform: uppercase; }
 .card__title { font-size: var(--fs-body-4); line-height: var(--lh-paragraph-en); }
 .card__actions { display: flex; flex-wrap: wrap; column-gap: var(--space-card-text); }
+.card__actions:empty { display: none; }
+/* RELEASES: 버튼(PLAY·LISTEN)이 없는 해도 버튼 줄 자리와 정보 2줄 자리를 비워 둬서 해마다 카드 높이가 같게 (넘길 때 위아래로 들썩이지 않게) */
+.discography .card__actions, .discography .card__actions:empty { display: flex; min-height: var(--hit-area); }
+.discography .card__meta { min-height: calc(2em * 1.2); }
 .card__link { display: flex; flex-direction: column; row-gap: var(--space-card-text); } /* 카드 전체가 하나의 링크 (display: contents는 포커스 표시가 사라져 사용 안 함) */
 @media (hover: hover) and (pointer: fine) {
   .card__media { transition: transform var(--dur-lg) var(--ease-out); }
@@ -495,7 +504,7 @@ html.js:not(.no-webgl) #now-playing-fallback { display: none; } /* WebGL·JS가 
 .empty-state .cta { margin-top: var(--space-card-text); }
 @media (min-width: 768px) {
   .live__poster { grid-column: 1 / span 2; }
-  .live__body { grid-column: 3 / span 3; align-self: center; }
+  .live__body { grid-column: 3 / span 3; align-self: start; } /* 11/04: 포스터 가운데 → 포스터 위쪽에 맞춤 */
   .event { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 }
 
