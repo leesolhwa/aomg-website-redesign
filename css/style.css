@@ -362,7 +362,6 @@ html.js:not(.no-webgl) #now-playing-fallback { display: none; } /* WebGL·JS가 
 .np.is-on .np__player, .np.is-on .np__nav { pointer-events: auto; }
 .np__head { position: absolute; top: calc(var(--header-h) + var(--space-card-text)); left: var(--gutter-x); width: min(22rem, calc(100% - var(--gutter-x) * 2)); }
 .np__head .np__title { width: max-content; max-width: calc(100vw - var(--gutter-x) * 2); }
-.np__eyebrow { font-family: var(--font-sans-en); font-size: var(--fs-body-1); line-height: var(--lh-body-1); text-transform: uppercase; color: var(--color-accent); }
 .np__title { margin-top: 4px; font-family: var(--type-display); font-weight: var(--fw-display); font-size: clamp(36px, 5vw, 80px); line-height: 0.95; letter-spacing: -0.02em; text-transform: uppercase; white-space: nowrap; }
 .np__meta { margin-top: var(--space-card-text); border-top: 1px solid currentColor; }
 .np__meta div { display: flex; justify-content: space-between; column-gap: var(--grid-gap-x); padding-block: 6px; border-bottom: 1px solid rgb(255 255 255 / 0.35); font-family: var(--font-sans-en); font-size: var(--fs-body-1); line-height: var(--lh-body-1); text-transform: uppercase; }
