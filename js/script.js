@@ -430,83 +430,6 @@
     }, { threshold: 0.05 }).observe(video);
   }
 
-  /* Live, LOUDER (손 하프톤, 시험 적용): 스토리보드 장면 3장(관객 → 손 분리 → 큰 손)을 스크롤에 따라 섞고,
-   * 매 프레임 점(하프톤)으로 다시 그림. 주황(손)으로 판단된 점은 주황, 나머지는 회색. 손 점은 비트(96 BPM)에 맞춰 위아래로 흔들림.
-   *   0~25% 관객 → 손 분리 / 25~60% 손 흔들기 / 50~70% 큰 손으로 / 72~90% 문구 / 92~100% 어두워지며 LIVE로 */
-  function initHands() {
-    const sec = $('#hands'); if (!sec) return;
-    const canvas = sec.querySelector('.hands__canvas'), ctx = canvas.getContext('2d');
-    const SRC = ['img/live-hands-1.webp', 'img/live-hands-2.webp', 'img/live-hands-3.webp'];
-    const sm = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
-    let frames = null, cols = 0, rows = 0, cell = 12, W = 0, H = 0, dpr = 1, prog = 0, visible = false, raf = 0;
-    // 장면 이미지 → 칸마다 밝기(0~1)와 손 정도(0~1)
-    const sample = (img) => {
-      const c = document.createElement('canvas'); c.width = cols; c.height = rows;
-      const x = c.getContext('2d');
-      const s = Math.max(cols / img.width, rows / img.height), w = img.width * s, h = img.height * s;   // 화면을 꽉 채우게(cover)
-      x.drawImage(img, (cols - w) / 2, (rows - h) / 2, w, h);
-      const d = x.getImageData(0, 0, cols, rows).data, lum = new Float32Array(cols * rows), hand = new Float32Array(cols * rows);
-      for (let i = 0; i < cols * rows; i++) {
-        const r = d[i * 4], g = d[i * 4 + 1], b = d[i * 4 + 2];
-        lum[i] = (r * 0.55 + g * 0.3 + b * 0.15) / 255;
-        hand[i] = Math.min(1, Math.max(0, (r - 175) / 45)) * Math.min(1, Math.max(0, (r - g - 90) / 40));
-      }
-      return { lum, hand };
-    };
-    const fit = () => {
-      dpr = Math.min(2, devicePixelRatio || 1); W = canvas.clientWidth; H = canvas.clientHeight;
-      canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
-      cell = W < 768 ? 9 : 12; cols = Math.ceil(W / cell); rows = Math.ceil(H / cell);
-      if (imgs) frames = imgs.map(sample);
-    };
-    let imgs = null;
-    Promise.all(SRC.map((src) => new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = src; })))
-      .then((list) => { imgs = list; fit(); draw(performance.now()); }).catch(() => {});
-    const draw = (now) => {
-      raf = 0; if (!frames) return;
-      const p = reduceMotion ? 0.4 : prog;
-      // 장면 섞기: 0~25% 1→2, 50~70% 2→3
-      const a = sm(0.02, 0.25, p), b = sm(0.5, 0.7, p);
-      const w0 = (1 - a), w1 = a * (1 - b), w2 = a * b;
-      const bob = reduceMotion ? 0 : sm(0.22, 0.32, p) * (1 - sm(0.66, 0.76, p));   // 흔드는 구간
-      const dim = 1 - sm(0.92, 1, p) * 0.85, bgDim = 1 - sm(0.12, 0.3, p) * 0.45;   // 손 분리 후 관객은 어둡게
-      const t = now / 1000, beat = t * Math.PI * 2 * 1.6;   // 96 BPM
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
-      const [f0, f1, f2] = frames;
-      ctx.fillStyle = '#9a9a9a'; ctx.beginPath();
-      const handDots = [];
-      for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
-        const i = y * cols + x;
-        const L = f0.lum[i] * w0 + f1.lum[i] * w1 + f2.lum[i] * w2;
-        const hd = f0.hand[i] * w0 + f1.hand[i] * w1 + f2.hand[i] * w2;
-        const cx = x * cell + cell / 2, cy = y * cell + cell / 2;
-        if (hd > 0.5) { handDots.push(cx, cy, x); continue; }
-        const r = cell * 0.5 * Math.min(1, L * 1.5) * bgDim * dim;
-        if (r > 0.5) { ctx.moveTo(cx + r, cy); ctx.arc(cx, cy, r, 0, Math.PI * 2); }
-      }
-      ctx.fill();
-      ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--color-accent').trim() || '#FF3B1F';
-      ctx.globalAlpha = dim; ctx.beginPath();
-      const amp = cell * 2.2 * bob, r = cell * 0.56;
-      for (let k = 0; k < handDots.length; k += 3) {
-        const dy = amp * Math.sin(beat + (handDots[k] / W) * Math.PI * 3);   // 왼쪽 손과 오른쪽 손이 엇갈려 위아래 (가까운 점은 함께 움직여 손 모양 유지)
-        ctx.moveTo(handDots[k] + r, handDots[k + 1] - dy); ctx.arc(handDots[k], handDots[k + 1] - dy, r, 0, Math.PI * 2);
-      }
-      ctx.fill(); ctx.globalAlpha = 1;
-      sec.style.setProperty('--tx', (reduceMotion ? 1 : sm(0.72, 0.82, p) * (1 - sm(0.94, 1, p))).toFixed(3));
-      if (visible && !reduceMotion) raf = requestAnimationFrame(draw);
-    };
-    const onScroll = () => {
-      const r = sec.getBoundingClientRect(), span = sec.offsetHeight - innerHeight;
-      prog = span > 0 ? Math.min(1, Math.max(0, -r.top / span)) : 0;
-      if (reduceMotion && frames && !raf) raf = requestAnimationFrame(draw);
-    };
-    addEventListener('scroll', onScroll, { passive: true });
-    addEventListener('resize', () => { fit(); onScroll(); if (!raf) raf = requestAnimationFrame(draw); });
-    new IntersectionObserver(([en]) => { visible = en.isIntersecting; if (visible && !raf) raf = requestAnimationFrame(draw); }).observe(sec);
-    onScroll();
-  }
-
   /* WHAT WE DO (20차, 21차 속도 조정): 문장 줄이 좌우에서 날아와 고정 → 유리 카드 4장이 아래→위로 지나감 → 문장이 들어온 방향으로 빠짐.
    * 위치는 스크롤(화면 단위)로 정하고, 문장은 시간으로 한 번 더 부드럽게 따라가게 해서 빠르게 스크롤해도 천천히 들어오고 빠짐.
    * 데스크톱 + 동작 허용일 때만 (그 외에는 CSS가 일반 목록으로 보여줌) */
@@ -554,7 +477,7 @@
   if (isArtistPage) renderArtist(); else renderHome();
   bindPlayer();
   initPlayerDock();
-  if (!isArtistPage) { initNowPlaying(); initReel(); initHands(); initWhatWeDo(); }
+  if (!isArtistPage) { initNowPlaying(); initReel(); initWhatWeDo(); }
   initReveal();
   updateTone();
 })();

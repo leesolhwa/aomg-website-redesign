@@ -510,6 +510,8 @@ html.js:not(.no-webgl) #now-playing-fallback { display: none; } /* WebGL·JS가 
 
 /* ==== News (Kode justified-text-02: 112 / 256 패딩) ==== */
 .news { padding-top: var(--section-space); padding-bottom: var(--section-pad-end); }
+.news .card__link { row-gap: calc(var(--space-card-text) * 0.6); }
+.news .card__link > .card__frame { margin-bottom: calc(var(--space-card-text) * 2.4); } /* 11/04: 사진과 글자 사이가 좁아서 글자만 아래로 */
 /* 25차: 뉴스 5번째 칸 — 카드 사진과 같은 비율의 얇은 선 칸 안에 이탤릭 More + 넓은 고딕 News. 마우스 올리면 글자만 주황 */
 .news-more a { container-type: inline-size; display: grid; place-items: center; aspect-ratio: var(--ratio-news-poster); border: 1px solid rgba(255, 255, 255, 0.35); color: var(--color-white); transition: color var(--dur-md) var(--ease-out); }
 .news-more a:hover, .news-more a:focus-visible { color: var(--color-bg-accent); }
@@ -623,14 +625,6 @@ html.js [data-reveal].is-in { opacity: 1; transform: none; }
 .surface-accent ::selection, [data-tone="on-accent"] ::selection { background: var(--color-black); color: var(--color-accent); }
 
 /* ==== REEL: RELEASES와 LIVE 사이. 흰 배경에서 정사각형 영상이 스크롤하면 화면 100%로 커지고, 큰 문구가 한 줄씩 지나감 ==== */
-/* ==== Live, LOUDER (손 하프톤): 화면 고정, 공연장 사진을 점(하프톤)으로 — 손은 주황 점, 관객은 회색 점. 손이 떠오르고 비트에 맞춰 위아래로 흔들리다 큰 손에 집중 → 문구 ==== */
-.hands { position: relative; height: 300vh; background: var(--color-black); color: var(--color-white); }
-.hands__sticky { position: sticky; top: 0; height: 100vh; overflow: hidden; }
-.hands__canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-.hands__title { position: absolute; left: 5%; bottom: calc(var(--player-h) + var(--hit-area) + 4vh); margin: 0; line-height: 0.85; opacity: var(--tx, 0); transform: translateY(calc((1 - var(--tx, 0)) * 4vh)); pointer-events: none; }
-.hands__title em { display: block; font-family: var(--font-display-en); font-style: italic; font-weight: 400; font-size: min(9vw, 15vh); letter-spacing: -0.03em; }
-.hands__title span { display: block; font-family: var(--font-sans-en); font-weight: 600; font-size: min(10vw, 17vh); letter-spacing: -0.05em; transform: scaleX(1.25); transform-origin: left; }
-@media (prefers-reduced-motion: reduce) { .hands { height: auto; } .hands__sticky { position: relative; } .hands__title { --tx: 1; } }
 .reel { height: 320vh; background: var(--color-white); color: var(--color-black); }
 .reel__sticky { position: sticky; top: 0; height: 100vh; overflow: hidden; display: grid; place-items: center; }
 .reel__frame { --s: 56vmin; position: absolute; left: 50%; top: 50%; width: calc(var(--s) + (100vw - var(--s)) * var(--g, 0)); height: calc(var(--s) + (100vh - var(--s)) * var(--g, 0)); transform: translate(-50%, -50%); overflow: hidden; background: var(--color-black); }
@@ -671,7 +665,7 @@ html.js [data-reveal].is-in { opacity: 1; transform: none; }
 .wwd__card-top { display: grid; row-gap: 14px; padding: 28px 28px 22px; }
 .wwd__name { font-family: var(--font-sans-en); font-weight: 600; font-size: 34px; line-height: 1.02; letter-spacing: -0.035em; }
 .wwd__desc { grid-column: 1 / -1; font-size: 14px; line-height: 1.6; color: rgba(255, 255, 255, 0.72); }
-.wwd__obj { position: relative; height: 250px; background: radial-gradient(60% 70% at 50% 55%, rgba(255, 59, 31, 0.16), rgba(255, 59, 31, 0) 70%); }
+.wwd__obj { position: relative; aspect-ratio: 420 / 250; background: radial-gradient(60% 70% at 50% 55%, rgba(255, 59, 31, 0.16), rgba(255, 59, 31, 0) 70%); }
 .wwd__obj img, .wwd__canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
 .wwd__obj img { transform: none; } /* 멈춘 그림은 모양이 가장 잘 보이는 정면 각도로 따로 렌더 (22차) */
 
@@ -687,8 +681,11 @@ html.js [data-reveal].is-in { opacity: 1; transform: none; }
   html.js .wwd__sub { opacity: calc(0.7 * var(--k3, 0) * (1 - var(--out, 0))); }
   html.js .wwd__cards { position: absolute; inset: 0; display: block; width: auto; margin: 0; pointer-events: none; }
   html.js .wwd__card { position: absolute; top: 0; width: 420px; transform: translateY(var(--y, 120vh)); pointer-events: auto; }
-  html.js .wwd__card:nth-child(odd) { left: 7%; }
-  html.js .wwd__card:nth-child(even) { right: 7%; }
+  /* 11/04: 카드마다 크기를 다르게 하고 화면 안쪽으로 (사용자 예시 배치) */
+  html.js .wwd__card:nth-child(1) { left: 13%; width: clamp(300px, 23vw, 520px); }
+  html.js .wwd__card:nth-child(2) { left: 61%; width: clamp(320px, 26.5vw, 600px); }
+  html.js .wwd__card:nth-child(3) { left: 23%; width: clamp(300px, 23.4vw, 530px); }
+  html.js .wwd__card:nth-child(4) { left: 49%; width: clamp(340px, 33vw, 740px); }
 }
 @media (max-width: 1023px), (prefers-reduced-motion: reduce) {
   .wwd { padding-block: var(--section-pad-md); }
