@@ -125,7 +125,8 @@ export function initWwd3D(section) {
   let W = 0, H = 0;
   const GLOW = 'filter' in CanvasRenderingContext2D.prototype; // 캔버스 필터가 없는 브라우저는 번짐 없이
   const fit = () => {
-    const r = items[0].box.getBoundingClientRect(), dpr = Math.min(2, devicePixelRatio || 1);
+    // 카드마다 크기가 달라서(11/04) 가장 큰 칸 기준으로 그림 → 작은 칸은 같은 비율로 줄여 보여 줌
+    const r = items.map((it) => it.box.getBoundingClientRect()).reduce((a, b) => (b.width > a.width ? b : a)), dpr = Math.min(2, devicePixelRatio || 1);
     W = Math.max(1, Math.round(r.width * dpr)); H = Math.max(1, Math.round(r.height * dpr));
     renderer.setSize(W, H, false); camera.aspect = W / H; camera.updateProjectionMatrix();
     items.forEach((it) => { it.canvas.width = W; it.canvas.height = H; });
