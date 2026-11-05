@@ -691,3 +691,52 @@ html.js [data-reveal].is-in { opacity: 1; transform: none; }
   .wwd { padding-block: var(--section-pad-md); }
   .wwd__title { font-size: min(14vw, 96px); }
 }
+
+/* ===== #crowd: 3D 공연장 (뮤비와 LIVE 사이) — 모든 규칙을 .crowd 안과 바로 뒤 LIVE에만 =====
+   검은 화면에서 손이 올라옴(0.8화면) → 공연장이 켜지고 둘러보기(0.6화면) → 뒤쪽 양문 통과(2화면)
+   → 마지막 1화면은 LIVE가 빛 번짐과 함께 덮으며 올라옴. 공연장 길이 4.4화면 */
+.crowd { position: relative; height: 540vh; height: 540svh; background: #070503; }
+.crowd #crowd-frame {
+  position: sticky; top: 0; width: 100%; height: 100vh; height: 100svh;
+  overflow: hidden; background: #070503; isolation: isolate;
+  cursor: grab; touch-action: pan-y pinch-zoom;
+}
+.crowd #crowd-frame.dragging { cursor: grabbing; }
+.crowd #crowd-frame.walking { cursor: default; }
+.crowd #crowd-frame:focus-visible { outline: 2px solid var(--color-accent); outline-offset: -2px; }
+.crowd #crowd-picture { position: absolute; inset: 0; overflow: hidden; background: #070503; }
+.crowd #crowd-picture.printed { filter: url(#crowd-screen-print); }   /* 망점 필터: 공연장 화면에만 */
+.crowd #crowd-still {
+  filter: url(#crowd-photo-channel);
+  position: absolute; top: 0; left: 0; width: 1672px; height: 941px;
+  transform-origin: 0 0; pointer-events: none; user-select: none; isolation: isolate;
+}
+.crowd #crowd-still img { position: absolute; inset: 0; width: 100%; height: 100%; }
+.crowd #crowd-space, .crowd #crowd-space canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+.crowd .crowd__defs { position: absolute; width: 0; height: 0; pointer-events: none; }
+.crowd #crowd-hint {
+  position: absolute; left: 50%; bottom: 100px; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 8px;
+  color: var(--color-white); text-shadow: 0 1px 6px #050200;
+  font-family: var(--font-sans-en); font-size: var(--fs-body-1); line-height: var(--lh-body-1);
+  text-transform: uppercase; white-space: nowrap; pointer-events: none;
+  opacity: 0;
+}
+.crowd #crowd-hint svg { width: 17px; height: 17px; }
+@media (max-height: 470px) { .crowd #crowd-hint { bottom: 72px; } }
+/* LIVE: 공연장이 멈춘 채 아래에서 덮으며 올라오고, 경계선 없이 통로 빛이 번진 채 들어옴 */
+.crowd + .live { position: relative; z-index: 1; isolation: isolate; margin-top: -100vh; margin-top: -100svh; background: transparent; }
+.crowd + .live::before {             /* 공연장 → LIVE 배경으로 부드럽게 어두워짐 (LIVE 배경도 이것이 그림) */
+  content: ""; position: absolute; z-index: -1; pointer-events: none;
+  left: calc(50% - 50vw); width: 100vw; top: -55vh; bottom: 0;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0, var(--color-bg) 55vh);
+}
+.crowd + .live::after {              /* 번지는 주황 망점 빛 */
+  content: ""; position: absolute; z-index: -1; pointer-events: none;
+  left: calc(50% - 50vw); width: 100vw; top: -40vh; height: 110vh;
+  background:
+    radial-gradient(circle, rgba(255, 91, 8, .85) 0 1.2px, transparent 1.8px) 0 0 / 7px 7px,
+    radial-gradient(circle, rgba(255, 91, 8, .85) 0 1.2px, transparent 1.8px) 3.5px 3.5px / 7px 7px;
+  -webkit-mask-image: radial-gradient(ellipse 55% 45% at 50% 38%, #000 0, rgba(0, 0, 0, .35) 45%, transparent 100%);
+          mask-image: radial-gradient(ellipse 55% 45% at 50% 38%, #000 0, rgba(0, 0, 0, .35) 45%, transparent 100%);
+}
