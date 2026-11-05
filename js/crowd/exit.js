@@ -1,4 +1,4 @@
-// AOMG 3D 공연장 — 뒤쪽 양문과 통로 (원본 AOMG-Crowd v48, 사이트 연결용 수정: 문·통로 조명, 통로 끝 빛 줄임)
+// AOMG 3D 공연장 — 뒤쪽 양문과 문 너머 빛 (원본 AOMG-Crowd v48, 사이트 연결용 수정: 문 주변 조명, 통로 대신 빛 상자)
 window.createVenueExit = function (scene, roomMaterial, eye) {
   const depth = 4.48;
   const left = depth * Math.tan((826 / 1774 - .5) * Math.PI * 2);
@@ -6,7 +6,6 @@ window.createVenueExit = function (scene, roomMaterial, eye) {
   const height = eye + depth * Math.tan((.5 - 399 / 887) * Math.PI);
   const width = right - left;
   const center = (left + right) / 2;
-  const hallwayEnd = 8.8;
   const exit = new THREE.Group();
   exit.visible = false;
   scene.add(exit);
@@ -48,66 +47,39 @@ window.createVenueExit = function (scene, roomMaterial, eye) {
   const leftLeaf = doorLeaf(left, 1);
   const rightLeaf = doorLeaf(right, -1);
   const doorOpen = { value: 0 };
-  const hall = new THREE.ShaderMaterial({
+  // 문 너머: 통로 대신 빛만. 문 뒤를 빛 상자로 감싸 문틈으로 새어 나오다가, 통과하면 화면을 가득 채움 (공간감 없이)
+  const through = { value: 0 };
+  const glow = new THREE.ShaderMaterial({
     side: THREE.DoubleSide,
-    uniforms: { doorOpen, isFloor: { value: 0 } },
-    vertexShader: `varying vec3 world;
-      void main() {
-        vec4 positionInRoom = modelMatrix * vec4(position, 1.0);
-        world = positionInRoom.xyz;
-        gl_Position = projectionMatrix * viewMatrix * positionInRoom;
-      }`,
-    fragmentShader: `uniform float doorOpen, isFloor;
+    uniforms: { doorOpen, through, mid: { value: new THREE.Vector3(center, height * .55, depth + 3) } },
+    vertexShader: `varying vec3 world; void main() { vec4 w = modelMatrix * vec4(position, 1.0); world = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }`,
+    fragmentShader: `uniform float doorOpen, through; uniform vec3 mid;
       varying vec3 world;
-      float grain(vec3 p) {
-        return fract(sin(dot(p, vec3(127.1, 311.7, 79.3))) * 43758.5453);
-      }
       void main() {
-        vec3 p = world;
-        float roughness = .68 + .32 * grain(floor(p * 132.0));
-        vec3 wallDistance = (p - vec3(-1.53, 1.44, 8.45)) * vec3(.95, 1.0, .79);
-        float wallGlow = exp(-dot(wallDistance, wallDistance));
-        vec2 falloff = vec2((p.x + .54) * 2.35, (p.z - 7.4) * .55);
-        float reflection = exp(-dot(falloff, falloff));
-        vec3 color = vec3(.045, .030, .022) * roughness;
-        color += (1.0 - isFloor) * wallGlow * vec3(.72, .165, .015) * roughness;
-        // 통로 양옆 벽: 문에서 끝까지 이어지는 주황 반사광 (망점이 계속 보이게)
-        float sideLight = (1.0 - isFloor) * smoothstep(4.4, 6.0, p.z) * exp(-pow((p.y - 1.6) * .9, 2.0));
-        color += sideLight * vec3(.16, .038, .004) * roughness;
-        // 끝 벽: 가운데가 밝은 빛 (빛 쪽으로 걸어 나가는 느낌)
-        float endGlow = (1.0 - isFloor) * step(8.7, p.z) * exp(-pow(p.x * .75, 2.0) - pow((p.y - 1.5) * .9, 2.0));
-        color += doorOpen * endGlow * vec3(.34, .082, .008) * roughness;
-        color *= mix(1.0, .5, smoothstep(6.2, 8.8, p.z));   // 통로 끝으로 갈수록 은은하게   // A: 통로 끝이 어둠(LIVE 배경)으로
-        color += isFloor * reflection * vec3(.25, .061, .007) * roughness;
-        color += isFloor * smoothstep(4.5, 8.0, p.z) * exp(-pow(p.x * .9, 2.0)) * vec3(.22, .055, .006) * roughness;
-        float thresholdGlow = exp(-pow((p.x - .20) * 1.3, 2.0) - pow((p.z - 4.75) * 1.2, 2.0));
-        color += isFloor * doorOpen * thresholdGlow * vec3(.11, .031, .004);
-        float aisleEdge = 1.0 - smoothstep(1.05, 1.58, abs(p.x));
-        float floorOpacity = smoothstep(.7, 2.8, p.z) * mix(aisleEdge, 1.0, smoothstep(4.24, 4.55, p.z));
-        float opacity = mix(1.0, floorOpacity, isFloor);
-        gl_FragColor = vec4(color, opacity);
+        // 보는 방향 기준으로 밝기를 정해 상자의 면·모서리가 보이지 않음 (공간감 없이 빛만)
+        vec3 dir = normalize(world - cameraPosition);
+        vec2 off = dir.xy / max(dir.z, .05) - vec2(0.0, .12);
+        float r = dot(off, off);
+        float core = exp(-r * 6.0), halo = exp(-r * 1.2);
+        vec3 color = vec3(.6, .145, .014) * (.5 + .5 * halo) + vec3(.42, .16, .045) * core;
+        color *= .6 + .4 * doorOpen;
+        color = mix(color, vec3(1.0, .34, .05) * (.85 + .15 * halo), through);   // 통과하면 빛이 화면을 채움
+        gl_FragColor = vec4(color, 1.0);
         #include <colorspace_fragment>
         gl_FragColor.b = .29;
       }`
   });
-  const hallwayLength = hallwayEnd - depth;
-  const hallwayMidpoint = (depth + hallwayEnd) / 2;
-  const hallHalfWidth = 1.6;
-  panel(2 * hallHalfWidth, 3.4, center, 1.7, hallwayEnd, hall);
-  panel(hallwayLength, 3.4, center - hallHalfWidth, 1.7, hallwayMidpoint, hall).rotation.y = Math.PI / 2;
-  panel(hallwayLength, 3.4, center + hallHalfWidth, 1.7, hallwayMidpoint, hall).rotation.y = Math.PI / 2;
-  panel(2 * hallHalfWidth, hallwayLength, center, 3.4, hallwayMidpoint, hall).rotation.x = Math.PI / 2;
-
-  const floor = hall.clone();
-  floor.uniforms.isFloor.value = 1;
-  floor.uniforms.doorOpen = doorOpen;
-  floor.transparent = true;
-  floor.depthWrite = false;
-  panel(2 * hallHalfWidth, hallwayEnd, center, .008, hallwayEnd / 2, floor).rotation.x = -Math.PI / 2;
+  const boxD = 5, boxW = 5, boxH = 5, z0 = depth + .02;
+  panel(boxW, boxH, center, boxH / 2 + .01, z0 + boxD, glow);                                        // 뒤
+  panel(boxD, boxH, center - boxW / 2, boxH / 2 + .01, z0 + boxD / 2, glow).rotation.y = Math.PI / 2;  // 왼쪽
+  panel(boxD, boxH, center + boxW / 2, boxH / 2 + .01, z0 + boxD / 2, glow).rotation.y = Math.PI / 2;  // 오른쪽
+  panel(boxW, boxD, center, boxH + .01, z0 + boxD / 2, glow).rotation.x = Math.PI / 2;                // 위
+  panel(boxW, boxD, center, .015, z0 + boxD / 2, glow).rotation.x = Math.PI / 2;                      // 아래 (공연장 바닥보다 살짝 위 — 바닥 사진이 비치지 않게)
 
   return {
     draw(progress, openness) {
       exit.visible = progress >= .4;
+      through.value = THREE.MathUtils.smoothstep(progress, .86, 1);
       doorOpen.value = openness;
       leftLeaf.rotation.y = -1.46 * openness;
       rightLeaf.rotation.y = 1.46 * openness;
