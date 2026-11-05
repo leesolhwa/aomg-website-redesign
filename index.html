@@ -25,7 +25,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600&family=Instrument+Serif:ital@0;1&display=swap">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <link rel="preload" as="image" href="img/release-keyveatz-oxygen.webp">
-  <link rel="stylesheet" href="css/style.css?v=20261105-cr1">
+  <link rel="stylesheet" href="css/style.css?v=20261105-cr2">
   <script type="importmap">{ "imports": { "three": "./js/vendor/three.module.min.js" } }</script>
 </head>
 <body class="page-home">
@@ -248,10 +248,9 @@
         <img id="crowd-hand" data-src="img/crowd/hand.webp" alt="" hidden>
       </div>
       <div id="crowd-hint" lang="en" aria-hidden="true">
-        <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
-          <path d="M16.5 8a6.8 6.8 0 0 0-11.6-3M16.5 8V4.7M16.5 8h-3.3M3.5 12a6.8 6.8 0 0 0 11.6 3M3.5 12v3.3M3.5 12h3.3" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        LOOK AROUND
+        <!-- 가로·세로 궤도가 각자 화살표 방향으로 회전 (뒤로 넘어가는 쪽은 흐리게) -->
+        <svg class="crowd__icon" viewBox="0 0 80 80" fill="none" aria-hidden="true"><defs><clipPath id="crowd-hb"><rect width="80" height="40"/></clipPath><clipPath id="crowd-hf"><rect y="40" width="80" height="40"/></clipPath><clipPath id="crowd-vb"><rect width="40" height="80"/></clipPath><clipPath id="crowd-vf"><rect x="40" width="40" height="80"/></clipPath></defs><g class="crowd__back" clip-path="url(#crowd-hb)"><path pathLength="100" d="M 70 40 A 30 9 0 1 1 10 40 A 30 9 0 1 1 70 40" stroke-dasharray="36 14 36 14"><animate attributeName="stroke-dashoffset" from="0" to="-100" dur="3.2s" repeatCount="indefinite"/></path><path d="M -4.2 -3.6 L 0 0 L -4.2 3.6"><animateMotion dur="3.2s" begin="-1.152s" repeatCount="indefinite" rotate="auto" path="M 70 40 A 30 9 0 1 1 10 40 A 30 9 0 1 1 70 40"/></path><path d="M -4.2 -3.6 L 0 0 L -4.2 3.6"><animateMotion dur="3.2s" begin="-2.752s" repeatCount="indefinite" rotate="auto" path="M 70 40 A 30 9 0 1 1 10 40 A 30 9 0 1 1 70 40"/></path></g><g class="crowd__back" clip-path="url(#crowd-vb)"><path pathLength="100" d="M 40 8 A 11 32 0 1 1 40 72 A 11 32 0 1 1 40 8" stroke-dasharray="84 16"><animate attributeName="stroke-dashoffset" from="0" to="-100" dur="3.8s" repeatCount="indefinite"/></path><path d="M -4.2 -3.6 L 0 0 L -4.2 3.6"><animateMotion dur="3.8s" begin="-3.192s" repeatCount="indefinite" rotate="auto" path="M 40 8 A 11 32 0 1 1 40 72 A 11 32 0 1 1 40 8"/></path></g><g clip-path="url(#crowd-vf)"><path pathLength="100" d="M 40 8 A 11 32 0 1 1 40 72 A 11 32 0 1 1 40 8" stroke-dasharray="84 16"><animate attributeName="stroke-dashoffset" from="0" to="-100" dur="3.8s" repeatCount="indefinite"/></path><path d="M -4.2 -3.6 L 0 0 L -4.2 3.6"><animateMotion dur="3.8s" begin="-3.192s" repeatCount="indefinite" rotate="auto" path="M 40 8 A 11 32 0 1 1 40 72 A 11 32 0 1 1 40 8"/></path></g><g clip-path="url(#crowd-hf)"><path pathLength="100" d="M 70 40 A 30 9 0 1 1 10 40 A 30 9 0 1 1 70 40" stroke-dasharray="36 14 36 14"><animate attributeName="stroke-dashoffset" from="0" to="-100" dur="3.2s" repeatCount="indefinite"/></path><path d="M -4.2 -3.6 L 0 0 L -4.2 3.6"><animateMotion dur="3.2s" begin="-1.152s" repeatCount="indefinite" rotate="auto" path="M 70 40 A 30 9 0 1 1 10 40 A 30 9 0 1 1 70 40"/></path><path d="M -4.2 -3.6 L 0 0 L -4.2 3.6"><animateMotion dur="3.2s" begin="-2.752s" repeatCount="indefinite" rotate="auto" path="M 70 40 A 30 9 0 1 1 10 40 A 30 9 0 1 1 70 40"/></path></g></svg>
+        DRAG TO EXPLORE
       </div>
     </div>
   </section>
@@ -347,14 +346,14 @@
 
   <img class="artist-preview" alt="" aria-hidden="true">
 
-  <script src="js/data.js?v=20261105-cr1"></script>
-  <script src="js/player.js?v=20261105-cr1"></script>
-  <script src="js/script.js?v=20261105-cr1"></script>
-  <script src="js/effects.js?v=20261105-cr1"></script>
+  <script src="js/data.js?v=20261105-cr2"></script>
+  <script src="js/player.js?v=20261105-cr2"></script>
+  <script src="js/script.js?v=20261105-cr2"></script>
+  <script src="js/effects.js?v=20261105-cr2"></script>
   <script type="module">
-    import { createSoundScene } from './js/sound3d.js?v=20261105-cr1';
-    import { createLogoScene } from './js/logo3d.js?v=20261105-cr1';
-    import './js/crowd3d.js?v=20261105-cr1';
+    import { createSoundScene } from './js/sound3d.js?v=20261105-cr2';
+    import { createLogoScene } from './js/logo3d.js?v=20261105-cr2';
+    import './js/crowd3d.js?v=20261105-cr2';
     const section = document.getElementById('sound');
     const heroEl = document.getElementById('hero');
     const np = document.getElementById('np');
@@ -406,7 +405,7 @@
       .catch((e) => { console.warn(e); document.documentElement.classList.add('no-webgl'); });
     createLogoScene(document.getElementById('footer-canvas'), { mode: 'footer', interactive: false, follow: document.getElementById('contact') }).catch(() => {});
     // WHAT WE DO 카드 3D 오브제: 실패하면 미리 렌더한 이미지가 그대로 보임
-    import('./js/wwd3d.js?v=20261105-cr1').then((m) => m.initWwd3D(document.getElementById('what-we-do'))).catch(() => {});
+    import('./js/wwd3d.js?v=20261105-cr2').then((m) => m.initWwd3D(document.getElementById('what-we-do'))).catch(() => {});
   </script>
 </body>
 </html>

@@ -715,28 +715,32 @@ html.js [data-reveal].is-in { opacity: 1; transform: none; }
 .crowd #crowd-space, .crowd #crowd-space canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
 .crowd .crowd__defs { position: absolute; width: 0; height: 0; pointer-events: none; }
 .crowd #crowd-hint {
-  position: absolute; left: 50%; bottom: 100px; transform: translateX(-50%);
-  display: flex; align-items: center; gap: 8px;
+  position: absolute; left: 50%; bottom: 50px; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
   color: var(--color-white); text-shadow: 0 1px 6px #050200;
   font-family: var(--font-sans-en); font-size: var(--fs-body-1); line-height: var(--lh-body-1);
   text-transform: uppercase; white-space: nowrap; pointer-events: none;
   opacity: 0;
 }
-.crowd #crowd-hint svg { width: 17px; height: 17px; }
-@media (max-height: 470px) { .crowd #crowd-hint { bottom: 72px; } }
+.crowd .crowd__icon { width: 64px; height: 64px; overflow: visible; filter: drop-shadow(0 1px 4px #050200); }
+.crowd .crowd__icon path { stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+.crowd .crowd__back { opacity: .4; }
 /* LIVE: 공연장이 멈춘 채 아래에서 덮으며 올라오고, 경계선 없이 통로 빛이 번진 채 들어옴 */
 .crowd + .live { position: relative; z-index: 1; isolation: isolate; margin-top: -100vh; margin-top: -100svh; background: transparent; }
 .crowd + .live::before {             /* 공연장 → LIVE 배경으로 부드럽게 어두워짐 (LIVE 배경도 이것이 그림) */
   content: ""; position: absolute; z-index: -1; pointer-events: none;
   left: calc(50% - 50vw); width: 100vw; top: -55vh; bottom: 0;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0, var(--color-bg) 55vh);
+  background:
+    radial-gradient(ellipse 75% 50% at 50% 42%, rgba(255, 91, 8, .14), rgba(255, 91, 8, 0) 70%) 0 0 / 100% 110vh no-repeat,   /* 망점 아래 은은한 빛 */
+    linear-gradient(to bottom, rgba(0, 0, 0, 0) 0, var(--color-bg) 55vh);
 }
-.crowd + .live::after {              /* 번지는 주황 망점 빛 */
+.crowd + .live::after {              /* 넓고 부드럽게 퍼지는 주황 망점 빛 (테두리 없이) */
   content: ""; position: absolute; z-index: -1; pointer-events: none;
-  left: calc(50% - 50vw); width: 100vw; top: -40vh; height: 110vh;
+  left: calc(50% - 50vw); width: 100vw; top: -55vh; height: 150vh; opacity: .75;
   background:
     radial-gradient(circle, rgba(255, 91, 8, .85) 0 1.2px, transparent 1.8px) 0 0 / 7px 7px,
     radial-gradient(circle, rgba(255, 91, 8, .85) 0 1.2px, transparent 1.8px) 3.5px 3.5px / 7px 7px;
-  -webkit-mask-image: radial-gradient(ellipse 55% 45% at 50% 38%, #000 0, rgba(0, 0, 0, .35) 45%, transparent 100%);
-          mask-image: radial-gradient(ellipse 55% 45% at 50% 38%, #000 0, rgba(0, 0, 0, .35) 45%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 85% 55% at 50% 40%, #000 0, rgba(0, 0, 0, .55) 25%, rgba(0, 0, 0, .22) 50%, rgba(0, 0, 0, .06) 75%, transparent 100%);
+          mask-image: radial-gradient(ellipse 85% 55% at 50% 40%, #000 0, rgba(0, 0, 0, .55) 25%, rgba(0, 0, 0, .22) 50%, rgba(0, 0, 0, .06) 75%, transparent 100%);
 }
+@media (min-width: 768px) { .crowd + .live #live-title { margin-top: 100px; } }   /* LIVE 제목·안내 글 100px 내림 (포스터는 그대로) */

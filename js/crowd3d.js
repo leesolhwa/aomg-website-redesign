@@ -4,6 +4,8 @@ import * as THREE from 'three';
 const track = document.getElementById('crowd-track');
 if (track) {
   globalThis.THREE = THREE;                         // js/crowd/*.js는 전역 THREE를 씀
+  const hintIcon = track.querySelector('.crowd__icon');   // 안내 아이콘(SVG 애니메이션): 동작 줄이기면 멈춤
+  if (hintIcon && matchMedia('(prefers-reduced-motion: reduce)').matches) hintIcon.pauseAnimations();
   const version = new URL(import.meta.url).search;
   const files = ['print', 'exit', 'venue', 'scene'];
   const load = (src) => new Promise((resolve, reject) => {
