@@ -47,7 +47,7 @@ window.createConcertSpace = function (container, front, surround, clean, roomFac
   const cueArea = { value: new THREE.Vector4() };
   const cueAngle = { value: 0 };
   const reveal = { value: 1 };     // 검은 화면 → 공연장 밝아짐
-  const exitLight = { value: 0 };  // 뒤쪽 문 주변 조명 (망점이 보이도록)
+  const exitLight = { value: 0 };  // 뒤로 돌수록 문 주변을 어둡게
   // Hair, fabric and the lit side of each face catch the orange spill.
   function highlightMap(width, height, referenceWidth, referenceHeight, edges, faces) {
     const mask = canvas(width, height);
@@ -160,9 +160,9 @@ window.createConcertSpace = function (container, front, surround, clean, roomFac
           color.rgb += projectedLight(texel) * reflected * vec3(1.10, .26, .014);
         }
         // 뒤쪽 양문 주변을 주황 조명으로 밝혀 문·벽에도 망점이 찍히게
-        float doorPool = lightPool(texel, vec2(.5, .47), vec2(.075, .13));
-        float doorWide = lightPool(texel, vec2(.5, .52), vec2(.16, .2));
-        color.rgb += exitLight * (doorPool * (1.25 * photo + vec3(.16, .04, .004)) + doorWide * (.45 * photo + vec3(.05, .012, .001)));
+        // 문짝·문틀 주변만 클럽처럼 어둡게 (문틈 빛이 돋보이게, 관객·벽돌은 보이게)
+        float doorDark = lightPool(texel, vec2(.5, .47), vec2(.09, .16));
+        color.rgb *= 1.0 - exitLight * .6 * doorDark;
         color.rgb *= reveal;
         gl_FragColor = color;
         #include <colorspace_fragment>
