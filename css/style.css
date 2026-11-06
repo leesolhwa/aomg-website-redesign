@@ -745,3 +745,6 @@ html.js [data-reveal].is-in { opacity: 1; transform: none; }
           mask-image: radial-gradient(ellipse 85% 55% at 50% 40%, #000 0, rgba(0, 0, 0, .55) 25%, rgba(0, 0, 0, .22) 50%, rgba(0, 0, 0, .06) 75%, transparent 100%);
 }
 @media (min-width: 768px) { .crowd + .live #live-title { margin-top: 100px; } }   /* LIVE 제목·안내 글 100px 내림 (포스터는 그대로) */
+
+/* 11/06: LIVE — 포스터 사진이 먼저, 이어서 LIVE 안내 문구 */
+.live .live__body[data-reveal] { transition-delay: .45s; }

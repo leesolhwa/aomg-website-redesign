@@ -74,10 +74,9 @@ async def main():
     check('scroll changes year', years[0]=='2026' and years[-1]=='2019' and len(set(years))==3, str(years))
     await pg.click('[data-action=year-prev]'); await pg.wait_for_timeout(1200)
     check('PREV button moves to previous year', (await pg.inner_text('.discography__year'))!='2019')
-    # scratch
-    await pg.evaluate("document.querySelector('.scratch').scrollIntoView({block:'center',behavior:'instant'})"); await pg.wait_for_timeout(500)
-    await pg.click('[data-action=reveal]'); await pg.wait_for_timeout(300)
-    check('REVEAL button uncovers poster', await pg.evaluate("document.querySelector('.scratch').classList.contains('is-revealed')"))
+    # LIVE poster (11/06: 스크래치 덮개 삭제)
+    await pg.evaluate("document.querySelector('.live__poster').scrollIntoView({block:'center',behavior:'instant'})"); await pg.wait_for_timeout(500)
+    check('LIVE poster shows photo without cover', await pg.evaluate("!document.querySelector('.scratch__canvas') && !!document.querySelector('.live__poster img')"))
     # 3d hero
     check('hero 3D ready', await pg.evaluate("document.getElementById('hero').classList.contains('is-3d')"))
     # 3 navigate to artist, restore, back
