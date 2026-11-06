@@ -58,7 +58,7 @@ window.createVenueExit = function (scene, roomMaterial, eye) {
         float inY = step(0.0, d.y) * step(d.y, 1.0), inX = step(abs(d.x), .5);
         float lit = .55 + .45 * smoothstep(0.0, .8, doorOpen);
         float bw = mix(.003, .03, smoothstep(0.0, .9, doorOpen));                    // 빛 기둥 굵기
-        float under = line(d.y, .006) * inX, underGlow = line(d.y, .04) * inX;
+        float under = line(d.y, .0022) * inX * .8, underGlow = line(d.y, .012) * inX * .5;   // 문 아래 빛: 얇은 한 줄
         float core = smoothstep(bw, bw * .4, abs(d.x)) * inY + under;
         float glow = line(d.x, bw * 6.0) * inY + underGlow;
         float fill = smoothstep(.75, .97, doorOpen) * smoothstep(.62, .5, abs(d.x)) * smoothstep(-.12, .02, d.y) * smoothstep(1.12, .98, d.y);
