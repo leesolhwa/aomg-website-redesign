@@ -1,4 +1,4 @@
-// AOMG 3D 공연장 — 뒤쪽 양문과 문 너머 빛 (원본 AOMG-Crowd v48, 사이트 연결용 수정: 문 주변 조명, 통로 대신 빛 상자)
+// AOMG 3D 공연장 — 뒤쪽 양문과 문 너머 빛 (원본 AOMG-Crowd v48, 사이트 연결용 수정: 문은 닫힌 채 문틈 빛 기둥, 통로 대신 빛 상자)
 window.createVenueExit = function (scene, roomMaterial, eye) {
   const depth = 4.48;
   const left = depth * Math.tan((826 / 1774 - .5) * Math.PI * 2);
@@ -47,6 +47,28 @@ window.createVenueExit = function (scene, roomMaterial, eye) {
   const leftLeaf = doorLeaf(left, 1);
   const rightLeaf = doorLeaf(right, -1);
   const doorOpen = { value: 0 };
+  // 문은 닫힌 채: 가운데 틈과 문 아래로 아주 밝은 빛(흰빛 → 망점 필터에서 점 없이 꽉 찬 레드).
+  // 다가갈수록 틈 빛이 굵은 빛 기둥이 되고, 문 앞에 닿으면 문 전체가 빛으로 차오르며 벽으로 번짐
+  const leak = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, side: THREE.DoubleSide, uniforms: { doorOpen },
+    vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+    fragmentShader: `uniform float doorOpen; varying vec2 vUv;
+      float line(float d, float w) { return exp(-pow(d / w, 2.0)); }
+      void main() {
+        vec2 d = vec2((vUv.x - .5) * 2.0, vUv.y * 1.3 - .08);   // 판은 문의 2배 폭 (번짐이 벽까지), 문 = |x|<.5, 0<y<1
+        float inY = step(0.0, d.y) * step(d.y, 1.0), inX = step(abs(d.x), .5);
+        float lit = .55 + .45 * smoothstep(0.0, .8, doorOpen);
+        float bw = mix(.003, .03, smoothstep(0.0, .9, doorOpen));                    // 빛 기둥 굵기
+        float under = line(d.y, .006) * inX, underGlow = line(d.y, .04) * inX;
+        float core = smoothstep(bw, bw * .4, abs(d.x)) * inY + under;
+        float glow = line(d.x, bw * 6.0) * inY + underGlow;
+        float fill = smoothstep(.75, .97, doorOpen) * smoothstep(.62, .5, abs(d.x)) * smoothstep(-.12, .02, d.y) * smoothstep(1.12, .98, d.y);
+        float a = clamp((core + glow * .55) * lit + fill, 0.0, 1.0);
+        vec3 c = mix(vec3(1.0, .45, .2), vec3(1.0), clamp(core * lit + fill, 0.0, 1.0));   // 틈 한가운데는 흰빛
+        gl_FragColor = vec4(c, a);
+        #include <colorspace_fragment>
+        gl_FragColor.b = .29;
+      }` });
+  panel(width * 2.0, height * 1.3, center, height * 1.3 / 2 - height * .08, depth - .006, leak);
   // 문 너머: 통로 대신 빛만. 문 뒤를 빛 상자로 감싸 문틈으로 새어 나오다가, 통과하면 화면을 가득 채움 (공간감 없이)
   const through = { value: 0 };
   const glow = new THREE.ShaderMaterial({
@@ -81,8 +103,7 @@ window.createVenueExit = function (scene, roomMaterial, eye) {
       exit.visible = progress >= .4;
       through.value = THREE.MathUtils.smoothstep(progress, .86, 1);
       doorOpen.value = openness;
-      leftLeaf.rotation.y = -1.46 * openness;
-      rightLeaf.rotation.y = 1.46 * openness;
+      leftLeaf.visible = rightLeaf.visible = openness < .97;   // 문은 움직이지 않고, 빛으로 다 찬 뒤 숨김
     }
   };
 };
