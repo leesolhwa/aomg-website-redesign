@@ -69,10 +69,10 @@ window.createVenueExit = function (scene, roomMaterial, eye) {
         float pd = mix(rr, rr / R, .7);   // 모양은 살짝만, 외곽선 없이
         float fill = smoothstep(.75, .97, doorOpen) * .8 / (1.0 + pd * pd * 4.0);   // 외곽선 없이 번지는 빛 (가운데 뾰족함·테두리 없이)   // 가운데만, 조약돌 모양으로
         float a = clamp((core + glow * .55) * lit + fill, 0.0, 1.0);
-        vec3 c = mix(vec3(1.0, .45, .2), vec3(1.0), clamp(core * lit, 0.0, 1.0));   // 흰빛(꽉 찬 레드)은 틈에만, 차오르는 빛은 망점으로   // 틈 한가운데는 흰빛
+        vec3 c = mix(vec3(1.0, .07, .025), vec3(1.0), clamp(core * lit, 0.0, 1.0));   // 흰빛(꽉 찬 레드)은 틈 한가운데만
         gl_FragColor = vec4(c, a);
         #include <colorspace_fragment>
-        gl_FragColor.b = .29;
+        gl_FragColor.b = core * lit > .35 ? .29 : 0.0;   // 틈 한가운데만 꽉 찬 레드, 번지는 빛은 손과 같은 부드러운 망점 경로(네온 문턱 경계선 없음)
       }` });
   panel(width * 2.0, height * 1.3, center, height * 1.3 / 2 - height * .08, depth - .006, leak);
   // 문 너머: 통로 대신 빛만. 문 뒤를 빛 상자로 감싸 문틈으로 새어 나오다가, 통과하면 화면을 가득 채움 (공간감 없이)
@@ -95,11 +95,11 @@ window.createVenueExit = function (scene, roomMaterial, eye) {
         float amp = mix(.3, 1.0, smoothstep(.6, 1.0, morph));   // 스크롤할수록 더 불규칙하게
         float R = 1.0 + amp * (.17 * sin(2.0 * th + 1.0 + 4.0 * morph) + .11 * cos(3.0 * th + .4 - 3.0 * morph) + .05 * sin(5.0 * th + 2.0 + 6.0 * morph));   // 스크롤 진행률 따라 일그러지는 조약돌 모양
         float pd = mix(rr, rr / R, .7);   // 모양은 살짝만, 외곽선 없이
-        vec3 color = vec3(.05, .014, .003) + vec3(.62, .17, .04) / (1.0 + pd * pd * 2.0) + vec3(.15, .04, .01) / (1.0 + pd * pd * 8.0);   // 외곽선 없이 번지는 빛
+        vec3 color = vec3(.05, .006, .002) + vec3(.62, .045, .015) / (1.0 + pd * pd * 2.0) + vec3(.15, .012, .004) / (1.0 + pd * pd * 8.0);   // 부드러운 망점 경로에서 브랜드 레드가 되도록 G를 낮춤   // 외곽선 없이 번지는 빛
         color *= .75 + .25 * through;
         gl_FragColor = vec4(color, 1.0);
         #include <colorspace_fragment>
-        gl_FragColor.b = .29;
+        gl_FragColor.b = 0.0;   // 번지는 빛은 손과 같은 부드러운 망점 경로 — 네온 문턱에서 생기던 경계선 없음
       }`
   });
   const boxD = 5, boxW = 5, boxH = 5, z0 = depth + .02;
