@@ -57,7 +57,7 @@ window.createVenueExit = function (scene, roomMaterial, eye) {
       void main() {
         vec2 d = vec2((vUv.x - .5) * 2.0, vUv.y * 1.3 - .08);   // 판은 문의 2배 폭 (번짐이 벽까지), 문 = |x|<.5, 0<y<1
         float inY = step(0.0, d.y) * step(d.y, 1.0), inX = step(abs(d.x), .5);
-        float lit = .55 + .45 * smoothstep(0.0, .8, doorOpen);
+        float lit = .4 + .6 * smoothstep(0.0, .8, doorOpen);   // 처음엔 은은하게, 다가갈수록 밝게
         float bw = mix(.003, .03, smoothstep(0.0, .9, doorOpen));                    // 빛 기둥 굵기
         float under = line(d.y, .0012) * inX * .45, underGlow = line(d.y, .006) * inX * .2;   // 문 아래 빛: 머리카락처럼 얇게
         float core = smoothstep(bw, bw * .4, abs(d.x)) * inY + under;
@@ -111,7 +111,7 @@ window.createVenueExit = function (scene, roomMaterial, eye) {
 
   return {
     draw(progress, openness) {
-      exit.visible = progress >= .4;
+      exit.visible = true;   // 처음(둘러보기)부터 문틈 빛이 보이게 — 뒤를 돌아보면 '저 문으로 간다'는 힌트
       through.value = THREE.MathUtils.smoothstep(progress, .86, 1);
       morph.value = progress;
       doorOpen.value = openness;
