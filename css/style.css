@@ -671,22 +671,17 @@ html.js [data-reveal].is-in { opacity: 1; transform: none; }
 .wwd__obj img { transform: none; } /* 멈춘 그림은 모양이 가장 잘 보이는 정면 각도로 따로 렌더 (22차) */
 
 .wwd__obj.is-3d img { visibility: hidden; }
-/* 데스크톱 + 동작 허용: 화면 고정, 문장은 좌우에서 날아오고 카드는 아래에서 위로 지나감 (JS가 --k1~3, --out, --y 설정) */
+/* 데스크톱 + 동작 허용 (11/07): 화면 고정, 세로 스크롤만큼 문장 → 카드 4장이 오른쪽에서 왼쪽으로 지나감
+   섹션 높이 = 트랙 이동 거리 + 화면 1개 (JS가 --wwd-h, --wwd-x 설정) */
 @media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
-  html.js .wwd { height: 560vh; }
-  html.js .wwd__sticky { position: sticky; top: 0; height: 100vh; display: grid; place-items: center; }
-  html.js   html.js .wwd__ln { opacity: calc(var(--k, 0) * (1 - var(--out, 0))); transform: translateX(calc((1 - var(--k, 0) + var(--out, 0)) * var(--dir) * 70vw)); }
-  html.js .wwd__ln:nth-child(1) { --k: var(--k1); --dir: -1; }
-  html.js .wwd__ln:nth-child(2) { --k: var(--k2); --dir: 1; }
-  html.js .wwd__ln:nth-child(3) { --k: var(--k3); --dir: -1; }
-  html.js .wwd__sub { opacity: calc(0.7 * var(--k3, 0) * (1 - var(--out, 0))); }
-  html.js .wwd__cards { position: absolute; inset: 0; display: block; width: auto; margin: 0; pointer-events: none; }
-  html.js .wwd__card { position: absolute; top: 0; width: 420px; transform: translateY(var(--y, 120vh)); pointer-events: auto; }
-  /* 11/04: 카드마다 크기를 다르게 하고 화면 안쪽으로 (사용자 예시 배치) */
-  html.js .wwd__card:nth-child(1) { left: 13%; width: clamp(300px, 23vw, 520px); }
-  html.js .wwd__card:nth-child(2) { left: 61%; width: clamp(320px, 26.5vw, 600px); }
-  html.js .wwd__card:nth-child(3) { left: 23%; width: clamp(300px, 23.4vw, 530px); }
-  html.js .wwd__card:nth-child(4) { left: 49%; width: clamp(340px, 33vw, 740px); }
+  html.js .wwd { height: var(--wwd-h, 300vh); }
+  html.js .wwd__sticky { position: sticky; top: 0; height: 100vh; }
+  html.js .wwd__track { position: absolute; top: 0; left: 0; height: 100%; display: flex; align-items: center; gap: 4vw; padding-right: 8vw; transform: translate3d(var(--wwd-x, 0px), 0, 0); will-change: transform; }
+  html.js .wwd__lead { flex: none; width: 100vw; }
+  html.js .wwd__cards { display: flex; gap: 4vw; width: auto; margin: 0; }
+  html.js .wwd__card { flex: none; width: clamp(320px, 27vw, 560px); }
+  html.js .wwd__card:nth-child(odd) { margin-top: -9vh; }    /* 위·아래 번갈아 */
+  html.js .wwd__card:nth-child(even) { margin-top: 9vh; }
 }
 @media (max-width: 1023px), (prefers-reduced-motion: reduce) {
   .wwd { padding-block: var(--section-pad-md); }
