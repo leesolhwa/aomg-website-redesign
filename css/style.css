@@ -556,10 +556,10 @@ html.js:not(.no-webgl) #now-playing-fallback { display: none; } /* WebGL·JS가 
 @property --lr { syntax: "<length>"; inherits: true; initial-value: 0px; }
 .footer { --lr: 0px; transition: --lr .35s var(--ease-out); }
 .footer.is-holding { --lr: 150px; }
-.footer.is-holding > .footer__body { -webkit-mask-image: radial-gradient(circle at var(--lx) var(--ly), transparent var(--lr), #000 calc(var(--lr) + 1px)); mask-image: radial-gradient(circle at var(--lx) var(--ly), transparent var(--lr), #000 calc(var(--lr) + 1px)); }   /* 원 안의 원래 글은 숨기고 */
 .footer__insp { position: absolute; inset: 0; z-index: 2; pointer-events: none; clip-path: circle(var(--lr) at var(--lx, 50%) var(--ly, 50%));
-  background-color: rgba(5, 5, 5, 0.4);   /* 반투명 → 원 안으로 엠블럼 뼈대가 비침 */ background-image: linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px); background-size: 24px 24px; }
+  background-color: #050505;   /* 원 안은 불투명 — 엠블럼 자리엔 뼈대 그림(.footer__skel)이 대신 보임 */ background-image: linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px); background-size: 24px 24px; }
 .footer__insp .footer__body { min-height: 100vh; min-height: 100svh; }
+.footer__skel { z-index: 0; }   /* 꾹 누른 순간의 엠블럼 뼈대 사진 — .footer__canvas와 같은 자리·크기, 돋보기 원 안에서만 보임 */
 .footer__insp * { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace !important; letter-spacing: 0 !important; }
 .footer__insp [data-sz] { position: relative; outline: 1px dashed rgba(255, 59, 31, 0.7); }
 .footer__insp [data-sz]::before { content: attr(data-sz); position: absolute; left: -1px; top: -18px; padding: 0 5px; font: 600 11px/16px ui-monospace, Menlo, Consolas, monospace; background: #ff3b1f; color: #fff; white-space: nowrap; text-transform: none; }
@@ -718,7 +718,7 @@ html.js [data-reveal].is-in { opacity: 1; transform: none; }
 @media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
   html.js .wwd { height: var(--wwd-h, 300vh); }
   html.js .wwd__sticky { position: sticky; top: 0; height: 100vh; }
-  html.js .wwd__track { position: absolute; top: 0; left: 0; height: 100%; display: flex; align-items: center; gap: 4vw; padding-right: 8vw; transform: translate3d(var(--wwd-x, 0px), 0, 0); will-change: transform; }
+  html.js .wwd__track { position: absolute; top: 0; left: 0; height: 100%; display: flex; align-items: center; gap: 4vw; padding-right: calc(50vw - min(26vw, 56vh) / 2); transform: translate3d(var(--wwd-x, 0px), 0, 0); will-change: transform; }
   html.js .wwd__lead { flex: none; width: 100vw; }
   html.js .wwd__cards { display: flex; gap: 4vw; width: auto; margin: 0; }
   /* 11/08: 카드 1:1, 위아래 여백(지그재그 ±6%), 오브제는 남은 칸 가운데. 가운데 온 카드만 크고 또렷 + 오브제 패럴랙스 (JS가 --s, --o, --px) */

@@ -343,18 +343,62 @@ export async function createLogoScene(canvas, opts = {}) {
     });
     follow.addEventListener('pointerleave', () => { fol.on = false; });
   }
-  /* 11/09 푸터 꾹 누르기(돋보기): 엠블럼이 그 자리에 멈추고 유리 대신 조각 뼈대(모서리 선)만 보임.
-   * script.js가 #contact에 'footer-inspect' 이벤트(detail: true/false)를 보냄 */
+  /* 11/09 푸터 꾹 누르기(돋보기): 엠블럼은 그대로 보이고 그 자리에 멈춤. 같은 각도의 '뼈대'를 한 장 그려 돋보기 층 캔버스에 넘김
+   * → 돋보기 원이 엠블럼 위를 지날 때만 원 안에 보임. 뼈대는 히어로의 깨짐처럼 조각 일부(약 38%)만, 조각마다 바깥으로 살짝 튀어나온 채
+   *   가는 선으로. 엠블럼 크기 태그(가로×세로 px)와 점선 테두리도 같이. script.js가 'footer-inspect' 이벤트를 보냄 */
   let inspect = false, skeleton = null;
+  const skelMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.55 });
+  function brokenEdges() {
+    const pos = logo.geometry.attributes.position, cen = logo.geometry.attributes.aCenter, dir = logo.geometry.attributes.aDir;
+    const keep = new Map(), out = [];
+    for (let i = 0; i < pos.count; i += 3) {
+      const key = `${cen.getX(i).toFixed(3)},${cen.getY(i).toFixed(3)},${cen.getZ(i).toFixed(3)}`;
+      if (!keep.has(key)) keep.set(key, Math.random() < 0.38 ? 0.01 + Math.random() * 0.04 : -1);   // 조각마다: 보일지 · 튀어나올 거리
+      const k = keep.get(key); if (k < 0) continue;
+      for (let j = 0; j < 3; j++) out.push(pos.getX(i + j) + dir.getX(i + j) * k, pos.getY(i + j) + dir.getY(i + j) * k, pos.getZ(i + j) + dir.getZ(i + j) * k);
+    }
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(out, 3));
+    const e = new THREE.EdgesGeometry(g, 20); g.dispose(); return e;
+  }
   if (mode === 'footer' && follow) {
     follow.addEventListener('footer-inspect', (e) => {
-      inspect = !!e.detail;
-      if (inspect && !skeleton) {
-        skeleton = new THREE.LineSegments(new THREE.EdgesGeometry(logo.geometry, 20), new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.85 }));
+      const d = e.detail || {};
+      inspect = !!d.on;
+      if (inspect && d.canvas) {
+        if (skeleton) { pivot.remove(skeleton); skeleton.geometry.dispose(); }
+        skeleton = new THREE.LineSegments(brokenEdges(), skelMat);   // 누를 때마다 다른 조각
         pivot.add(skeleton);
+        // 선을 가늘게: 2배 해상도로 그려서 줄여 담음
+        const w = canvas.clientWidth, h = canvas.clientHeight, pr = renderer.getPixelRatio();
+        renderer.setPixelRatio(pr * 2); renderer.setSize(w, h, false);
+        logo.visible = false;
+        renderer.render(scene, camera);
+        const out = d.canvas; out.width = Math.round(w * pr); out.height = Math.round(h * pr);
+        const ctx = out.getContext('2d');
+        ctx.drawImage(canvas, 0, 0, out.width, out.height);
+        // 엠블럼 크기 태그: 바운딩 박스를 화면에 투영 → 점선 테두리 + '가로×세로' (화면에 보이는 px)
+        logo.geometry.computeBoundingBox();
+        const bb = logo.geometry.boundingBox, v = new THREE.Vector3();
+        let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+        for (let c = 0; c < 8; c++) {
+          v.set(c & 1 ? bb.max.x : bb.min.x, c & 2 ? bb.max.y : bb.min.y, c & 4 ? bb.max.z : bb.min.z).applyMatrix4(logo.matrixWorld).project(camera);
+          const px = (v.x + 1) / 2 * out.width, py = (1 - v.y) / 2 * out.height;
+          x0 = Math.min(x0, px); y0 = Math.min(y0, py); x1 = Math.max(x1, px); y1 = Math.max(y1, py);
+        }
+        const m = new DOMMatrixReadOnly(getComputedStyle(canvas).transform === 'none' ? undefined : getComputedStyle(canvas).transform);
+        const k = m.a || 1, onScreen = (n) => Math.round(n / pr * k);   // 화면 px = 캔버스 px ÷ 픽셀 비율 × CSS 확대
+        ctx.save(); ctx.strokeStyle = 'rgba(255,59,31,.7)'; ctx.lineWidth = pr / k; ctx.setLineDash([4 * pr / k, 3 * pr / k]);
+        ctx.strokeRect(x0, y0, x1 - x0, y1 - y0); ctx.setLineDash([]);
+        const fs = 11 * pr / k, label = `${onScreen(x1 - x0)}×${onScreen(y1 - y0)}`;
+        ctx.font = `600 ${fs}px ui-monospace, Menlo, Consolas, monospace`;
+        const tw = ctx.measureText(label).width + 10 * pr / k, th = 16 * pr / k;
+        ctx.fillStyle = '#ff3b1f'; ctx.fillRect(x0, y0 - th, tw, th);
+        ctx.fillStyle = '#fff'; ctx.textBaseline = 'middle'; ctx.fillText(label, x0 + 5 * pr / k, y0 - th / 2);
+        ctx.restore();
+        logo.visible = true; skeleton.visible = false;
+        renderer.setPixelRatio(pr); renderer.setSize(w, h, false);
+        renderer.render(scene, camera);
       }
-      if (skeleton) skeleton.visible = inspect;
-      logo.visible = !inspect;
       if (!raf) raf = requestAnimationFrame(loop);
     });
   }

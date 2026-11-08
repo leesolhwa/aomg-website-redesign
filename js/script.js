@@ -413,7 +413,8 @@
     const body = ft.querySelector('.footer__body'); if (!body) return;
     const insp = document.createElement('div');
     insp.className = 'footer__insp'; insp.setAttribute('aria-hidden', 'true'); insp.inert = true;
-    insp.append(body.cloneNode(true));
+    const skel = document.createElement('canvas'); skel.className = 'footer__canvas footer__skel';   // 엠블럼 뼈대 (logo3d.js가 그려 줌)
+    insp.append(skel, body.cloneNode(true));
     const lens = document.createElement('div');
     lens.className = 'footer__lens'; lens.setAttribute('aria-hidden', 'true');
     let ticks = '';
@@ -437,12 +438,12 @@
     ft.addEventListener('pointerdown', (e) => {
       if (e.button !== 0 || e.target.closest('a, button')) return;   // 링크·버튼은 평소처럼 누름
       move(e); ft.classList.add('is-holding');
-      ft.dispatchEvent(new CustomEvent('footer-inspect', { detail: true }));   // 엠블럼: 멈추고 뼈대만 (logo3d.js)
+      ft.dispatchEvent(new CustomEvent('footer-inspect', { detail: { on: true, canvas: skel } }));   // 엠블럼: 그 자리에 멈추고, 뼈대 사진을 돋보기 층에 (logo3d.js)
     });
     const end = () => {
       if (!ft.classList.contains('is-holding')) return;
       ft.classList.remove('is-holding');
-      ft.dispatchEvent(new CustomEvent('footer-inspect', { detail: false }));
+      ft.dispatchEvent(new CustomEvent('footer-inspect', { detail: { on: false } }));
     };
     addEventListener('pointerup', end); addEventListener('pointercancel', end); ft.addEventListener('pointerleave', end);
   }
