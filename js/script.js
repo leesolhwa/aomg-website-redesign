@@ -444,10 +444,19 @@
       dist = Math.max(0, track.scrollWidth - innerWidth);
       sec.style.setProperty('--wwd-h', `${dist + innerHeight}px`);
     };
+    const cardsEl = track.querySelector('.wwd__cards'), cards = [...track.querySelectorAll('.wwd__card')];
     const run = () => {
-      if (!on()) return;
+      if (!on()) { cards.forEach((c) => ['--s', '--o', '--px'].forEach((n) => c.style.removeProperty(n))); return; }
       const p = Math.min(1, Math.max(0, -sec.getBoundingClientRect().top / Math.max(1, dist)));
-      track.style.setProperty('--wwd-x', `${(-p * dist).toFixed(1)}px`);
+      const x = -p * dist, half = innerWidth / 2;
+      track.style.setProperty('--wwd-x', `${x.toFixed(1)}px`);
+      // 11/08: 화면 가운데에 가까운 카드일수록 크고 또렷, 오브제는 반대로 살짝 (패럴랙스)
+      cards.forEach((c) => {
+        const d = (cardsEl.offsetLeft + c.offsetLeft + c.offsetWidth / 2 + x - half) / half, a = Math.min(1, Math.abs(d));
+        c.style.setProperty('--s', (1 + 0.14 * (1 - a)).toFixed(3));
+        c.style.setProperty('--o', (0.4 + 0.6 * (1 - a)).toFixed(2));
+        c.style.setProperty('--px', `${(-d * 30).toFixed(1)}px`);
+      });
     };
     size(); run();
     addEventListener('scroll', run, { passive: true });
