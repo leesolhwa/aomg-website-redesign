@@ -437,8 +437,13 @@
     ft.addEventListener('pointerdown', (e) => {
       if (e.button !== 0 || e.target.closest('a, button')) return;   // 링크·버튼은 평소처럼 누름
       move(e); ft.classList.add('is-holding');
+      ft.dispatchEvent(new CustomEvent('footer-inspect', { detail: true }));   // 엠블럼: 멈추고 뼈대만 (logo3d.js)
     });
-    const end = () => ft.classList.remove('is-holding');
+    const end = () => {
+      if (!ft.classList.contains('is-holding')) return;
+      ft.classList.remove('is-holding');
+      ft.dispatchEvent(new CustomEvent('footer-inspect', { detail: false }));
+    };
     addEventListener('pointerup', end); addEventListener('pointercancel', end); ft.addEventListener('pointerleave', end);
   }
 
