@@ -24,7 +24,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600&family=Instrument+Serif:ital@0;1&display=swap">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <link rel="preload" as="image" href="img/artist-keyveatz.webp">
-  <link rel="stylesheet" href="css/style.css?v=20261108-hs3">
+  <link rel="stylesheet" href="css/style.css?v=20261109-ft1">
   <script type="importmap">{ "imports": { "three": "./js/vendor/three.module.min.js" } }</script>
 </head>
 <body class="page-artist">
@@ -41,8 +41,7 @@
         <li><a href="index.html#now-playing" data-copy="nav.nowPlaying" aria-label="지금 재생">NOW PLAYING</a></li>
         <li><a href="index.html#artists" data-copy="nav.artists" aria-label="아티스트">ARTISTS</a></li>
         <li><a href="index.html#discography" data-copy="nav.releases" aria-label="발매 기록">RELEASES</a></li>
-        <li><a href="index.html#live" data-copy="nav.live" aria-label="공연 일정">LIVE</a></li>
-        <li><a href="index.html#news" data-copy="nav.news" aria-label="소식">NEWS</a></li>
+        <li><a href="index.html#live" data-copy="nav.live" aria-label="공연 일정">SCHEDULE</a></li>
       </ul>
     </nav>
   </header>
@@ -85,7 +84,7 @@
 
     <!-- ===== #artist-live ===== -->
     <section class="detail-live container" id="artist-live" data-tone="on-dark" aria-labelledby="alive-title" data-section="events">
-      <h2 class="section-title" id="alive-title" data-reveal><span data-copy="detail.live.title">LIVE</span></h2>
+      <h2 class="section-title" id="alive-title" data-reveal><span data-copy="detail.live.title">SCHEDULE</span></h2>
       <ul class="event-list" data-render="artist-events"></ul>
       <div class="empty-state" data-empty="artist-events" hidden>
         <p data-copy="live.empty">지금 예정된 공연이 없어요.<br class="m-only"> 새 일정은 공식 인스타그램에서<br class="m-only"> 확인할 수 있어요.</p>
@@ -113,14 +112,27 @@
   </main>
 
   <!-- ===== Footer (공통) ===== -->
-  <footer class="footer container grid" id="contact" data-tone="on-dark">
+  <footer class="footer" id="contact" data-tone="on-dark">
     <canvas class="footer__canvas" id="footer-canvas" aria-hidden="true"></canvas>
-    <ul class="footer__social">
-      <li><a href="https://www.instagram.com/aomgofficial" target="_blank" rel="noopener" aria-label="인스타그램, 새 창">INSTAGRAM</a></li>
-      <li><a href="https://www.youtube.com/channel/UCW5gbSGTGIukUDsPt2sdhGw" target="_blank" rel="noopener" aria-label="유튜브, 새 창">YOUTUBE</a></li>
-      <li><a href="https://www.facebook.com/AOMGOFFICIAL" target="_blank" rel="noopener" aria-label="페이스북, 새 창">FACEBOOK</a></li>
-      <li><a href="https://soundcloud.com/aomgofficial" target="_blank" rel="noopener" aria-label="사운드클라우드, 새 창">SOUNDCLOUD</a></li>
-    </ul>
+    <div class="footer__body">
+      <h2 class="footer__title"><em>Let’s go</em><br>Above<br><em>Ordinary.</em></h2>
+      <div class="footer__cols">
+        <div class="footer__col">
+          <p class="footer__label">Email</p>
+          <a class="footer__mail" href="mailto:info@aomgofficial.com">info@aomgofficial.com</a>
+          <a class="footer__cta" href="mailto:info@aomgofficial.com">CONTACT US →</a>
+        </div>
+        <div class="footer__col">
+          <p class="footer__label">Follow us</p>
+          <ul class="footer__social">
+            <li><a href="https://www.instagram.com/aomgofficial" target="_blank" rel="noopener" aria-label="인스타그램, 새 창">INSTAGRAM</a></li>
+            <li><a href="https://www.youtube.com/channel/UCW5gbSGTGIukUDsPt2sdhGw" target="_blank" rel="noopener" aria-label="유튜브, 새 창">YOUTUBE</a></li>
+            <li><a href="https://www.facebook.com/AOMGOFFICIAL" target="_blank" rel="noopener" aria-label="페이스북, 새 창">FACEBOOK</a></li>
+            <li><a href="https://soundcloud.com/aomgofficial" target="_blank" rel="noopener" aria-label="사운드클라우드, 새 창">SOUNDCLOUD</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </footer>
 
   <!-- ===== Mini Player (공통) ===== -->
@@ -135,12 +147,12 @@
     <div class="player__end"><button class="cta player__audio" type="button" data-action="audio-toggle" aria-pressed="false" aria-label="소리 켜기"><span class="cta__label" data-copy="audio.on">SOUND ON</span></button><button class="cta" type="button" data-action="player-close" aria-label="플레이어 접기"><span class="cta__label">CLOSE</span></button></div>
   </div>
 
-  <script src="js/data.js?v=20261108-hs3"></script>
-  <script src="js/player.js?v=20261108-hs3"></script>
-  <script src="js/script.js?v=20261108-hs3"></script>
-  <script src="js/effects.js?v=20261108-hs3"></script>
+  <script src="js/data.js?v=20261109-ft1"></script>
+  <script src="js/player.js?v=20261109-ft1"></script>
+  <script src="js/script.js?v=20261109-ft1"></script>
+  <script src="js/effects.js?v=20261109-ft1"></script>
   <script type="module">
-    import { createLogoScene } from './js/logo3d.js?v=20261108-hs3';
+    import { createLogoScene } from './js/logo3d.js?v=20261109-ft1';
     createLogoScene(document.getElementById('footer-canvas'), { mode: 'footer', interactive: false, follow: document.getElementById('contact') }).catch(() => {});
   </script>
 </body>
