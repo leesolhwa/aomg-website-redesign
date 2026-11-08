@@ -25,7 +25,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600&family=Instrument+Serif:ital@0;1&display=swap">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <link rel="preload" as="image" href="img/release-keyveatz-oxygen.webp">
-  <link rel="stylesheet" href="css/style.css?v=20261109-ft3">
+  <link rel="stylesheet" href="css/style.css?v=20261109-lp1">
   <script type="importmap">{ "imports": { "three": "./js/vendor/three.module.min.js" } }</script>
 </head>
 <body class="page-home">
@@ -341,10 +341,11 @@
   </footer>
 
   <!-- ===== Mini Player (공통) ===== -->
-  <button class="player-pill" type="button" data-action="player-open" aria-controls="player" aria-expanded="false" aria-label="플레이어 열기"><span class="player-pill__eq" aria-hidden="true"><i></i><i></i><i></i></span><span>PLAYER</span></button>
+  <button class="player-pill" type="button" data-action="player-open" aria-controls="player" aria-expanded="false" aria-label="플레이어 열기"><span class="player-pill__tip" aria-hidden="true"><b data-render="pill-title">PLAYER</b><span data-render="pill-time"></span></span><svg class="lp" viewBox="0 0 64 64" fill="none" aria-hidden="true"><circle class="lp__bg" cx="32" cy="32" r="31.5"/><circle class="lp__track" cx="32" cy="32" r="30.5"/><circle class="lp__arc" cx="32" cy="32" r="30.5" pathLength="100" transform="rotate(-90 32 32)"/><g class="lp__disc"><circle cx="32" cy="32" r="25.5" stroke="#fff"/><circle cx="32" cy="32" r="21.9" stroke="rgba(255,255,255,.55)"/><circle cx="32" cy="32" r="17.6" stroke="rgba(255,255,255,.43)"/><circle cx="32" cy="32" r="13.3" stroke="rgba(255,255,255,.31)"/><path d="M32 23.8V9" stroke="#ff3b1f" stroke-width="1.5"/><circle cx="32" cy="32" r="2" fill="#fff"/></g></svg></button>
   <div class="player container is-collapsed" id="player" role="region" aria-label="미니 플레이어">
     <a class="player__logo" href="index.html" aria-label="AOMG 홈">AOMG</a>
     <div class="player__track">
+      <svg class="lp lp--bar" viewBox="0 0 64 64" fill="none" aria-hidden="true"><circle class="lp__bg" cx="32" cy="32" r="31.5"/><circle class="lp__track" cx="32" cy="32" r="30.5"/><circle class="lp__arc" cx="32" cy="32" r="30.5" pathLength="100" transform="rotate(-90 32 32)"/><g class="lp__disc"><circle cx="32" cy="32" r="25.5" stroke="#fff"/><circle cx="32" cy="32" r="21.9" stroke="rgba(255,255,255,.55)"/><circle cx="32" cy="32" r="17.6" stroke="rgba(255,255,255,.43)"/><circle cx="32" cy="32" r="13.3" stroke="rgba(255,255,255,.31)"/><path d="M32 23.8V9" stroke="#ff3b1f" stroke-width="1.5"/><circle cx="32" cy="32" r="2" fill="#fff"/></g></svg>
       <button class="cta" type="button" data-action="play-toggle" aria-label="재생"><span class="cta__label">PLAY</span></button>
       <p class="player__title" aria-live="polite" data-render="player-title" data-copy="player.idle">재생 중인 곡 없음</p>
       <div class="player__progress" role="progressbar" aria-label="재생 위치" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></div>
@@ -354,14 +355,14 @@
 
   <img class="artist-preview" alt="" aria-hidden="true">
 
-  <script src="js/data.js?v=20261109-ft3"></script>
-  <script src="js/player.js?v=20261109-ft3"></script>
-  <script src="js/script.js?v=20261109-ft3"></script>
-  <script src="js/effects.js?v=20261109-ft3"></script>
+  <script src="js/data.js?v=20261109-lp1"></script>
+  <script src="js/player.js?v=20261109-lp1"></script>
+  <script src="js/script.js?v=20261109-lp1"></script>
+  <script src="js/effects.js?v=20261109-lp1"></script>
   <script type="module">
-    import { createSoundScene } from './js/sound3d.js?v=20261109-ft3';
-    import { createLogoScene } from './js/logo3d.js?v=20261109-ft3';
-    import './js/crowd3d.js?v=20261109-ft3';
+    import { createSoundScene } from './js/sound3d.js?v=20261109-lp1';
+    import { createLogoScene } from './js/logo3d.js?v=20261109-lp1';
+    import './js/crowd3d.js?v=20261109-lp1';
     const section = document.getElementById('sound');
     const heroEl = document.getElementById('hero');
     const np = document.getElementById('np');
@@ -413,7 +414,7 @@
       .catch((e) => { console.warn(e); document.documentElement.classList.add('no-webgl'); });
     createLogoScene(document.getElementById('footer-canvas'), { mode: 'footer', interactive: false, follow: document.getElementById('contact') }).catch(() => {});
     // WHAT WE DO 카드 3D 오브제: 실패하면 미리 렌더한 이미지가 그대로 보임
-    import('./js/wwd3d.js?v=20261109-ft3').then((m) => m.initWwd3D(document.getElementById('what-we-do'))).catch(() => {});
+    import('./js/wwd3d.js?v=20261109-lp1').then((m) => m.initWwd3D(document.getElementById('what-we-do'))).catch(() => {});
   </script>
 </body>
 </html>

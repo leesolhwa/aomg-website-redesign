@@ -24,9 +24,13 @@ async def main():
     pg,errs=await newpage(b); await pg.goto(BASE+'index.html')
     await pg.click('.hero [data-action=audio-toggle]'); await pg.wait_for_timeout(1500)
     s=await pg.evaluate('Player.state'); check('audio on plays demo-01', s['playing'] and s['trackId']=='demo-01', str(s))
+    check('player hidden in NOW PLAYING (at-np)', await pg.evaluate("document.documentElement.classList.contains('at-np') && getComputedStyle(document.querySelector('.player')).visibility==='hidden'"))
+    await pg.evaluate("scrollTo({top:document.getElementById('artists').getBoundingClientRect().top+scrollY,behavior:'instant'})")   # 11/09: NOW PLAYING 밖에서 플레이어 확인
+    await pg.wait_for_function("getComputedStyle(document.querySelector('.player')).visibility==='visible'", timeout=20000)
     lab=await pg.inner_text('.player [data-action=audio-toggle]'); check('player label SOUND OFF', 'SOUND OFF' in lab, lab)
     await pg.click('.player [data-action=play-toggle]'); await pg.wait_for_timeout(300)
     check('player pause', not (await pg.evaluate('Player.state.playing')))
+    await pg.evaluate("scrollTo({top:0,behavior:'instant'})"); await pg.wait_for_timeout(500)   # 히어로로 돌아감
     # 1b 히어로 → NOW PLAYING (로고 → 선 → CD). 진행도는 스크롤로만 바뀜
     await pg.wait_for_function('window.SoundScene', timeout=120000)
     async def goP(v):
