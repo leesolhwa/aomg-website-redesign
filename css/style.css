@@ -680,10 +680,11 @@ html.js [data-reveal].is-in { opacity: 1; transform: none; }
   html.js .wwd__lead { flex: none; width: 100vw; }
   html.js .wwd__cards { display: flex; gap: 4vw; width: auto; margin: 0; }
   /* 11/08: 카드 1:1, 위아래 여백(지그재그 ±6%), 오브제는 남은 칸 가운데. 가운데 온 카드만 크고 또렷 + 오브제 패럴랙스 (JS가 --s, --o, --px) */
-  html.js .wwd__card { flex: none; width: min(26vw, 56vh); height: min(26vw, 56vh); display: flex; flex-direction: column; overflow: hidden; transform: scale(var(--s, 1)); opacity: var(--o, 1); }
+  html.js .wwd__card { flex: none; width: min(26vw, 56vh); height: min(26vw, 56vh); display: flex; flex-direction: column; overflow: hidden; transform: translateY(var(--zy, 0)) scale(var(--s, 1)); opacity: var(--o, 1); border-color: rgba(255, 255, 255, var(--bd, 0.16)); }
   html.js .wwd__obj { flex: 1 1 0; min-height: 0; aspect-ratio: auto; transform: translateX(var(--px, 0px)); }
-  html.js .wwd__card:nth-child(odd) { margin-top: -6vh; }    /* 위·아래 번갈아 */
-  html.js .wwd__card:nth-child(even) { margin-top: 6vh; }
+  html.js .wwd__card:nth-child(odd) { --zy: -6vh; }    /* 위·아래 번갈아 (11/08: 자리를 차지하지 않는 이동이라 위아래 여백이 같음) */
+  html.js .wwd__card:nth-child(even) { --zy: 6vh; }
+  html.js .wwd__track { padding-top: var(--header-h); }   /* 헤더 아래 남은 칸의 가운데에 */
 }
 @media (max-width: 1023px), (prefers-reduced-motion: reduce) {
   .wwd { padding-block: var(--section-pad-md); }
