@@ -521,7 +521,7 @@ html.js:not(.no-webgl) #now-playing-fallback { display: none; } /* WebGL·JS가 
 .news-more__text span { font-family: var(--font-sans-en); font-weight: 600; font-size: 19cqi; letter-spacing: -0.04em; transform: scaleX(1.5); }
 
 /* ==== Footer (11/09): 왼쪽 위 3줄 문장(명조·고딕·명조) · 왼쪽 아래 이메일·SNS · 오른쪽 큰 3D 엠블럼(마우스 따라 보기) ====
- * 한 화면, 저작권 줄 없음. 꾹 누르고 있으면 돋보기(.footer__insp: 같은 글을 '검사 모드'로, 원 안만) — JS initFooterLoupe */
+ * 한 화면, 저작권 줄 없음. 꾹 누르기 돋보기는 페이지 전체(.loupe, JS initLoupe) */
 .footer { position: relative; overflow: hidden; min-height: 100vh; min-height: 100svh; background: var(--color-bg); color: var(--color-text-on-dark); --ft-line: rgba(255, 255, 255, 0.18); }
 .footer__canvas { position: absolute; top: var(--header-h); bottom: 0; left: 0; right: 0; width: 100%; height: calc(100% - var(--header-h)); pointer-events: none; }
 .footer__body { position: relative; z-index: 1; min-height: inherit; display: flex; flex-direction: column; justify-content: space-between; row-gap: 48px; padding: calc(var(--header-h) + 48px) var(--gutter-x) 56px; pointer-events: none; }
@@ -551,26 +551,23 @@ html.js:not(.no-webgl) #now-playing-fallback { display: none; } /* WebGL·JS가 
 .at-footer .player-pill, .at-footer .player { opacity: 0; visibility: hidden; pointer-events: none; }
 
 /* 꾹 누르기 돋보기(롱프레스 인스펙터 루페): 원 안만 고정폭 글꼴 · 모눈 · 점선 테두리 · 크기 태그, 빨간 눈금 원 + 좌표 */
-.footer.has-loupe { cursor: crosshair; }
-.footer.has-loupe.is-holding { user-select: none; -webkit-user-select: none; }
+/* 꾹 누르기 돋보기(롱프레스 인스펙터 루페) — 페이지 전체 (JS initLoupe). 원 안: 모눈 + 요소 점선 테두리 · 크기 태그, 글자는 제자리 그대로 */
 @property --lr { syntax: "<length>"; inherits: true; initial-value: 0px; }
-.footer { --lr: 0px; transition: --lr .35s var(--ease-out); }
-.footer.is-holding { --lr: 150px; }
-.footer__insp { position: absolute; inset: 0; z-index: 2; pointer-events: none; clip-path: circle(var(--lr) at var(--lx, 50%) var(--ly, 50%));
-  background-color: #050505;   /* 원 안은 불투명 — 엠블럼 자리엔 뼈대 그림(.footer__skel)이 대신 보임 */ background-image: linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px); background-size: 24px 24px; }
-.footer__insp .footer__body { min-height: 100vh; min-height: 100svh; }
-.footer__skel { z-index: 0; }   /* 꾹 누른 순간의 엠블럼 뼈대 사진 — .footer__canvas와 같은 자리·크기, 돋보기 원 안에서만 보임 */
-.footer__insp * { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace !important; letter-spacing: 0 !important; }
-.footer__insp [data-sz] { position: relative; outline: 1px dashed rgba(255, 59, 31, 0.7); }
-.footer__insp [data-sz]::before { content: attr(data-sz); position: absolute; left: -1px; top: -18px; padding: 0 5px; font: 600 11px/16px ui-monospace, Menlo, Consolas, monospace; background: #ff3b1f; color: #fff; white-space: nowrap; text-transform: none; }
-.footer__insp .footer__social a::before { display: none; }
-.footer__insp .footer__title { display: inline-block; }
-.footer__insp .footer__cta { background: transparent; color: #ff3b1f; outline: 1px solid #ff3b1f; }
-.footer__lens { position: absolute; z-index: 3; left: var(--lx); top: var(--ly); width: 320px; height: 320px; margin: -160px 0 0 -160px; pointer-events: none; opacity: 0; transform: scale(0.6); transition: opacity .25s, transform .35s var(--ease-out); }
-.footer.is-holding .footer__lens { opacity: 1; transform: none; }
-.footer__lens svg { width: 100%; height: 100%; overflow: visible; }
-.footer__lens span { position: absolute; left: 50%; bottom: 44px; transform: translateX(-50%); padding: 0 8px; font: 600 13px/22px ui-monospace, Menlo, Consolas, monospace; background: rgba(0, 0, 0, 0.85); color: #fff; white-space: pre; }
-@media (prefers-reduced-motion: reduce) { .footer, .footer__lens { transition: none; } }
+.loupe { position: fixed; inset: 0; z-index: 9999; pointer-events: none; --lr: 0px; transition: --lr .35s var(--ease-out); }
+.is-loupe .loupe { --lr: 150px; }
+.is-loupe, .is-loupe * { cursor: crosshair !important; user-select: none !important; -webkit-user-select: none !important; }
+.loupe__in { position: absolute; inset: 0; clip-path: circle(var(--lr) at var(--lx, 50%) var(--ly, 50%));
+  background-color: rgba(5, 5, 5, 0.35); background-image: linear-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.09) 1px, transparent 1px); background-size: 24px 24px; }
+.loupe__skel { position: absolute; }   /* 푸터 엠블럼과 같은 자리에 깔리는 뼈대 그림 */
+.loupe__skel[hidden] { display: none; }
+.loupe__mark { position: absolute; outline: 1px dashed rgba(255, 59, 31, 0.75); }
+.loupe__mark[hidden] { display: none; }
+.loupe__mark::before { content: attr(data-sz); position: absolute; left: -1px; top: -17px; padding: 0 5px; font: 600 11px/16px ui-monospace, Menlo, Consolas, monospace; font-style: normal; background: #ff3b1f; color: #fff; white-space: nowrap; }
+.loupe__lens { position: absolute; left: var(--lx); top: var(--ly); width: 320px; height: 320px; margin: -160px 0 0 -160px; opacity: 0; transform: scale(0.6); transition: opacity .25s, transform .35s var(--ease-out); }
+.is-loupe .loupe__lens { opacity: 1; transform: none; }
+.loupe__lens svg { width: 100%; height: 100%; overflow: visible; }
+.loupe__lens span { position: absolute; left: 50%; bottom: 44px; transform: translateX(-50%); padding: 0 8px; font: 600 13px/22px ui-monospace, Menlo, Consolas, monospace; background: rgba(0, 0, 0, 0.85); color: #fff; white-space: pre; }
+@media (prefers-reduced-motion: reduce) { .loupe, .loupe__lens { transition: none; } }
 
 /* ==== Mini Player (Kode 하단 바: 60px, 3열) ==== */
 .player { position: fixed; inset: auto 0 0 0; z-index: var(--z-player); height: var(--player-h); display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; column-gap: var(--grid-gap-x); background: var(--color-black); color: var(--color-white); }
@@ -653,9 +650,9 @@ html.js [data-reveal].is-in { opacity: 1; transform: none; }
 @media (min-width: 768px) { .player { padding-inline: 5%; } }
 .player__end { display: flex; align-items: center; column-gap: var(--space-card-text); }
 /* 11/09 플레이어 버튼: 테두리·글자 없이 선 LP(52px) + 둘레 빨간 호(재생 진행률). 재생 중엔 판이 돎(3초 한 바퀴).
-   마우스를 올리면 왼쪽으로 곡 이름 · 시간. 항상 오른쪽·아래에서 100px, NOW PLAYING·푸터에선 잠깐 숨김(html.at-np / .at-footer) */
+   마우스를 올리면 왼쪽으로 곡 이름 · 시간. 항상 오른쪽·아래에서 50px, NOW PLAYING·푸터에선 잠깐 숨김(html.at-np / .at-footer) */
 .player-pill { position: fixed; right: 20px; bottom: 20px; z-index: var(--z-player); display: block; width: 64px; height: 64px; padding: 0; border: 0; background: none; color: var(--color-white); cursor: pointer; }
-@media (min-width: 768px) { .player-pill { right: 100px; bottom: 100px; } }
+@media (min-width: 768px) { .player-pill { right: 50px; bottom: 50px; } }
 .player-pill[hidden] { display: none; }
 .player-pill:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 4px; border-radius: 50%; }
 .player-pill .lp { width: 100%; height: 100%; }

@@ -425,44 +425,95 @@
       }, { threshold: [0, 0.01] });
       np.forEach((el) => io.observe(el));
     }
-    // 돋보기: 마우스(정밀 포인터)에서만. 글을 '검사 모드'로 복제해 원 안에서만 보여 줌
+  }
+
+  /* ---------- 꾹 누르기 돋보기 (11/09, 페이지 전체) ----------
+   * 마우스로 빈 곳을 0.3초 꾹 누르면 빨간 눈금 원 + 좌표. 원 안은 모눈 + 그 자리 요소들의 점선 테두리 · 크기 태그(가로×세로 px).
+   * 글자·그림은 원래 자리·글꼴 그대로(원 안과 밖이 어긋나지 않게). 푸터 엠블럼 위에서는 깨진 조각 뼈대(logo3d.js)가 원 안에 보임.
+   * 링크·버튼·입력·캔버스(드래그하는 3D)·공연장 위에서는 평소처럼 동작. 터치 기기에서는 끔 */
+  function initLoupe() {
     if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-    const body = ft.querySelector('.footer__body'); if (!body) return;
-    const insp = document.createElement('div');
-    insp.className = 'footer__insp'; insp.setAttribute('aria-hidden', 'true'); insp.inert = true;
-    const skel = document.createElement('canvas'); skel.className = 'footer__canvas footer__skel';   // 엠블럼 뼈대 (logo3d.js가 그려 줌)
-    insp.append(skel, body.cloneNode(true));
-    const lens = document.createElement('div');
-    lens.className = 'footer__lens'; lens.setAttribute('aria-hidden', 'true');
+    const R = 150, HOLD_MS = 300;
+    const root = document.createElement('div');
+    root.className = 'loupe'; root.setAttribute('aria-hidden', 'true');
     let ticks = '';
     for (let i = 0; i < 72; i++) {
       const a = i * 5 * Math.PI / 180, r1 = i % 6 ? 150 : 146, r2 = i % 6 ? 158 : 162;
       ticks += `<line x1="${(160 + Math.cos(a) * r1).toFixed(1)}" y1="${(160 + Math.sin(a) * r1).toFixed(1)}" x2="${(160 + Math.cos(a) * r2).toFixed(1)}" y2="${(160 + Math.sin(a) * r2).toFixed(1)}"/>`;
     }
-    lens.innerHTML = `<svg viewBox="0 0 320 320" fill="none" stroke="#ff3b1f" stroke-width="1"><circle cx="160" cy="160" r="150" stroke-width="1.5"/>${ticks}<line x1="160" y1="0" x2="160" y2="320"/><line x1="0" y1="160" x2="320" y2="160"/><circle cx="160" cy="160" r="3" fill="#ff3b1f" stroke="none"/></svg><span></span>`;
-    ft.append(insp, lens);
-    ft.classList.add('has-loupe');
-    const xy = lens.querySelector('span');
-    const sizes = () => insp.querySelectorAll('h2, p, a, ul').forEach((el) => { const r = el.getBoundingClientRect(); el.dataset.sz = `${Math.round(r.width)}×${Math.round(r.height)}`; });
-    sizes(); addEventListener('resize', sizes);
-    if (document.fonts) document.fonts.ready.then(sizes);
-    const move = (e) => {
-      const r = ft.getBoundingClientRect();
-      ft.style.setProperty('--lx', `${e.clientX - r.left}px`); ft.style.setProperty('--ly', `${e.clientY - r.top}px`);
-      xy.textContent = `x ${Math.round(e.clientX)}   y ${Math.round(e.clientY + scrollY)}`;
+    root.innerHTML = `<div class="loupe__in"><canvas class="loupe__skel"></canvas><div class="loupe__marks"></div></div><div class="loupe__lens"><svg viewBox="0 0 320 320" fill="none" stroke="#ff3b1f" stroke-width="1"><circle cx="160" cy="160" r="150" stroke-width="1.5"/>${ticks}<line x1="160" y1="0" x2="160" y2="320"/><line x1="0" y1="160" x2="320" y2="160"/><circle cx="160" cy="160" r="3" fill="#ff3b1f" stroke="none"/></svg><span></span></div>`;
+    document.body.append(root);
+    const marksEl = root.querySelector('.loupe__marks'), skel = root.querySelector('.loupe__skel'), xy = root.querySelector('.loupe__lens span');
+    const SEL = 'h1, h2, h3, h4, h5, h6, p, a, button, img, video, figcaption, time, input, label, li';
+    const SKIP = 'a, button, input, select, textarea, label, video, canvas, [role="slider"], [draggable="true"], #crowd-frame, .gnb, .player, .player-pill';
+    let timer = 0, holding = false, sx = 0, sy = 0, items = [], pool = [], raf = 0, last = null;
+    const collect = () => {
+      const vw = innerWidth, vh = innerHeight, big = vw * vh * 0.4;
+      const els = [...document.querySelectorAll(SEL)].filter((el) => {
+        if (el.closest('.loupe')) return false;
+        const r = el.getBoundingClientRect();
+        if (r.width < 2 || r.height < 2 || r.bottom < 0 || r.top > vh || r.right < 0 || r.left > vw || r.width * r.height > big) return false;
+        return el.checkVisibility ? el.checkVisibility({ opacityProperty: true, visibilityProperty: true }) : true;
+      });
+      const set = new Set(els);
+      items = els.filter((el) => !els.some((o) => o !== el && el.contains(o) && set.has(o)))   // 안쪽 요소만 (겹친 테두리 방지)
+        .slice(0, 400).map((el) => ({ r: el.getBoundingClientRect() }));
     };
-    ft.addEventListener('pointermove', move);
-    ft.addEventListener('pointerdown', (e) => {
-      if (e.button !== 0 || e.target.closest('a, button')) return;   // 링크·버튼은 평소처럼 누름
-      move(e); ft.classList.add('is-holding');
-      ft.dispatchEvent(new CustomEvent('footer-inspect', { detail: { on: true, canvas: skel } }));   // 엠블럼: 그 자리에 멈추고, 뼈대 사진을 돋보기 층에 (logo3d.js)
-    });
+    const paint = () => {
+      raf = 0; if (!last) return;
+      const { x, y } = last;
+      root.style.setProperty('--lx', `${x}px`); root.style.setProperty('--ly', `${y}px`);
+      xy.textContent = `x ${Math.round(x)}   y ${Math.round(y + scrollY)}`;
+      if (!holding) return;
+      const near = items.filter(({ r }) => {   // 원과 겹치는 요소
+        const cx = Math.max(r.left, Math.min(x, r.right)), cy = Math.max(r.top, Math.min(y, r.bottom));
+        return (cx - x) ** 2 + (cy - y) ** 2 < R * R;
+      });
+      while (pool.length < near.length) { const m = document.createElement('i'); m.className = 'loupe__mark'; marksEl.append(m); pool.push(m); }
+      pool.forEach((m, i) => {
+        const it = near[i];
+        if (!it) { m.hidden = true; return; }
+        m.hidden = false;
+        m.style.cssText = `left:${it.r.left}px;top:${it.r.top}px;width:${it.r.width}px;height:${it.r.height}px`;
+        m.dataset.sz = `${Math.round(it.r.width)}×${Math.round(it.r.height)}`;
+      });
+    };
+    const queue = (e) => { last = { x: e.clientX, y: e.clientY }; if (!raf) raf = requestAnimationFrame(paint); };
+    const footer = $('#contact'), fcv = $('#footer-canvas');
+    const start = () => {
+      timer = 0; holding = true; collect();
+      getSelection()?.removeAllRanges();   // 누르는 동안 끌려 선택된 글자 해제
+      document.documentElement.classList.add('is-loupe');
+      // 푸터 엠블럼이 보이면: 그 자리에 멈추고 뼈대 한 장을 받아 엠블럼과 같은 자리에 깔기
+      skel.hidden = true;
+      if (footer && fcv) {
+        const r = fcv.getBoundingClientRect();
+        if (r.bottom > 0 && r.top < innerHeight) {
+          skel.style.cssText = `left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px`;
+          skel.hidden = false;
+          footer.dispatchEvent(new CustomEvent('footer-inspect', { detail: { on: true, canvas: skel } }));
+        }
+      }
+      paint();
+    };
     const end = () => {
-      if (!ft.classList.contains('is-holding')) return;
-      ft.classList.remove('is-holding');
-      ft.dispatchEvent(new CustomEvent('footer-inspect', { detail: { on: false } }));
+      clearTimeout(timer); timer = 0;
+      if (!holding) return;
+      holding = false;
+      document.documentElement.classList.remove('is-loupe');
+      if (footer) footer.dispatchEvent(new CustomEvent('footer-inspect', { detail: { on: false } }));
     };
-    addEventListener('pointerup', end); addEventListener('pointercancel', end); ft.addEventListener('pointerleave', end);
+    addEventListener('pointerdown', (e) => {
+      if (e.button !== 0 || e.pointerType !== 'mouse' || e.target.closest(SKIP)) return;
+      sx = e.clientX; sy = e.clientY; queue(e);
+      clearTimeout(timer); timer = setTimeout(start, HOLD_MS);
+    });
+    addEventListener('pointermove', (e) => {
+      if (timer && Math.hypot(e.clientX - sx, e.clientY - sy) > 6) { clearTimeout(timer); timer = 0; }   // 끌기(드래그)면 취소
+      if (holding) { e.preventDefault(); queue(e); }
+    });
+    addEventListener('pointerup', end); addEventListener('pointercancel', end); addEventListener('blur', end);
+    addEventListener('scroll', end, { passive: true });   // 스크롤하면 닫힘 (자리 어긋남 방지)
   }
 
   /* ---------- REEL: 스크롤에 따라 정사각형 영상 → 화면 100%, 문구가 한 줄씩. 보일 때만 재생 ---------- */
@@ -533,6 +584,7 @@
   bindPlayer();
   initPlayerDock();
   initFooter();
+  initLoupe();
   if (!isArtistPage) { initNowPlaying(); initReel(); initWhatWeDo(); }
   initReveal();
   updateTone();
