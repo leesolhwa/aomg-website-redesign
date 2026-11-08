@@ -200,7 +200,7 @@
 /* ==== Base ==== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { background: var(--color-bg); color: var(--color-text-on-dark); scroll-padding-top: var(--header-h); /* 부드러운 이동은 script.js에서 같은 페이지 앵커에만 적용 */ -webkit-text-size-adjust: 100%; }
-body { font-family: var(--type-sans); font-weight: var(--fw-body); font-size: var(--fs-ko-body); line-height: var(--lh-ko-body); letter-spacing: var(--ls-ko-body); word-break: keep-all; padding-bottom: var(--player-h); overflow-x: hidden; }
+body { font-family: var(--type-sans); font-weight: var(--fw-body); font-size: var(--fs-ko-body); line-height: var(--lh-ko-body); letter-spacing: var(--ls-ko-body); word-break: keep-all; overflow-x: hidden; } /* 11/09: 맨 밑 플레이어 자리 여백 없앰 — 푸터에서는 플레이어를 숨겨서 */
 body { cursor: default; } /* 글자 위에서도 I자 대신 화살표 (링크·버튼 손가락, CD·포스터 등 지정 커서는 그대로) */
 img, canvas { display: block; max-width: 100%; height: auto; }
 a { color: inherit; text-decoration: none; }
@@ -520,15 +520,54 @@ html.js:not(.no-webgl) #now-playing-fallback { display: none; } /* WebGL·JS가 
 .news-more__text em { font-family: var(--font-display-en); font-style: italic; font-size: 24cqi; } /* 칸 폭에 맞춰 (1440px에서 약 58px) */
 .news-more__text span { font-family: var(--font-sans-en); font-weight: 600; font-size: 19cqi; letter-spacing: -0.04em; transform: scaleX(1.5); }
 
-/* ==== Footer (Kode footer: 100vh 검정) ==== */
-.footer { position: relative; overflow: hidden; min-height: var(--section-screen); padding-top: var(--section-pad-md); padding-bottom: calc(var(--hit-area) + 40px); align-content: end; background: var(--color-bg); color: var(--color-text-on-dark); }
-.footer__canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-.footer > *:not(.footer__canvas) { position: relative; }
-/* 24차: 소개·이메일·안내 문구 삭제, SNS만 굵고 크게 2줄 양쪽 정렬로 화면 맨 아래 (오른쪽 아래 PLAYER 버튼과 안 겹치게 그만큼 띄움) */
-.footer__social { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; column-gap: var(--grid-gap-x); row-gap: 2vh; }
-.footer__social li:nth-child(even) { justify-self: end; }
-.footer__social a { display: inline-flex; align-items: center; min-height: var(--hit-area); font-family: var(--font-sans-en); font-weight: 600; font-size: min(7.4vw, 13vh); line-height: 0.95; letter-spacing: -0.045em; text-transform: uppercase; }
-.footer__social a:hover, .footer__social a:focus-visible { color: var(--color-bg-accent); } /* 히어로 배경색과 같은 주황 */
+/* ==== Footer (11/09): 왼쪽 위 3줄 문장(명조·고딕·명조) · 왼쪽 아래 이메일·SNS · 오른쪽 큰 3D 엠블럼(마우스 따라 보기) ====
+ * 한 화면, 저작권 줄 없음. 꾹 누르고 있으면 돋보기(.footer__insp: 같은 글을 '검사 모드'로, 원 안만) — JS initFooterLoupe */
+.footer { position: relative; overflow: hidden; min-height: 100vh; min-height: 100svh; background: var(--color-bg); color: var(--color-text-on-dark); --ft-line: rgba(255, 255, 255, 0.18); }
+.footer__canvas { position: absolute; top: var(--header-h); bottom: 0; left: 0; right: 0; width: 100%; height: calc(100% - var(--header-h)); pointer-events: none; }
+.footer__body { position: relative; z-index: 1; min-height: inherit; display: flex; flex-direction: column; justify-content: space-between; row-gap: 48px; padding: calc(var(--header-h) + 48px) var(--gutter-x) 56px; pointer-events: none; }
+.footer__body a { pointer-events: auto; }
+.footer__title { font-family: var(--font-sans-en); font-weight: 700; font-size: clamp(56px, 7vw, 112px); line-height: 0.98; letter-spacing: -0.05em; }
+.footer__title em { font-family: var(--font-display-en); font-style: italic; font-weight: 400; letter-spacing: -0.01em; }
+.footer__cols { display: grid; grid-template-columns: auto auto; justify-content: start; column-gap: 96px; row-gap: 40px; }
+.footer__label { font-family: var(--font-sans-en); font-size: 14px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 14px; }
+.footer__mail { display: inline-block; font-family: var(--font-sans-en); font-size: clamp(22px, 2vw, 30px); font-weight: 600; letter-spacing: -0.01em; padding-bottom: 4px; border-bottom: 2px solid currentColor; transition: color var(--dur-sm, .3s); }
+.footer__cta { display: table; margin-top: 22px; padding: 16px 24px; background: var(--color-accent); color: var(--color-black); font-family: var(--font-sans-en); font-weight: 600; white-space: nowrap; transition: background-color .3s; }
+.footer__social { display: grid; row-gap: 10px; }
+.footer__social a { display: inline-flex; align-items: center; min-height: 28px; font-family: var(--font-sans-en); font-size: 16px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(255, 255, 255, 0.55); transition: color .3s; }
+.footer__mail:hover, .footer__mail:focus-visible { color: var(--color-accent); }
+.footer__cta:hover, .footer__cta:focus-visible { background: var(--color-white); }
+.footer__social a:hover, .footer__social a:focus-visible { color: var(--color-white); }
+@media (min-width: 768px) {
+  .footer__canvas { left: 46%; width: 54%; transform: scale(1.55); }   /* 오른쪽 칸 가득, 화면에 맞게 키움 */
+  .footer__body { padding-inline: 5%; }   /* 헤더(5%)와 같은 왼쪽 줄 */
+}
+@media (max-width: 767px) {   /* 모바일: 문장 → 엠블럼 → 이메일·SNS 순서로 세로 */
+  .footer__body { justify-content: flex-start; }
+  .footer__cols { grid-template-columns: 1fr; margin-top: 42vh; }
+  .footer__canvas { top: calc(var(--header-h) + 48px + 3 * 0.98 * 56px + 8px); height: 42vh; transform: scale(1.25); }
+}
+/* 맨 밑(푸터)에선 PLAYER 버튼·바를 잠깐 숨김 → 푸터인 게 확실히 보이게 (JS: html.at-footer) */
+.player-pill, .player { transition: opacity .4s var(--ease-out), visibility .4s, transform var(--dur-md) var(--ease-out); }
+.at-footer .player-pill, .at-footer .player { opacity: 0; visibility: hidden; pointer-events: none; }
+
+/* 꾹 누르기 돋보기(롱프레스 인스펙터 루페): 원 안만 고정폭 글꼴 · 모눈 · 점선 테두리 · 크기 태그, 빨간 눈금 원 + 좌표 */
+.footer.has-loupe { cursor: crosshair; }
+.footer.has-loupe.is-holding { user-select: none; -webkit-user-select: none; }
+.footer__insp { position: absolute; inset: 0; z-index: 2; pointer-events: none; clip-path: circle(0 at var(--lx, 50%) var(--ly, 50%)); transition: clip-path .35s var(--ease-out);
+  background-color: #050505; background-image: linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px); background-size: 24px 24px; }
+.footer.is-holding .footer__insp { clip-path: circle(150px at var(--lx) var(--ly)); }
+.footer__insp .footer__body { min-height: 100vh; min-height: 100svh; }
+.footer__insp * { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace !important; letter-spacing: 0 !important; }
+.footer__insp [data-sz] { position: relative; outline: 1px dashed rgba(255, 59, 31, 0.7); }
+.footer__insp [data-sz]::before { content: attr(data-sz); position: absolute; left: -1px; top: -18px; padding: 0 5px; font: 600 11px/16px ui-monospace, Menlo, Consolas, monospace; background: #ff3b1f; color: #fff; white-space: nowrap; text-transform: none; }
+.footer__insp .footer__social a::before { display: none; }
+.footer__insp .footer__title { display: inline-block; }
+.footer__insp .footer__cta { background: transparent; color: #ff3b1f; outline: 1px solid #ff3b1f; }
+.footer__lens { position: absolute; z-index: 3; left: var(--lx); top: var(--ly); width: 320px; height: 320px; margin: -160px 0 0 -160px; pointer-events: none; opacity: 0; transform: scale(0.6); transition: opacity .25s, transform .35s var(--ease-out); }
+.footer.is-holding .footer__lens { opacity: 1; transform: none; }
+.footer__lens svg { width: 100%; height: 100%; overflow: visible; }
+.footer__lens span { position: absolute; left: 50%; bottom: 44px; transform: translateX(-50%); padding: 0 8px; font: 600 13px/22px ui-monospace, Menlo, Consolas, monospace; background: rgba(0, 0, 0, 0.85); color: #fff; white-space: pre; }
+@media (prefers-reduced-motion: reduce) { .footer__insp, .footer__lens { transition: none; } }
 
 /* ==== Mini Player (Kode 하단 바: 60px, 3열) ==== */
 .player { position: fixed; inset: auto 0 0 0; z-index: var(--z-player); height: var(--player-h); display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; column-gap: var(--grid-gap-x); background: var(--color-black); color: var(--color-white); }

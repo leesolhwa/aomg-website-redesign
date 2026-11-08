@@ -120,16 +120,17 @@ async def main():
     check('menu opens', (await pg.get_attribute('.gnb__toggle','aria-expanded'))=='true')
     await pg.keyboard.press('Escape'); await pg.wait_for_timeout(300)
     check('menu closes on Esc', (await pg.get_attribute('.gnb__toggle','aria-expanded'))=='false')
-    await pg.click('.gnb__toggle'); await pg.wait_for_timeout(400); await pg.click('.gnb__menu a[href="#news"]')
-    try: await pg.wait_for_function("(()=>{const t=document.querySelector('#news').getBoundingClientRect().top;return t>=0&&t<=60})()", timeout=20000)  # 긴 고정 구간을 지나는 부드러운 스크롤
+    await pg.click('.gnb__toggle'); await pg.wait_for_timeout(400); await pg.click('.gnb__menu a[href="#live"]')
+    try: await pg.wait_for_function("(()=>{const t=document.querySelector('#live').getBoundingClientRect().top;return t>=0&&t<=60})()", timeout=20000)  # 긴 고정 구간을 지나는 부드러운 스크롤
     except Exception: pass
-    top=await pg.evaluate("Math.round(document.querySelector('#news').getBoundingClientRect().top)")
-    check('menu link scrolls to #news under GNB', 0<=top<=60, f'top={top}')
+    top=await pg.evaluate("Math.round(document.querySelector('#live').getBoundingClientRect().top)")
+    check('menu link scrolls to #live under GNB', 0<=top<=60, f'top={top}')
+    check('NEWS removed (section + menu), LIVE -> SCHEDULE', await pg.evaluate("!document.getElementById('news') && !document.querySelector('.gnb__menu a[href=\"#news\"]') && document.querySelector('.gnb__menu a[href=\"#live\"]').textContent.trim()==='SCHEDULE'"))
     pg2,_=await newpage(b, 390, 844, keep=True); await pg2.goto(BASE+'artist.html'); await pg2.click('.gnb__toggle'); await pg2.wait_for_timeout(400)
     await pg2.click('.gnb__menu a[href="index.html#live"]'); await pg2.wait_for_load_state('load'); await pg2.wait_for_timeout(800)
     check('artist page menu -> index.html#live', pg2.url.endswith('index.html#live'), pg2.url)
     # footer links on mobile
-    hrefs=await pg.eval_on_selector_all('footer a', 'els=>els.map(e=>e.href)'); check('footer links present (SNS 4)', len(hrefs)==4, str(len(hrefs)))
+    hrefs=await pg.eval_on_selector_all('#contact > .footer__body a', 'els=>els.map(e=>e.href)'); check('footer links present (email 2 + SNS 4)', len(hrefs)==6, str(len(hrefs)))
     # 6 reduced motion
     pg,errs=await newpage(b, 1440, 900, reduced_motion='reduce'); await pg.goto(BASE+'index.html'); await pg.wait_for_timeout(300)
     n=await pg.eval_on_selector_all('.discography__year','e=>e.length'); hid=await pg.evaluate("document.querySelector('.discography__controls').hidden")

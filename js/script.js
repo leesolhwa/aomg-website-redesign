@@ -206,7 +206,8 @@
     initDiscography();
     renderEvents(EVENTS, 'events');
     // 25차: 카드 4개 뒤 5번째 칸 = 뉴스 더 보기 (이탤릭 More + 넓은 고딕 News, 얇은 선 테두리). 누르면 인스타그램
-    $('[data-render="news"]').innerHTML = NEWS.map(newsCard).join('') +
+    const newsList = $('[data-render="news"]');   // 11/09: 메인 NEWS 섹션 삭제(인스타그램과 겹침) — 다시 넣으면 그대로 그려짐
+    if (newsList) newsList.innerHTML = NEWS.map(newsCard).join('') +
       `<li class="news-more"><a href="${AOMG.social.instagram}" target="_blank" rel="noopener" aria-label="뉴스 더 보기, 인스타그램 새 창"><span class="news-more__text" aria-hidden="true"><em>More</em><span>News</span></span></a></li>`;
   }
 
@@ -402,6 +403,45 @@
     if (window.Player) window.Player.subscribe((st) => { if (st.playing) set(true); });   // 어디서든 재생이 시작되면 열림
   }
 
+  /* ---------- 푸터 (11/09): 맨 밑에서 플레이어 숨김 + 꾹 누르기 돋보기 ---------- */
+  function initFooter() {
+    const ft = $('#contact'); if (!ft) return;
+    // 푸터가 화면 대부분을 채우면 PLAYER 버튼·바를 숨김 (html.at-footer)
+    new IntersectionObserver(([en]) => document.documentElement.classList.toggle('at-footer', en.isIntersecting), { threshold: 0.6 }).observe(ft);
+    // 돋보기: 마우스(정밀 포인터)에서만. 글을 '검사 모드'로 복제해 원 안에서만 보여 줌
+    if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    const body = ft.querySelector('.footer__body'); if (!body) return;
+    const insp = document.createElement('div');
+    insp.className = 'footer__insp'; insp.setAttribute('aria-hidden', 'true'); insp.inert = true;
+    insp.append(body.cloneNode(true));
+    const lens = document.createElement('div');
+    lens.className = 'footer__lens'; lens.setAttribute('aria-hidden', 'true');
+    let ticks = '';
+    for (let i = 0; i < 72; i++) {
+      const a = i * 5 * Math.PI / 180, r1 = i % 6 ? 150 : 146, r2 = i % 6 ? 158 : 162;
+      ticks += `<line x1="${(160 + Math.cos(a) * r1).toFixed(1)}" y1="${(160 + Math.sin(a) * r1).toFixed(1)}" x2="${(160 + Math.cos(a) * r2).toFixed(1)}" y2="${(160 + Math.sin(a) * r2).toFixed(1)}"/>`;
+    }
+    lens.innerHTML = `<svg viewBox="0 0 320 320" fill="none" stroke="#ff3b1f" stroke-width="1"><circle cx="160" cy="160" r="150" stroke-width="1.5"/>${ticks}<line x1="160" y1="0" x2="160" y2="320"/><line x1="0" y1="160" x2="320" y2="160"/><circle cx="160" cy="160" r="3" fill="#ff3b1f" stroke="none"/></svg><span></span>`;
+    ft.append(insp, lens);
+    ft.classList.add('has-loupe');
+    const xy = lens.querySelector('span');
+    const sizes = () => insp.querySelectorAll('h2, p, a, ul').forEach((el) => { const r = el.getBoundingClientRect(); el.dataset.sz = `${Math.round(r.width)}×${Math.round(r.height)}`; });
+    sizes(); addEventListener('resize', sizes);
+    if (document.fonts) document.fonts.ready.then(sizes);
+    const move = (e) => {
+      const r = ft.getBoundingClientRect();
+      ft.style.setProperty('--lx', `${e.clientX - r.left}px`); ft.style.setProperty('--ly', `${e.clientY - r.top}px`);
+      xy.textContent = `x ${Math.round(e.clientX)}   y ${Math.round(e.clientY + scrollY)}`;
+    };
+    ft.addEventListener('pointermove', move);
+    ft.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0 || e.target.closest('a, button')) return;   // 링크·버튼은 평소처럼 누름
+      move(e); ft.classList.add('is-holding');
+    });
+    const end = () => ft.classList.remove('is-holding');
+    addEventListener('pointerup', end); addEventListener('pointercancel', end); ft.addEventListener('pointerleave', end);
+  }
+
   /* ---------- REEL: 스크롤에 따라 정사각형 영상 → 화면 100%, 문구가 한 줄씩. 보일 때만 재생 ---------- */
   function initReel() {
     const sec = $('#reel'); if (!sec) return;
@@ -469,6 +509,7 @@
   if (isArtistPage) renderArtist(); else renderHome();
   bindPlayer();
   initPlayerDock();
+  initFooter();
   if (!isArtistPage) { initNowPlaying(); initReel(); initWhatWeDo(); }
   initReveal();
   updateTone();
