@@ -343,6 +343,21 @@ export async function createLogoScene(canvas, opts = {}) {
     });
     follow.addEventListener('pointerleave', () => { fol.on = false; });
   }
+  /* 11/09 푸터 꾹 누르기(돋보기): 엠블럼이 그 자리에 멈추고 유리 대신 조각 뼈대(모서리 선)만 보임.
+   * script.js가 #contact에 'footer-inspect' 이벤트(detail: true/false)를 보냄 */
+  let inspect = false, skeleton = null;
+  if (mode === 'footer' && follow) {
+    follow.addEventListener('footer-inspect', (e) => {
+      inspect = !!e.detail;
+      if (inspect && !skeleton) {
+        skeleton = new THREE.LineSegments(new THREE.EdgesGeometry(logo.geometry, 20), new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.85 }));
+        pivot.add(skeleton);
+      }
+      if (skeleton) skeleton.visible = inspect;
+      logo.visible = !inspect;
+      if (!raf) raf = requestAnimationFrame(loop);
+    });
+  }
   const LOOK_Y = THREE.MathUtils.degToRad(35), LOOK_X = THREE.MathUtils.degToRad(25), SPIN = Math.PI * 2 / 10;
 
   /* ---------- 루프 ---------- */
@@ -360,7 +375,9 @@ export async function createLogoScene(canvas, opts = {}) {
     const beat = parseFloat(css('--beat')) || 0;
     uniforms.uBeat.value += (beat - uniforms.uBeat.value) * 0.3;
 
-    if (followMode) {
+    if (followMode && inspect) {
+      // 멈춤: 각도·위치 그대로
+    } else if (followMode) {
       if (fol.on) {
         const look = fol.mx * LOOK_Y, turn = Math.PI * 2;
         const base = Math.round((rot.y - look) / turn) * turn;      // 돌던 각도에서 가장 가까운 쪽으로 돌아봄
