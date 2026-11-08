@@ -453,8 +453,9 @@
       // 11/08: 화면 가운데에 가까운 카드일수록 크고 또렷, 오브제는 반대로 살짝 (패럴랙스)
       cards.forEach((c) => {
         const d = (cardsEl.offsetLeft + c.offsetLeft + c.offsetWidth / 2 + x - half) / half, a = Math.min(1, Math.abs(d));
-        c.style.setProperty('--s', (1 + 0.14 * (1 - a)).toFixed(3));
-        c.style.setProperty('--o', (0.4 + 0.6 * (1 - a)).toFixed(2));
+        c.style.setProperty('--s', (0.86 + 0.3 * (1 - a)).toFixed(3));   // 가운데 1.16 · 가장자리 0.86
+        c.style.setProperty('--o', (0.22 + 0.78 * (1 - a) ** 1.5).toFixed(2));   // 가운데 또렷 · 나머지 어둡게
+        c.style.setProperty('--bd', (0.1 + 0.45 * (1 - a) ** 2).toFixed(2));   // 가운데만 밝은 테두리
         c.style.setProperty('--px', `${(-d * 30).toFixed(1)}px`);
       });
     };
