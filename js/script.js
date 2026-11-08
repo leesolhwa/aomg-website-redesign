@@ -313,6 +313,13 @@
       const pct = Math.round(s.progress * 100);
       bar.firstElementChild.style.width = `${pct}%`;
       bar.setAttribute('aria-valuenow', String(pct));
+      // 11/09 LP 버튼·바: 둘레 빨간 호 = 진행률, 마우스 올리면 곡 이름 · 시간 (데모 한 바퀴 30초)
+      $$('.lp').forEach((el) => el.style.setProperty('--lpp', (s.progress * 100).toFixed(1)));
+      const pt2 = $('[data-render="pill-title"]'), tm = $('[data-render="pill-time"]');
+      if (pt2 && (s.playing || Player.restored || s.progress > 0)) {
+        const sec = Math.floor(s.progress * 30);
+        pt2.textContent = `${s.title} · DEMO`; tm.textContent = `0:${String(sec).padStart(2, '0')} / 0:30`;
+      }
     });
   }
 
@@ -400,7 +407,8 @@
     set(false);
     pill.addEventListener('click', () => { set(true); const b = bar.querySelector('[data-action="play-toggle"]'); b && b.focus({ preventScroll: true }); });
     bar.addEventListener('click', (e) => { if (e.target.closest('[data-action="player-close"]')) { set(false); pill.focus({ preventScroll: true }); } });
-    if (window.Player) window.Player.subscribe((st) => { if (st.playing) set(true); });   // 어디서든 재생이 시작되면 열림
+    let was = false;   // 11/09: 재생이 '시작될 때만' 열림 (재생 중 진행률 알림마다 다시 열려서 접을 수 없던 것 수정)
+    if (window.Player) window.Player.subscribe((st) => { if (st.playing && !was) set(true); was = st.playing; });
   }
 
   /* ---------- 푸터 (11/09): 맨 밑에서 플레이어 숨김 + 꾹 누르기 돋보기 ---------- */
@@ -408,6 +416,15 @@
     const ft = $('#contact'); if (!ft) return;
     // 푸터가 화면 대부분을 채우면 PLAYER 버튼·바를 숨김 (html.at-footer)
     new IntersectionObserver(([en]) => document.documentElement.classList.toggle('at-footer', en.isIntersecting), { threshold: 0.6 }).observe(ft);
+    // NOW PLAYING(히어로~CD 컬렉션) 구간에서도 플레이어를 숨김 (html.at-np)
+    const np = ['#sound', '#now-playing-fallback'].map((q) => $(q)).filter(Boolean), seen = new Set();
+    if (np.length) {
+      const io = new IntersectionObserver((ents) => {
+        ents.forEach((en) => (en.isIntersecting && en.intersectionRatio > 0 ? seen.add(en.target) : seen.delete(en.target)));   // 가장자리만 닿은 경우(넓이 0)는 제외
+        document.documentElement.classList.toggle('at-np', seen.size > 0);
+      }, { threshold: [0, 0.01] });
+      np.forEach((el) => io.observe(el));
+    }
     // 돋보기: 마우스(정밀 포인터)에서만. 글을 '검사 모드'로 복제해 원 안에서만 보여 줌
     if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return;
     const body = ft.querySelector('.footer__body'); if (!body) return;
