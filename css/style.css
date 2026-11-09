@@ -592,7 +592,7 @@ html.js:not(.no-webgl) #now-playing-fallback { display: none; } /* WebGL·JS가 
 .detail-hero__body .cta { margin-top: var(--space-body-cta); }
 @media (min-width: 768px) {
   .detail-hero__image { grid-column: 1 / span 2; align-self: end; }
-  .detail-hero__body { grid-column: 3 / span 3; align-self: end; }
+  .detail-hero__body { grid-column: 3 / span 3; align-self: end; padding-left: max(0px, calc(50px - var(--grid-gap-x))); }   /* 사진과 글 사이 50px (그리드 간격 포함) */
 }
 .detail-about, .detail-releases, .detail-videos, .detail-live, .detail-news { padding-block: calc(var(--section-space) * 0.75); }
 .detail-about { row-gap: var(--space-heading-body); }
