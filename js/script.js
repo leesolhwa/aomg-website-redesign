@@ -428,12 +428,12 @@
   }
 
   /* ---------- 꾹 누르기 돋보기 (11/09, 페이지 전체) ----------
-   * 마우스로 빈 곳을 0.3초 꾹 누르면 빨간 눈금 원 + 좌표. 원 안은 모눈 + 그 자리 요소들의 점선 테두리 · 크기 태그(가로×세로 px).
+   * 마우스로 빈 곳을 0.12초 꾹 누르면 빨간 눈금 원 + 좌표. 원 안은 모눈 + 그 자리 요소들의 점선 테두리 · 크기 태그(가로×세로 px).
    * 글자·그림은 원래 자리·글꼴 그대로(원 안과 밖이 어긋나지 않게). 푸터 엠블럼 위에서는 깨진 조각 뼈대(logo3d.js)가 원 안에 보임.
    * 링크·버튼·입력·캔버스(드래그하는 3D)·공연장 위에서는 평소처럼 동작. 터치 기기에서는 끔 */
   function initLoupe() {
     if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-    const R = 150, HOLD_MS = 300;
+    const R = 150, HOLD_MS = 120;
     const root = document.createElement('div');
     root.className = 'loupe'; root.setAttribute('aria-hidden', 'true');
     let ticks = '';
